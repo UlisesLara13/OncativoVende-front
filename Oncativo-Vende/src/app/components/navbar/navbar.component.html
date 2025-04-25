@@ -1,0 +1,45 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container-fluid">
+    <!-- Logo -->
+    <a class="navbar-brand fw-bold" [routerLink]="'/home'">
+      <img src="assets/logo2.png" alt="OncativoVende" style="height: 40px; width: auto;" class="me-2">
+    </a>
+
+    <!-- Botón toggle para móviles -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+      aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Contenido del navbar -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- Buscador centrado -->
+      <form class="d-flex mx-auto w-50">
+        <div class="input-group">
+          <!-- Campo de búsqueda con borde redondeado y color unificado -->
+          <input class="form-control rounded-start ps-3 placeholder-dark" type="search" placeholder="Buscar productos o servicios" aria-label="Buscar">
+          <!-- Ícono de lupa dentro del campo -->
+          <span class="input-group-text bg-white  rounded-end">
+            <i class="bi bi-search text-dark"></i>
+          </span>
+        </div>
+      </form>
+
+      <!-- Opciones a la derecha -->
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <!-- Perfil -->
+        <li class="nav-item">
+          <a class="nav-link text-white" href="#">
+            <i class="bi bi-person-circle me-1"></i> Perfil
+          </a>
+        </li>
+        <!-- Login -->
+        <li class="nav-item">
+          <a class="nav-link text-white" [routerLink]="'/login'">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Ingresar
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
