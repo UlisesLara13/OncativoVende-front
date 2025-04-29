@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UsersService } from '../../services/users.service';
 import { LoginUser } from '../../models/LoginUser';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -24,10 +25,11 @@ export class LoginComponent {
   reactiveForm = new FormGroup({
     email: new FormControl('', [
       Validators.required,
+      Validators.minLength(5),
       Validators.maxLength(50)]),
     password: new FormControl('', [
       Validators.required,
-      Validators.minLength(6),
+      Validators.minLength(8),
     ]),
   });
 
@@ -49,6 +51,8 @@ export class LoginComponent {
       switch (errorKey) {
         case 'required':
           return 'Este campo no puede estar vacío.';
+        case 'email':
+          return 'Formato de correo electrónico inválido.';
         case 'minlength':
           return `Valor ingresado demasiado corto. Mínimo ${control.errors['minlength'].requiredLength} caracteres.`;
         case 'maxlength':
@@ -70,9 +74,22 @@ export class LoginComponent {
       
       },
       error: (error) => {
+        Swal.fire({
+          title: 'Error',
+          text: 'Usuario o contraseña incorrectos.',
+          icon: 'error',
+          timer: 1500,
+          showConfirmButton: false
+        });
         this.errorLog = true;
+        this.cleanForm();
       },
     });
+  }
+
+  //Funcion para limpiar el formulario
+  cleanForm() {
+    this.reactiveForm.reset();
   }
 
 }

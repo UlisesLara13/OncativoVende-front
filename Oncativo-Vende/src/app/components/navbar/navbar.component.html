@@ -1,9 +1,33 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary py-0">
   <div class="container-fluid">
     <!-- Logo -->
     <a class="navbar-brand fw-bold" [routerLink]="'/home'">
-      <img src="assets/logo2.png" alt="OncativoVende" style="height: 40px; width: auto;" class="me-2">
+      <img src="assets/logo2.png" alt="OncativoVende" style="height: 35px; width: auto;" class="me-2">
     </a>
+
+    <!-- Centro: Input de búsqueda y botón de categorías -->
+    <div class="d-flex justify-content-center align-items-center w-50 mx-auto">
+      <!-- Input de búsqueda -->
+      <form class="d-flex w-100 me-2">
+        <input class="form-control form-control-sm rounded ps-3 placeholder-dark mb-2 mt-2" type="search" placeholder="Buscar productos o servicios" aria-label="Buscar">
+      </form>
+
+      <!-- Select de categorías -->
+      <div class="dropdown mb-2 mt-2">
+        <button class="btn btn-transparent text-white dropdown-toggle p-0" type="button" id="dropdownCategorias" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.9rem;">
+          Categorías
+        </button>
+        <ul class="dropdown-menu">
+          @for (category of categories; track category) {
+            <li>
+              <a class="dropdown-item" href="#">
+                {{ category.description }}
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
 
     <!-- Botón toggle para móviles -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
@@ -13,32 +37,32 @@
 
     <!-- Contenido del navbar -->
     <div class="collapse navbar-collapse" id="navbarContent">
-      <!-- Buscador centrado -->
-      <form class="d-flex mx-auto w-50">
-        <div class="input-group">
-          <!-- Campo de búsqueda con borde redondeado y color unificado -->
-          <input class="form-control rounded-start ps-3 placeholder-dark" type="search" placeholder="Buscar productos o servicios" aria-label="Buscar">
-          <!-- Ícono de lupa dentro del campo -->
-          <span class="input-group-text bg-white  rounded-end">
-            <i class="bi bi-search text-dark"></i>
-          </span>
-        </div>
-      </form>
-
-      <!-- Opciones a la derecha -->
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <!-- Perfil -->
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">
-            <i class="bi bi-person-circle me-1"></i> Perfil
-          </a>
-        </li>
-        <!-- Login -->
-        <li class="nav-item">
-          <a class="nav-link text-white" [routerLink]="'/login'">
-            <i class="bi bi-box-arrow-in-right me-1"></i> Ingresar
-          </a>
-        </li>
+        @if (authService.isLoggedIn(); as loggedIn) {
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              @if (userProfileImage; as profileImg) {
+                <img [src]="profileImg" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+              } @else {
+                <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; border: 0.3px solid black;">
+                  {{ getInitials() }}
+                </div>
+              }
+              {{ setName() }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" [routerLink]="'/profile'">Mi perfil</a></li>
+              <li><a class="dropdown-item" (click)="logout()" style="cursor: pointer;">Cerrar sesión</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/favorites'">Mis favoritos</a></li>
+            </ul>
+          </li>
+        } @else {
+          <li class="nav-item">
+            <a class="nav-link text-white" [routerLink]="'/login'">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Ingresar
+            </a>
+          </li>
+        }
       </ul>
     </div>
   </div>

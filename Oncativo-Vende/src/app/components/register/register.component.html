@@ -1,43 +1,60 @@
-<!-- Contenedor principal centrado -->
 <div class="container-fluid d-flex justify-content-center align-items-center" style="height: 88vh;">
-    <form class="form-register row">
-      <h3 class="text-center mb-4 w-100">Crear Cuenta</h3>
-  
-      <!-- Columna 1: Nombre y Apellido -->
-      <div class="col-md-6 mb-3">
-        <label for="firstName" class="form-label">Nombre</label>
-        <input type="text" id="firstName" class="form-control" required />
-      </div>
-      <div class="col-md-6 mb-3">
-        <label for="lastName" class="form-label">Apellido</label>
-        <input type="text" id="lastName" class="form-control" required />
-      </div>
-  
-      <!-- Columna 2: E-mail, Contraseña y Confirmar Contraseña -->
-      <div class="col-md-6 mb-3">
-        <label for="email" class="form-label">E-mail</label>
-        <input type="email" id="email" class="form-control" required />
-      </div>
-      <div class="col-md-6 mb-3">
-        <label for="password" class="form-label">Usuario</label>
-        <input type="password" id="password" class="form-control" required />
-      </div>
-      <div class="col-md-6 mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <input type="password" id="password" class="form-control" required />
-      </div>
-      <div class="col-md-6 mb-3">
-        <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
-        <input type="password" id="confirmPassword" class="form-control" required />
-      </div>
-  
-      <!-- Botones -->
-      <div class="col-12 mb-3">
-        <button type="submit" class="btn btn-primary w-100">Registrar</button>
-      </div>
-      <div class="col-12">
-        <button type="button" class="btn btn-light w-100 mt-2" [routerLink]="'/login'">¿Ya tienes cuenta? Inicia sesión</button>
-      </div>
-    </form>
-  </div>
-  
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-register row">
+
+    <h3 class="text-center mb-4 w-100">Crear Cuenta</h3>
+
+    <!-- Nombre -->
+    <div class="col-md-6 mb-3">
+      <label for="firstName" class="form-label">Nombre</label>
+      <input type="text" id="firstName" formControlName="firstName" class="form-control" [ngClass]="onValidate('firstName')" />
+      <div class="invalid-feedback">{{showError('firstName')}}</div>
+    </div>
+
+    <!-- Apellido -->
+    <div class="col-md-6 mb-3">
+      <label for="lastName" class="form-label">Apellido</label>
+      <input type="text" id="lastName" formControlName="lastName" class="form-control" [ngClass]="onValidate('lastName')"/>
+      <div class="invalid-feedback">{{showError('lastName')}}</div>
+    </div>
+
+    <!-- Email -->
+    <div class="col-md-6 mb-3">
+      <label for="email" class="form-label">E-mail</label>
+      <input type="email" id="email" formControlName="email" class="form-control" [ngClass]="onValidate('email')" />
+      <div class="invalid-feedback">{{showError('email')}}</div>
+    </div>
+
+    <!-- Username -->
+    <div class="col-md-6 mb-3">
+      <label for="username" class="form-label">Usuario</label>
+      <input type="text" id="username" formControlName="username" class="form-control" [ngClass]="onValidate('username')" />
+      <div class="invalid-feedback">{{showError('username')}}</div>
+    </div>
+
+    <!-- Password -->
+    <div class="col-md-6 mb-3">
+      <label for="password" class="form-label">Contraseña</label>
+      <input type="password" id="password" formControlName="password" class="form-control" [ngClass]="onValidate('password')" />
+      <div class="invalid-feedback">{{showError('password')}}</div>
+    </div>
+
+    <!-- Confirmar Password -->
+    <div class="col-md-6 mb-3">
+      <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+      <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control" [ngClass]="onValidate('confirmPassword')" />
+      <div class="invalid-feedback">{{showError('confirmPassword')}}</div>
+    </div>
+
+    <!-- Botones -->
+    <div class="col-12 mb">
+      <button type="submit" class="btn btn-primary w-100" [disabled]="form.invalid">Registrar</button>
+    </div>
+
+    <div class="col-12">
+      <button type="button" class="btn btn-light w-100 mt-2" [routerLink]="'/login'">
+        ¿Ya tienes cuenta? Inicia sesión
+      </button>
+    </div>
+
+  </form>
+</div>

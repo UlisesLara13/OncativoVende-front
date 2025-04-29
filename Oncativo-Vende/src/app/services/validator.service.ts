@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { catchError, map, Observable, of } from 'rxjs';
 
 @Injectable({
@@ -30,6 +30,21 @@ export class ValidatorService {
           return of({ serverError: true });
         })
       );
+    };
+  }
+
+  matchFields(field1: string, field2: string): ValidatorFn {
+    return (formGroup: AbstractControl): ValidationErrors | null => {
+      const control1 = formGroup.get(field1);
+      const control2 = formGroup.get(field2);
+
+      if (control1?.value !== control2?.value) {
+        control2?.setErrors({ notMatch: true });
+        return { notMatch: true };
+      }
+      
+      control2?.setErrors(null);
+      return null;
     };
   }
 

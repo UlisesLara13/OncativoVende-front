@@ -22,11 +22,6 @@
         </div>
         <button type="submit" class="btn btn-primary w-100" [disabled]="!reactiveForm.valid">Ingresar</button>
         <button type="button" class="btn btn-light w-100" [routerLink]="'/register'">Crear Cuenta</button>
-        @if (errorLog) {
-          <div class="row mb-3">
-              <div class="invalid-feedback d-block mt-1 text-center">Email o contraseña no válidos. Por favor, intentelo de nuevo.</div>
-          </div>
-      }
       </form>
     </div>
   </div>
