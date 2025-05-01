@@ -1,3 +1,85 @@
-<div class="container-fluid d-flex justify-content-center align-items-center fondo-gris" style="min-height: 100vh;">
+<div class="fondo-gris">
+    <div class="fondo-carrusel">
+      <!-- Carrusel -->
+      <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        
+        <!-- Indicadores -->
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+        </div>
   
-</div>
+        <!-- Slides -->
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="assets/carrusel1.png" class="d-block w-100" alt="Promo 1">
+          </div>
+          <div class="carousel-item">
+            <img src="assets/carrusel2.png" class="d-block w-100" alt="Promo 2">
+          </div>
+          <div class="carousel-item">
+            <img src="assets/carrusel3.png" class="d-block w-100" alt="Promo 3">
+          </div>
+        </div>
+  
+        <!-- Flechas -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+  
+      <!-- Cards de Categorías -->
+      <div class="container mt-4">
+        <div class="row row-cols-1 row-cols-md-5 g-3">
+      
+          <div class="col">
+            <div class="card card-custom text-center p-3 h-100">
+              <h1 class="text-primary"><i class="bi bi-car-front"></i></h1>
+              <h5>Vehículos</h5>
+              <hr>
+              Vehículos de todo tipo, desde autos hasta motos y bicicletas. Encuentra el medio de transporte ideal para vos.
+            </div>
+          </div>
+      
+          <div class="col">
+            <div class="card card-custom text-center p-3 h-100">
+              <h1 class="text-danger"><i class="bi bi-plug"></i></h1>
+              <h5>Electrónica</h5>
+              <hr>
+              Dispositivos electrónicos de última generación. Desde smartphones hasta electrodomésticos, ¡todo lo que necesitas!
+            </div>
+          </div>
+      
+          <div class="col">
+            <div class="card card-custom text-center p-3 h-100">
+              <h1 class="text-success"><i class="bi bi-controller"></i></h1>
+              <h5>Entretenimiento</h5>
+              <hr>
+              Disfruta de la mejor experiencia de entretenimiento con nuestros productos. Desde consolas de videojuegos hasta equipos de sonido.
+            </div>
+          </div>
+      
+          <div class="col">
+            <div class="card card-custom text-center p-3 h-100">
+              <h1 class="text-warning"><i class="bi bi-cash-stack"></i></h1>
+              <h5>Menos de $20.000</h5>
+              <hr>
+              Encuentra productos increíbles a precios accesibles. Todo lo que necesitas por menos de $20.000.
+            </div>
+          </div>
+      
+          <div class="col">
+            <div class="card card-custom text-center p-3 h-100">
+              <h1 class="text-purple"><i class="bi bi-star-fill"></i></h1>
+              <h5>Productos Nuevos</h5>
+              <hr>
+              Productos nuevos y de calidad para todos los gustos.
+            </div>
+          </div>
+      
+        </div>
+      </div>

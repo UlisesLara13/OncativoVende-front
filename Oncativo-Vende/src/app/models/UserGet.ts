@@ -11,6 +11,7 @@ export class UserGet {
     avatar_url?: string;
     roles: string[];
     rating: number;
+    subscription: string;
     constructor() {
         this.id = 0;
         this.name = '';
@@ -24,5 +25,6 @@ export class UserGet {
         this.active = false;
         this.verified = false;
         this.rating = 0;
+        this.subscription = '';
     }
 }

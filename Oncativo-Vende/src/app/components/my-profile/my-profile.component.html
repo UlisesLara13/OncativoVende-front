@@ -37,9 +37,36 @@
         </ng-container>
       </div>
 
-      <div class="mb-2">
-        <strong>Suscripción:</strong>
-      </div>
+      <div class="mb-2 d-flex align-items-center">
+        <strong class="me-2">Suscripción:</strong>
+        <ng-container [ngSwitch]="user.subscription.toLowerCase()">
+      
+          <!-- Bronce -->
+          <button *ngSwitchCase="'bronce'" class="btn btn-sm me-2"
+                  style="border: 1px solid #cd7f32; background-color: transparent; color: #cd7f32;">
+            <i class="bi bi-gem me-1" style="color: #cd7f32;"></i>Bronce
+          </button>
+      
+          <!-- Plata -->
+          <button *ngSwitchCase="'plata'" class="btn btn-sm me-2"
+                  style="border: 1px solid #c0c0c0; background-color: transparent; color: #c0c0c0;">
+            <i class="bi bi-gem me-1" style="color: #c0c0c0;"></i>Plata
+          </button>
+      
+          <!-- Oro -->
+          <button *ngSwitchCase="'oro'" class="btn btn-sm me-2"
+                  style="border: 1px solid gold; background-color: transparent; color: gold;">
+            <i class="bi bi-gem me-1" style="color: gold;"></i>Oro
+          </button>
+      
+          <!-- Sin suscripción -->
+          <button *ngSwitchDefault class="btn btn-sm me-2"
+                  style="border: 1px solid #0dcaf0; background-color: transparent; color: #0dcaf0;">
+            <i class="bi bi-gem me-1" style="color: #0dcaf0;"></i>Obtener Suscripción
+          </button>
+      
+        </ng-container>
+      </div>      
   
       <hr>
   
