@@ -1,0 +1,30 @@
+.fondo-gris {
+    height: 88vh;
+    background-color: #f8f9fa;
+}
+
+.text-purple {
+    color: #9b59b6; /* púrpura pastel */
+  }
+  
+  body {
+    background-color: #f8f9fa; /* fondo suave que combine */
+  }
+
+  .fondo-carrusel {
+    background: #f8f9fa; /* Purpura pastel a gris claro */
+    padding-bottom: 2rem;
+  }
+
+  .card-custom {
+    border: 1px solid #dee2e6; /* Borde sutil */
+    border-radius: 0.75rem;
+    transition: box-shadow 0.3s ease;
+    height: 100%;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  .card-custom:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.582);
+  }

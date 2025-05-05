@@ -1,0 +1,39 @@
+/* Fuente global */
+* {
+    font-family: 'Poppins', sans-serif;
+    
+  }
+  
+  /* Estructura general */
+  .container-fluid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 0;
+    background-color: #f8f9fa;
+  }
+  
+  /* Formulario de registro */
+  .form-register {
+    max-width: 600px;
+    width: 100%;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Estilos para los inputs enfocados */
+  .form-register input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(30, 60, 114, 0.25);
+    border-color: #000000;
+  }
+  
+  /* Botones */
+  button {
+    margin-bottom: 0.5rem;
+  }
+
+
+  

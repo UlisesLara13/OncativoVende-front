@@ -1,0 +1,39 @@
+
+<!-- Columna izquierda con ola -->
+<div class="container-fluid">
+    <div class="col-md-6 gradient-bg d-flex justify-content-center align-items-center">
+      <h1 class="welcome-text">
+        ¡Bienvenido!<br />Nos alegra verte de nuevo
+      </h1>
+    </div>
+  
+    <!-- Columna derecha con formulario -->
+    <div class="col-md-6 bg-light d-flex justify-content-center align-items-center">
+      <form [formGroup]="reactiveForm" action="" (ngSubmit)="login()" autocomplete="on">
+        <div class="mb-3">
+          <label for="email" class="form-label">E-mail o usuario</label>
+          <input type="email" id="email" class="form-control"  formControlName="email" autocomplete="email" [ngClass]="onValidate('email')"/>
+          <div class="invalid-feedback d-block mt-1 text-start">{{showError('email')}}</div>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Contraseña</label>
+          <input type="password" id="password" class="form-control" formControlName="password" autocomplete="current-password" [ngClass]="onValidate('password')" />
+          <div class="invalid-feedback d-block mt-1 text-start">{{showError('password')}}</div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100" [disabled]="!reactiveForm.valid">Ingresar</button>
+        <button type="button" class="btn btn-light w-100" [routerLink]="'/register'">Crear Cuenta</button>
+      </form>
+    </div>
+  </div>
+  <div class="wave">
+    <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 150px; width: 100%;">
+      <path d="M0.00,49.98 C120.00,150.00 380.00,-50.00 500.00,49.98 L500.00,150.00 L0.00,150.00 Z"
+         style="stroke: none; fill: url(#gradient);"></path>
+        <defs>
+          <linearGradient id="gradient" x1="0" x2="0" y1="1" y2="0">
+            <stop offset="0%" style="stop-color: var(--bs-primary); stop-opacity: 1;" />
+            <stop offset="100%" style="stop-color: #034AA6; stop-opacity: 1;" />
+          </linearGradient>
+        </defs>
+    </svg>
+  </div>
