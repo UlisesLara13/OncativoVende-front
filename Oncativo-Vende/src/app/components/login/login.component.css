@@ -6,7 +6,7 @@
   /* Estructura general */
   .container-fluid {
     display: flex;
-    height: 65vh;
+    height: 80vh;
     padding: 0;
 
   }

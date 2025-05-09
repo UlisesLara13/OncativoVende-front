@@ -18,13 +18,11 @@
           Categorías
         </button>
         <ul class="dropdown-menu">
-          @for (category of categories; track category) {
-            <li>
-              <a class="dropdown-item" href="#">
-                {{ category.description }}
-              </a>
-            </li>
-          }
+          <li *ngFor="let category of categories">
+            <a class="dropdown-item" href="#">
+              {{ category.description }}
+            </a>
+          </li>
         </ul>
       </div>
     </div>
@@ -38,16 +36,19 @@
     <!-- Contenido del navbar -->
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        @if (authService.isLoggedIn(); as loggedIn) {
+        <ng-container *ngIf="authService.isLoggedIn()">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              @if (userProfileImage; as profileImg) {
-                <img [src]="profileImg" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
-              } @else {
-                <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; border: 0.3px solid black;">
+              <!-- Mostrar avatar o iniciales -->
+              <div *ngIf="getProfileImage(); else initials" class="rounded-circle me-2">
+                <img [src]="getProfileImage()" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+              </div>
+              <ng-template #initials>
+                <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-2"
+                    style="width: 30px; height: 30px; border: 0.3px solid black;">
                   {{ getInitials() }}
                 </div>
-              }
+              </ng-template>
               {{ setName() }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
@@ -56,13 +57,15 @@
               <li><a class="dropdown-item" [routerLink]="'/favorites'">Mis favoritos</a></li>
             </ul>
           </li>
-        } @else {
+        </ng-container>
+
+        <ng-container *ngIf="!authService.isLoggedIn()">
           <li class="nav-item">
             <a class="nav-link text-white" [routerLink]="'/login'">
               <i class="bi bi-box-arrow-in-right me-1"></i> Ingresar
             </a>
           </li>
-        }
+        </ng-container>
       </ul>
     </div>
   </div>

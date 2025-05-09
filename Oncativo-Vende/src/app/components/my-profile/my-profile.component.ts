@@ -5,6 +5,8 @@ import { UserLoged } from '../../models/UserLoged';
 import { UserGet } from '../../models/UserGet';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { FileService } from '../../services/file.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-my-profile',
@@ -17,10 +19,12 @@ export class MyProfileComponent implements OnInit {
 
   authService = inject(AuthService);
   usersService = inject(UsersService);
+  fileService = inject(FileService);
   private readonly router = inject(Router);
 
   user: UserGet = new UserGet();
   userLoged: UserLoged = new UserLoged();
+  selectedFile: File | null = null;
 
   ngOnInit(): void {
     this.userLoged = this.authService.getUser();
@@ -55,6 +59,47 @@ export class MyProfileComponent implements OnInit {
   }
 
   onChangeAvatar(): void {
-    console.log('Cambiar avatar...');
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.click();
+
+    input.onchange = (event: any) => {
+      const file = event.target.files[0];
+      if (file) {
+        this.selectedFile = file;
+        this.uploadProfilePic(file);
+      }
+    };
   }
+
+  uploadProfilePic(file: File): void {
+    if (this.userLoged && this.userLoged.id) {
+      this.fileService.uploadProfilePic(this.userLoged.id, file).subscribe({
+        next: (fileUrl: string) => {
+          console.log('Foto subida exitosamente', fileUrl);
+  
+          this.usersService.updateAvatarUrl(this.userLoged.id, fileUrl).subscribe({
+            next: () => {
+              this.user.avatar_url = fileUrl;
+  
+              Swal.fire({
+                icon: 'success',
+                title: 'Foto de perfil actualizada',
+                text: 'Tu foto de perfil ha sido actualizada exitosamente.',
+                timer: 2000,
+                showConfirmButton: false
+              });
+            },
+            error: (error) => {
+              console.error('Error actualizando avatar en el backend:', error);
+            }
+          });
+        },
+        error: (error) => {
+          console.error('Error al subir la imagen:', error);
+        }
+      });
+    }
+  }  
 }
