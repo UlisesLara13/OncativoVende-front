@@ -10,11 +10,12 @@ import { CategoryGet } from '../../models/CategoryGet';
 import { UserGet } from '../../models/UserGet';
 import { UserLoged } from '../../models/UserLoged';
 import { PublicationsService } from '../../services/publications.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
@@ -26,8 +27,10 @@ export class NavbarComponent implements OnInit {
   usersService = inject(UsersService);
 
   userLoged: UserLoged = new UserLoged();
+  selectedCategory: string = '';
   user: UserGet = new UserGet();
   categories: CategoryGet[] = [];
+  searchText: string = '';
 
   ngOnInit(): void {
     this.userLoged = this.authService.getUser();
@@ -51,6 +54,12 @@ export class NavbarComponent implements OnInit {
         this.router.navigate(['/home']);
       }
     });
+  }
+
+  selectCategory(category: any) {
+    this.selectedCategory = category.description;  
+
+    this.onSearch();
   }
 
   loadCategories(): void {
@@ -86,7 +95,15 @@ export class NavbarComponent implements OnInit {
   }
 
   getProfileImage(): string {
-    // Retorna la URL de la imagen de perfil si está disponible, de lo contrario retorna null
     return this.user.avatar_url ? this.user.avatar_url : '';
+  }
+
+onSearch() {
+    this.router.navigate(['/search'], {
+      queryParams: {
+        query: this.searchText,
+        category: this.selectedCategory
+      }
+    });
   }
 }

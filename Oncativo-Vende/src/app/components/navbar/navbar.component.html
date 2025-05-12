@@ -8,23 +8,31 @@
     <!-- Centro: Input de búsqueda y botón de categorías -->
     <div class="d-flex justify-content-center align-items-center w-50 mx-auto">
       <!-- Input de búsqueda -->
-      <form class="d-flex w-100 me-2">
-        <input class="form-control form-control-sm rounded ps-3 placeholder-dark mb-2 mt-2" type="search" placeholder="Buscar productos o servicios" aria-label="Buscar">
-      </form>
+      <form class="d-flex w-100 me-2" (ngSubmit)="onSearch()">
+  <input
+    class="form-control form-control-sm rounded ps-3 placeholder-dark mb-2 mt-2"
+    type="search"
+    placeholder="Buscar productos o servicios"
+    aria-label="Buscar"
+    [(ngModel)]="searchText"
+    name="searchText"
+    required
+  >
+</form>
 
-      <!-- Select de categorías -->
-      <div class="dropdown mb-2 mt-2">
-        <button class="btn btn-transparent text-white dropdown-toggle p-0" type="button" id="dropdownCategorias" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.9rem;">
-          Categorías
-        </button>
-        <ul class="dropdown-menu">
-          <li *ngFor="let category of categories">
-            <a class="dropdown-item" href="#">
-              {{ category.description }}
-            </a>
-          </li>
-        </ul>
-      </div>
+<!-- Select de categorías -->
+<div class="dropdown mb-2 mt-2">
+  <button class="btn btn-transparent text-white dropdown-toggle p-0" type="button" id="dropdownCategorias" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.9rem;">
+    Categorías
+  </button>
+  <ul class="dropdown-menu">
+    <li *ngFor="let category of categories">
+      <a class="dropdown-item" (click)="selectCategory(category)">
+        {{ category.description }}
+      </a>
+    </li>
+  </ul>
+</div>
     </div>
 
     <!-- Botón toggle para móviles -->

@@ -3,6 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CategoryGet } from '../models/CategoryGet';
 import { PublicationGet } from '../models/PublicationGet';
+import { SearchDto } from '../models/SearchDto';
+import { PaginatedPublications } from '../models/PaginatedPublications';
 
 @Injectable({
   providedIn: 'root'
@@ -20,5 +22,10 @@ export class PublicationsService {
   getLast10Publications(): Observable<PublicationGet[]> {
     return this.http.get<PublicationGet[]>(`${this.publicationsUrl}/last10`);
   }
+
+  getFilteredPublications(search: SearchDto): Observable<PaginatedPublications> {
+    return this.http.post<PaginatedPublications>(`${this.publicationsUrl}/filter`, search);
+  }
+  
 
 }

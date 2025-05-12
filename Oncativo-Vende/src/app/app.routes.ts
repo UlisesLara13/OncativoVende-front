@@ -7,6 +7,7 @@ import { authGuard } from './guards/auth.guard';
 import { loginBlockGuard } from './guards/login-block.guard';
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { SearchComponent } from './components/search/search.component';
 
 export const routes: Routes = [
     {path: 'home', component: HomeComponent},
@@ -15,6 +16,7 @@ export const routes: Routes = [
     {path: 'profile', component: MyProfileComponent, canActivate: [authGuard]},
     {path: 'unauthorized', component: UnauthorizedComponent},
     {path: 'not-found', component: NotFoundComponent},
+    {path: 'search', component: SearchComponent},
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: '**', redirectTo: 'not-found' }
 ];
