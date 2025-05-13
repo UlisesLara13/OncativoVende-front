@@ -25,7 +25,7 @@ export class SearchComponent implements OnInit {
   categories: CategoryGet[] = [];
   locations: LocationGet[] = [];
   tags: TagGet[] = [];
-  searchTerm: string | null = null;
+  searchText: string | null = null;
   category: string | null = null;
   location: string | null = null;
   minPrice: number | null = null;
@@ -46,7 +46,7 @@ export class SearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.searchTerm = params['searchTerm'] || '';
+      this.searchText = params['searchText'] || '';
       this.category = params['category'] || '';
       this.location = params['location'] || '';
       this.minPrice = params['minPrice'] ? +params['minPrice'] : null;
@@ -65,8 +65,8 @@ export class SearchComponent implements OnInit {
   loadPublications(): void {
   const searchDto: SearchDto = {};
 
-  if (this.searchTerm) {
-    searchDto.searchTerm = this.searchTerm;
+  if (this.searchText) {
+    searchDto.searchTerm = this.searchText;
   }
 
   if (this.category) {

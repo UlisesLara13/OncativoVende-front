@@ -29,6 +29,7 @@ export class AuthService {
     user.name = decodedToken.payloadObj.name;
     user.surname = decodedToken.payloadObj.surname;
     user.avatar = decodedToken.payloadObj.avatar;
+    user.subscription = decodedToken.payloadObj.subscription;
     return user;
   }
 
@@ -38,6 +39,11 @@ export class AuthService {
 
   saveToken(token: string): void {
     localStorage.setItem('jwtToken', token);
+  }
+
+  hasSubscription(): boolean {
+    const user = this.getUser();
+    return user.subscription !== 'NO' && user.subscription !== undefined;
   }
 
   logOut(): void {

@@ -7,12 +7,12 @@
           <h4>Filtros</h4>
           <form (ngSubmit)="applyFilters()">
             <div class="mb-3">
-              <label for="searchTerm" class="form-label">Buscar</label>
+              <label for="searchText" class="form-label">Buscar</label>
               <input
                 type="text"
-                id="searchTerm"
-                [(ngModel)]="searchTerm"
-                name="searchTerm"
+                id="searchText"
+                [(ngModel)]="searchText"
+                name="searchText"
                 class="form-control"
                 placeholder="Buscar publicaciones..."
               />
@@ -75,7 +75,7 @@
             </div>
 
             <div class="mb-3">
-              <label for="tag" class="form-label">Tags</label>
+              <label for="tag" class="form-label">Etiquetas</label>
               <select
                 id="tag"
                 [(ngModel)]="tag"
@@ -134,7 +134,7 @@
 
       <!-- Publicaciones -->
       <div class="col-md-9">
-        <div class="row row-cols-1 row-cols-md-3 g-1">
+        <div class="row row-cols-1 row-cols-md-3 g-3">
           <div class="col" *ngFor="let pub of publications">
             <div class="card card-custom-size">
               <img
@@ -145,7 +145,7 @@
               <div class="card-body">
                 <p class="card-title text-truncate">{{ pub.title }}</p>
                 <p class="text-secondary small">
-                  Por {{ pub.user.surname }}, {{ pub.user.name }}
+                  Por {{ pub.user.surname }} {{ pub.user.name }}
                   @if (pub.user.verified) {
                     <i class="bi bi-patch-check-fill text-info"></i>
                   }

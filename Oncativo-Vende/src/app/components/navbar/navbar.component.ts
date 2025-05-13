@@ -59,7 +59,7 @@ export class NavbarComponent implements OnInit {
   selectCategory(category: any) {
     this.selectedCategory = category.description;  
 
-    this.onSearch();
+    this.onCategoryChange();
   }
 
   loadCategories(): void {
@@ -101,9 +101,16 @@ export class NavbarComponent implements OnInit {
 onSearch() {
     this.router.navigate(['/search'], {
       queryParams: {
-        query: this.searchText,
-        category: this.selectedCategory
+        searchText: this.searchText,
       }
     });
+  }
+
+  onCategoryChange() {
+    this.router.navigate(['/search'], {
+      queryParams: {
+        category: this.selectedCategory
+      }
+  });
   }
 }
