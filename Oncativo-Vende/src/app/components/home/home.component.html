@@ -37,7 +37,7 @@
         <div class="row row-cols-1 row-cols-md-5 g-3">
       
           <div class="col">
-            <div class="card card-custom text-center p-3 h-100">
+            <div class="card card-custom text-center p-3 h-100" (click)="onCategoryChange('Vehículos')">
               <h1 class="text-primary"><i class="bi bi-car-front"></i></h1>
               <h5>Vehículos</h5>
               <hr>
@@ -46,7 +46,7 @@
           </div>
       
           <div class="col">
-            <div class="card card-custom text-center p-3 h-100">
+            <div class="card card-custom text-center p-3 h-100" (click)="onCategoryChange('Electrónica')">
               <h1 class="text-primary"><i class="bi bi-plug"></i></h1>
               <h5>Electrónica</h5>
               <hr>
@@ -55,7 +55,7 @@
           </div>
       
           <div class="col">
-            <div class="card card-custom text-center p-3 h-100">
+            <div class="card card-custom text-center p-3 h-100" (click)="onCategoryChange('Entretenimiento')" >
               <h1 class="text-primary"><i class="bi bi-controller"></i></h1>
               <h5>Entretenimiento</h5>
               <hr>
@@ -64,7 +64,7 @@
           </div>
       
           <div class="col">
-            <div class="card card-custom text-center p-3 h-100">
+            <div class="card card-custom text-center p-3 h-100" (click)="onPriceChange('20000')">
               <h1 class="text-primary"><i class="bi bi-cash-stack"></i></h1>
               <h5>Menos de $20.000</h5>
               <hr>
@@ -73,7 +73,7 @@
           </div>
       
           <div class="col">
-            <div class="card card-custom text-center p-3 h-100">
+            <div class="card card-custom text-center p-3 h-100"(click)="onTagChange('Nuevo')" >
               <h1 class="text-primary"><i class="bi bi-star-fill"></i></h1>
               <h5>Productos Nuevos</h5>
               <hr>
@@ -86,7 +86,12 @@
       <!-- Carrusel horizontal de productos -->
       <div class="container mt-5">
         <div class="bg-white p-3 rounded shadow">
-          <h4>Últimas Publicaciones</h4>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+          <h4 class="mb-0">Últimas Publicaciones</h4>
+            <a (click)="seeMore()" class="text-secondary small text-decoration-none" style="cursor: pointer;">
+              Ver más <i class="bi bi-chevron-right small"></i>
+            </a>
+        </div>
           <div class="card-carousel-wrapper position-relative">
             <button class="carousel-arrow left-arrow" (click)="scrollLeft()">
               <i class="bi bi-chevron-left"></i>

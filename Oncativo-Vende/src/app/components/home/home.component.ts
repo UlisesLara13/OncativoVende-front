@@ -4,12 +4,14 @@ import { PublicationsService } from '../../services/publications.service';
 import { CommonModule } from '@angular/common';
 import { DecimalFormatPipe } from '../../pipes/decimal-format.pipe';
 import { PipesModule } from '../../pipes/pipes.module';
+import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule,PipesModule],
+  imports: [CommonModule,PipesModule,RouterModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -17,6 +19,7 @@ export class HomeComponent {
 
   publications: PublicationGet[] = [];
   private readonly publicationService = inject(PublicationsService);
+  private readonly router = inject(Router);
   @ViewChild('carouselContainer', { static: false }) carouselContainer!: ElementRef;
 
   constructor() {
@@ -39,6 +42,37 @@ export class HomeComponent {
 
   scrollRight() {
     this.carouselContainer.nativeElement.scrollBy({ left: 300, behavior: 'smooth' });
+  }
+
+  onCategoryChange(categorySelected: string) {
+    this.router.navigate(['/search'], {
+      queryParams: {
+        category: categorySelected
+      }
+  });
+  }
+
+  onPriceChange(maxPrice: string) {
+    this.router.navigate(['/search'], {
+      queryParams: {
+        maxPrice: maxPrice
+      }
+  });
+  }
+
+  seeMore() {
+    this.router.navigate(['/search']).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+
+  onTagChange(tag: string) {
+    this.router.navigate(['/search'], {
+      queryParams: {
+        tag: tag
+      }
+  });
   }
 
   getTagClass(tag: string): string {

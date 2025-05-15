@@ -1,0 +1,130 @@
+<div class="fondo-gris py-5">
+  <div class="container">
+    <div class="bg-white rounded shadow p-4">
+      <h3 class="mb-4">Crear Publicación</h3>
+
+      <!-- Navegación de pasos -->
+      <ul class="nav nav-pills mb-4">
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="step === 1" disabled>Paso 1</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="step === 2" disabled>Paso 2</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="step === 3" disabled>Paso 3</button>
+        </li>
+      </ul>
+
+      <form [formGroup]="form" novalidate>
+
+        <!-- PASO 1: Datos principales -->
+        <div *ngIf="step === 1">
+          <div class="mb-3">
+            <label class="form-label">Título</label>
+            <input type="text" class="form-control" formControlName="title" />
+            <div class="text-danger" *ngIf="form.get('title')?.touched && form.get('title')?.invalid">
+              Título es obligatorio.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control" formControlName="description"></textarea>
+            <div class="text-danger" *ngIf="form.get('description')?.touched && form.get('description')?.invalid">
+              Descripción es obligatoria.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Precio</label>
+            <input type="number" class="form-control" formControlName="price" />
+            <div class="text-danger" *ngIf="form.get('price')?.touched && form.get('price')?.invalid">
+              Precio debe ser mayor que 0.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Localidad</label>
+            <select class="form-control" formControlName="location_id">
+              <option value="">Seleccione...</option>
+              <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.description }}</option>
+            </select>
+            <div class="text-danger" *ngIf="form.get('location_id')?.touched && form.get('location_id')?.invalid">
+              Debe seleccionar una localidad.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Categorías</label>
+            <select class="form-control" multiple formControlName="categories">
+              <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.description }}</option>
+            </select>
+            <div class="text-danger" *ngIf="form.get('categories')?.touched && form.get('categories')?.invalid">
+              Debe seleccionar al menos una categoría.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Etiquetas</label>
+            <select class="form-control" multiple formControlName="tags">
+              <option *ngFor="let tag of tags" [value]="tag.id">{{ tag.description }}</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn btn-primary" (click)="nextStep()">Siguiente</button>
+        </div>
+
+        <!-- PASO 2: Imágenes -->
+        <div *ngIf="step === 2">
+          <div class="mb-3">
+            <label class="form-label">Imágenes</label>
+            <input type="file" class="form-control" (change)="onImageSelected($event)" multiple />
+          </div>
+
+          <div class="row">
+            <div class="col-4" *ngFor="let img of selectedImages">
+              <img [src]="getImagePreview(img)" class="img-fluid rounded mb-2 border" style="max-height: 200px;" />
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-secondary me-2" (click)="prevStep()">Anterior</button>
+          <button type="button" class="btn btn-primary" (click)="nextStep()">Siguiente</button>
+        </div>
+
+        <!-- PASO 3: Contactos -->
+        <div *ngIf="step === 3" formArrayName="contacts">
+          <div
+            class="mb-3"
+            *ngFor="let contact of contacts.controls; let i = index"
+            [formGroupName]="i"
+          >
+            <div class="row">
+              <div class="col-md-5 mb-2">
+                <select class="form-control" formControlName="contact_type_id">
+                  <option value="">Seleccione tipo</option>
+                  <option *ngFor="let ct of contactTypes" [value]="ct.id">{{ ct.description }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-5 mb-2">
+                <input class="form-control" formControlName="contact_value" />
+              </div>
+
+              <div class="col-md-2 mb-2 d-flex align-items-center">
+                <button type="button" class="btn btn-danger" (click)="removeContact(i)">X</button>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-outline-primary mb-3" (click)="addContact()">+ Agregar contacto</button>
+          <br />
+
+          <button type="button" class="btn btn-secondary me-2" (click)="prevStep()">Anterior</button>
+          <button type="button" class="btn btn-success" (click)="submit()">Publicar</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

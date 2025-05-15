@@ -5,6 +5,7 @@ import { CategoryGet } from '../models/CategoryGet';
 import { PublicationGet } from '../models/PublicationGet';
 import { SearchDto } from '../models/SearchDto';
 import { PaginatedPublications } from '../models/PaginatedPublications';
+import { PublicationPost } from '../models/PublicationPost';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,10 @@ export class PublicationsService {
 
   getFilteredPublications(search: SearchDto): Observable<PaginatedPublications> {
     return this.http.post<PaginatedPublications>(`${this.publicationsUrl}/filter`, search);
+  }
+
+  createPublication(data: PublicationPost): Observable<PublicationGet> {
+  return this.http.post<PublicationGet>(`${this.publicationsUrl}`, data);
   }
   
 
