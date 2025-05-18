@@ -1,0 +1,39 @@
+.carousel-inner img {
+  border-radius: 0.5rem;
+}
+
+.badge {
+  font-size: 0.8rem;
+  padding: 0.4em 0.6em;
+  border-radius: 0.5rem;
+}
+.img-avatar {
+  width: 48px;
+  border: 1px solid black;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-initials {
+    font-size: 36px;
+    color: black;
+  }
+
+  .bi-star-fill {
+    font-size: 1.2rem;
+    color: gold;
+  }
+
+.avatar-initials {
+  font-size: 20px;
+  color: black;
+  border: 1px solid black;  
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

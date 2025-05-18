@@ -24,6 +24,10 @@ export class PublicationsService {
     return this.http.get<PublicationGet[]>(`${this.publicationsUrl}/last10`);
   }
 
+  getPublicationById(id: number): Observable<PublicationGet> {
+    return this.http.get<PublicationGet>(`${this.publicationsUrl}/${id}`);
+  }
+
   getFilteredPublications(search: SearchDto): Observable<PaginatedPublications> {
     return this.http.post<PaginatedPublications>(`${this.publicationsUrl}/filter`, search);
   }

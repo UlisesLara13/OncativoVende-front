@@ -97,11 +97,11 @@
               <i class="bi bi-chevron-left"></i>
             </button>
             <div class="card-carousel" #carouselContainer>
-              <div class="card card-custom-size" *ngFor="let pub of publications">
+              <div class="card card-custom-size" *ngFor="let pub of publications" (click)="goToPublication(pub.id)">
                 <img [src]="pub.images[0]" class="card-img-top" alt="assets/Publications/0-notfound.jpg">
                 <div class="card-body">
                   <p class="card-title text-truncate">{{ pub.title }}</p>
-                  <p class="text-secondary small">Por {{pub.user.surname}} {{pub.user.name}} 
+                  <p class="text-secondary small">Por {{pub.user.name}} {{pub.user.surname}} 
                     @if (pub.user.verified) {<i class="bi bi-patch-check-fill text-info"></i> }</p>
                   <p *ngFor="let tag of pub.tags" 
                     [ngClass]="getTagClass(tag)" 

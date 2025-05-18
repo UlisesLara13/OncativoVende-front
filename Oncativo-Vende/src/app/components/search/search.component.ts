@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PublicationsService } from '../../services/publications.service';
 import { PublicationGet } from '../../models/PublicationGet';
 import { SearchDto } from '../../models/SearchDto';
@@ -31,7 +31,7 @@ export class SearchComponent implements OnInit {
   minPrice: number | null = null;
   maxPrice: number | null = null;
   tag: string | null = null;
-  sortDir: string = 'asc';
+  sortDir: string = 'desc';
   sortBy: string = 'createdAt';
   currentPage: number = 1;
   totalPages: number = 0;
@@ -41,7 +41,8 @@ export class SearchComponent implements OnInit {
   constructor(
     private publicationsService: PublicationsService,
     private utilsService: UtilsService,
-    private route: ActivatedRoute 
+    private route: ActivatedRoute, 
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -53,7 +54,7 @@ export class SearchComponent implements OnInit {
       this.maxPrice = params['maxPrice'] ? +params['maxPrice'] : null;
       this.tag = params['tag'] || '';
       this.sortBy = params['sortBy'] || 'createdAt';
-      this.sortDir = params['sortDir'] || 'asc';
+      this.sortDir = params['sortDir'] || 'desc';
       
       this.loadCategories();
       this.loadLocations();
@@ -163,6 +164,12 @@ export class SearchComponent implements OnInit {
         }
       });
     }
+
+  goToPublication(id: number): void {
+        this.router.navigate(['/publication', id]).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 
   loadTags(): void {
     this.utilsService.getTags().subscribe({

@@ -135,7 +135,7 @@
       <div class="col-md-8">
         <div class="row row-cols-1 row-cols-md-3 gx-1 gy-3">
           <div class="col" *ngFor="let pub of publications">
-            <div class="card card-custom-size">
+            <div class="card card-custom-size" (click)="goToPublication(pub.id)">
               <img
                 [src]="pub.images && pub.images.length > 0 ? pub.images[0] : 'assets/not-found.jpg'"
                 class="card-img-top"
@@ -144,7 +144,7 @@
               <div class="card-body">
                 <p class="card-title text-truncate">{{ pub.title }}</p>
                 <p class="text-secondary small">
-                  Por {{ pub.user.surname }} {{ pub.user.name }}
+                  Por {{ pub.user.name }} {{ pub.user.surname }}
                   @if (pub.user.verified) {
                     <i class="bi bi-patch-check-fill text-info"></i>
                   }

@@ -44,6 +44,12 @@ export class HomeComponent {
     this.carouselContainer.nativeElement.scrollBy({ left: 300, behavior: 'smooth' });
   }
 
+  goToPublication(id: number): void {
+        this.router.navigate(['/publication', id]).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
   onCategoryChange(categorySelected: string) {
     this.router.navigate(['/search'], {
       queryParams: {
