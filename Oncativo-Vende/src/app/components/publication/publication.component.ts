@@ -1,0 +1,221 @@
+import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PublicationsService } from '../../services/publications.service';
+import { AuthService } from '../../services/auth.service';
+import { PublicationGet } from '../../models/PublicationGet';
+import { PipesModule } from '../../pipes/pipes.module';
+import { CommonModule } from '@angular/common';
+import { FavoriteService } from '../../services/favorite.service';
+import { UserLoged } from '../../models/UserLoged';
+import { Toast } from 'bootstrap';
+
+
+@Component({
+  selector: 'app-publication',
+  standalone: true,
+  imports: [PipesModule,CommonModule],
+  templateUrl: './publication.component.html',
+  styleUrl: './publication.component.css'
+})
+export class PublicationComponent implements OnInit {
+
+  publication!: PublicationGet;
+  @ViewChildren('zoomedImg') zoomedImgs!: QueryList<ElementRef<HTMLImageElement>>;
+  @ViewChild('liveToast', { static: false }) toastElement!: ElementRef<HTMLDivElement>;
+  isFavorite = false;
+  userLoged: UserLoged = new UserLoged();
+  toastMessage = '';
+  toastInstance: any;
+  
+
+  constructor(
+    private route: ActivatedRoute,
+    private publicationService: PublicationsService,
+    private authService: AuthService,
+    private favoriteService: FavoriteService,
+    private router: Router,
+  ) {}
+
+ngOnInit(): void {
+  this.route.paramMap.subscribe(params => {
+    const id = params.get('id');
+    console.log('ID recibido:', id);
+
+    if (id) {
+      this.loadPublication(id);
+    }
+  });
+  this.userLoged = this.authService.getUser();
+}
+
+toggleFavorite() {
+  const userId = this.userLoged.id;
+  const dto = {
+    publication_id: this.publication.id,
+    user_id: userId,
+  };
+
+  if (this.isFavorite) {
+    this.favoriteService.deleteFavorite(dto).subscribe(() => {
+      this.isFavorite = false;
+      this.showToast('Eliminado de favoritos',false);
+    });
+  } else {
+    this.favoriteService.createFavorite(dto).subscribe(() => {
+      this.isFavorite = true;
+      this.showToast('Agregado a favoritos',true);
+    });
+  }
+}
+
+showToast(message: string, success: boolean) {
+  this.toastMessage = message;
+
+  const toastEl = this.toastElement.nativeElement;
+
+  // Quitar clases previas
+  toastEl.classList.remove('bg-success', 'bg-dark', 'text-white');
+
+  // Agregar clase según éxito o no
+  if (success) {
+    toastEl.classList.add('bg-success', 'text-white'); // fondo verde
+  } else {
+    toastEl.classList.add('bg-dark', 'text-white');    // fondo negro
+  }
+
+  // Crear instancia solo una vez
+  if (!this.toastInstance) {
+    this.toastInstance = new Toast(toastEl);
+  }
+
+  this.toastInstance.show();
+}
+
+hideToast() {
+  if (this.toastInstance) {
+    this.toastInstance.hide();
+  }
+}
+
+zoomImage(event: MouseEvent) {
+    const img = (event.target as HTMLElement);
+    if (img && img instanceof HTMLImageElement) {
+      const rect = img.getBoundingClientRect();
+
+      const offsetX = event.clientX - rect.left;
+      const offsetY = event.clientY - rect.top;
+
+      const xPercent = (offsetX / rect.width) * 100;
+      const yPercent = (offsetY / rect.height) * 100;
+
+      // Escala de zoom
+      const scale = 3; // zoom 2x
+
+      img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+      img.style.transform = `scale(${scale})`;
+    }
+  }
+
+  resetZoom() {
+    this.zoomedImgs.forEach(imgRef => {
+      const img = imgRef.nativeElement;
+      img.style.transform = 'scale(1)';
+      img.style.transformOrigin = 'center center';
+    });
+  }
+
+loadPublication(id: string) {
+  this.publicationService.getPublicationById(+id).subscribe({
+    next: (data: PublicationGet) => {
+      this.publication = data;
+      console.log('Publicación cargada:', this.publication);
+
+      // Consultar si es favorita
+      const userId = this.userLoged.id;
+      const dto = {
+        publication_id: this.publication.id,
+        user_id: userId
+      };
+      this.favoriteService.isFavorite(dto).subscribe((result) => {
+        this.isFavorite = result;
+      });
+    },
+    error: (err) => {
+      console.error('Error al cargar la publicación:', err);
+      this.router.navigate(['/not-found']);
+    }
+  });
+}
+
+  getStarClass(rating: number, index: number): string {
+    if (index < Math.floor(rating)) {
+      return 'bi bi-star-fill text-warning'; 
+    } else if (index < Math.ceil(rating)) {
+      return 'bi bi-star-half text-warning'; 
+    } else {
+      return 'bi bi-star text-muted';
+    }
+  }
+
+  getInitials(name: string, surname: string): string {
+    const firstLetterName = name ? name.charAt(0).toUpperCase() : '';
+    const firstLetterSurname = surname ? surname.charAt(0).toUpperCase() : '';
+    return firstLetterName + firstLetterSurname;
+  }
+
+  formatDate(dateStr: string): string {
+    return dateStr ? dateStr.replace(/-/g, '/') : '';
+  }
+
+  getContactLink(contact: any): string {
+  const value = contact.contact_value;
+  switch (contact.contact_type.toLowerCase()) {
+    case 'whatsapp':
+      return `https://wa.me/${value}`;
+    case 'email':
+      return `mailto:${value}`;
+    case 'teléfono':
+      return `tel:${value}`;
+    case 'facebook':
+      return `https://facebook.com/${value}`;
+    case 'instagram':
+      return `https://instagram.com/${value}`;
+    default:
+      return '#';
+  }
+}
+
+getContactIcon(type: string): string {
+  switch (type.toLowerCase()) {
+    case 'whatsapp':
+      return 'bi bi-whatsapp text-success';
+    case 'email':
+      return 'bi bi-envelope-fill text-primary';
+    case 'teléfono':
+      return 'bi bi-telephone-fill text-secondary';
+    case 'facebook':
+      return 'bi bi-facebook text-primary';
+    case 'instagram':
+      return 'bi bi-instagram text-danger';
+    default:
+      return 'bi bi-question-circle';
+  }}
+
+  
+
+  
+  getTagClass(tag: string): string {
+    const tagColorMap: { [key: string]: string } = {
+      'Nuevo': 'bg-success',
+      'Usado': 'bg-danger',
+      'Envío incluido': 'bg-primary',
+      'Retiro en mano': 'bg-secondary',
+      'Punto de encuentro': 'bg-info',
+      'Precio fijo': 'bg-dark',
+      'Precio negociable': 'bg-warning',
+    };
+  
+    return `badge rounded-pill ${tagColorMap[tag] || 'bg-secondary'}`;
+  }
+
+}

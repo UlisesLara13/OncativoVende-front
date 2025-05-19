@@ -24,4 +24,10 @@ export class UsersService {
     return this.http.get<UserGet>(`${this.url}/${id}`);
   }
 
+  updateAvatarUrl(userId: number, avatarUrl: string): Observable<void> {
+    return this.http.put<void>(`http://localhost:8080/users/avatar/${userId}`, avatarUrl, {
+      headers: { 'Content-Type': 'text/plain' } // Porque el body es un string
+    });
+  }
+
 }

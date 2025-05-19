@@ -8,25 +8,31 @@
     <!-- Centro: Input de búsqueda y botón de categorías -->
     <div class="d-flex justify-content-center align-items-center w-50 mx-auto">
       <!-- Input de búsqueda -->
-      <form class="d-flex w-100 me-2">
-        <input class="form-control form-control-sm rounded ps-3 placeholder-dark mb-2 mt-2" type="search" placeholder="Buscar productos o servicios" aria-label="Buscar">
-      </form>
+      <form class="d-flex w-100 me-2" (ngSubmit)="onSearch()">
+  <input
+    class="form-control form-control-sm rounded ps-3 placeholder-dark mb-2 mt-2"
+    type="search"
+    placeholder="Buscar productos o servicios"
+    aria-label="Buscar"
+    [(ngModel)]="searchText"
+    name="searchText"
+    required
+  >
+</form>
 
-      <!-- Select de categorías -->
-      <div class="dropdown mb-2 mt-2">
-        <button class="btn btn-transparent text-white dropdown-toggle p-0" type="button" id="dropdownCategorias" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.9rem;">
-          Categorías
-        </button>
-        <ul class="dropdown-menu">
-          @for (category of categories; track category) {
-            <li>
-              <a class="dropdown-item" href="#">
-                {{ category.description }}
-              </a>
-            </li>
-          }
-        </ul>
-      </div>
+<!-- Select de categorías -->
+<div class="dropdown mb-2 mt-2 me-2">
+  <button class="btn btn-transparent text-white dropdown-toggle p-0" type="button" id="dropdownCategorias" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.9rem;">
+    Categorías
+  </button>
+  <ul class="dropdown-menu">
+    <li *ngFor="let category of categories">
+      <a class="dropdown-item" (click)="selectCategory(category)">
+        {{ category.description }}
+      </a>
+    </li>
+  </ul>
+</div>
     </div>
 
     <!-- Botón toggle para móviles -->
@@ -38,31 +44,43 @@
     <!-- Contenido del navbar -->
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        @if (authService.isLoggedIn(); as loggedIn) {
+        <ng-container *ngIf="authService.isLoggedIn()">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              @if (userProfileImage; as profileImg) {
-                <img [src]="profileImg" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
-              } @else {
-                <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; border: 0.3px solid black;">
+              <!-- Mostrar avatar o iniciales -->
+              <div *ngIf="getProfileImage(); else initials" class="rounded-circle me-2">
+                <img [src]="getProfileImage()" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+              </div>
+              <ng-template #initials>
+                <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-2"
+                    style="width: 30px; height: 30px; border: 0.3px solid black;">
                   {{ getInitials() }}
                 </div>
-              }
+              </ng-template>
               {{ setName() }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" [routerLink]="'/profile'">Mi perfil</a></li>
-              <li><a class="dropdown-item" (click)="logout()" style="cursor: pointer;">Cerrar sesión</a></li>
-              <li><a class="dropdown-item" [routerLink]="'/favorites'">Mis favoritos</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/my-favorites'">Mis favoritos</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/my-publications'">Mis publicaciones</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/favorites'">Gestionar suscripciones</a></li>
+                @if (authService.hasRole("PREMIUM")) {
+                <li><hr class="my-1"></li>
+                <li><a class="dropdown-item d-flex justify-content-between align-items-center" [routerLink]="'/new-publication'"> Crear publicación<i class="bi bi-clipboard-plus ms-1"></i></a></li>
+                }
+                <li><hr class="my-1"></li>
+                <li><a class="dropdown-item d-flex justify-content-between align-items-center" (click)="logout()" style="cursor: pointer;">Cerrar sesión<i class="bi bi-box-arrow-left ms-2"></i></a></li>
             </ul>
           </li>
-        } @else {
+        </ng-container>
+
+        <ng-container *ngIf="!authService.isLoggedIn()">
           <li class="nav-item">
             <a class="nav-link text-white" [routerLink]="'/login'">
               <i class="bi bi-box-arrow-in-right me-1"></i> Ingresar
             </a>
           </li>
-        }
+        </ng-container>
       </ul>
     </div>
   </div>

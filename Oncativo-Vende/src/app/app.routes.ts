@@ -7,14 +7,21 @@ import { authGuard } from './guards/auth.guard';
 import { loginBlockGuard } from './guards/login-block.guard';
 import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { SearchComponent } from './components/search/search.component';
+import { NewPublicationComponent } from './components/new-publication/new-publication.component';
+import { roleGuard } from './guards/role.guard';
+import { PublicationComponent } from './components/publication/publication.component';
 
 export const routes: Routes = [
-    {path: 'home', component: HomeComponent},
-    {path: 'login', component: LoginComponent, canActivate: [loginBlockGuard]},
-    {path: 'register', component: RegisterComponent, canActivate: [loginBlockGuard]},
-    {path: 'profile', component: MyProfileComponent, canActivate: [authGuard]},
-    {path: 'unauthorized', component: UnauthorizedComponent},
-    {path: 'not-found', component: NotFoundComponent},
+    { path: 'home', component: HomeComponent },
+    { path: 'login', component: LoginComponent, canActivate: [loginBlockGuard] },
+    { path: 'register', component: RegisterComponent, canActivate: [loginBlockGuard] },
+    { path: 'profile', component: MyProfileComponent, canActivate: [authGuard] },
+    { path: 'publication/:id', component: PublicationComponent},
+    { path: 'unauthorized', component: UnauthorizedComponent },
+    { path: 'new-publication', component: NewPublicationComponent, canActivate: [authGuard, roleGuard], data: { roles: ['PREMIUM'] } },
+    { path: 'not-found', component: NotFoundComponent },
+    { path: 'search', component: SearchComponent },
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: '**', redirectTo: 'not-found' }
 ];

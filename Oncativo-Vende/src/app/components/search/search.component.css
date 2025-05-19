@@ -1,0 +1,42 @@
+.card-custom-size {
+  width: 250px;
+  height: 380px;
+  display: flex;
+  border: 1px solid #dee2e6;
+  transition: box-shadow 0.3s ease;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 0.75rem;
+}
+
+.card-custom-size:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.582);
+}
+
+.card-custom-size img {
+  height: 150px;
+  object-fit: contain;
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+}
+
+.card-custom-size .card-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.card-custom-size .card-title:hover {
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.card-custom-size .card-body {
+  padding: 1rem;
+}
+
+.fondo-gris {
+  background-color: #f8f9fa; 
+  padding: 20px 0;
+}
