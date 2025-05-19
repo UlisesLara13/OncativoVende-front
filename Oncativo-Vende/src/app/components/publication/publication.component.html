@@ -1,9 +1,20 @@
 <div class="bg-light min-vh-100 py-5">
   <div class="container">
-    <div class="bg-white shadow rounded p-4 d-flex flex-column flex-md-row align-items-start">
+    <div class="bg-white shadow rounded p-4 d-flex flex-column flex-md-row align-items-start position-relative" style="padding-top: 4rem;">
+
+      <!-- Botón Favorito arriba a la izquierda -->
+      <div class="position-absolute top-0 end-0 m-2 p-2" style="z-index: 10;">
+        <button (click)="toggleFavorite()" 
+                [class.favorited]="isFavorite"
+                class="btn btn-link p-0"
+                aria-label="Agregar a favoritos"
+                style="font-size: 1.8rem; line-height: 1;">
+          <i class="bi" [ngClass]="isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+        </button>
+      </div>
 
       <!-- Carrusel de Imágenes -->
-      <div class="w-50 w-md-50 me-md-4 mb-4 mb-md-0">
+      <div class="w-50 w-md-50 me-md-4 mb-4 mb-md-0 position-relative">
         <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner rounded">
             <div
@@ -11,12 +22,18 @@
               [class.active]="i === 0"
               *ngFor="let img of publication.images; let i = index"
             >
-              <img
-                [src]="img"
-                class="d-block w-100"
-                alt="Imagen de publicación"
-                style="aspect-ratio: 1/1; object-fit: cover;"
-              />
+              <div class="zoom-wrapper" 
+                  (mousemove)="zoomImage($event)" 
+                  (mouseleave)="resetZoom()"
+                  style="position: relative; overflow: hidden;">
+                <img
+                  [src]="img"
+                  class="d-block w-100 zoom-img"
+                  alt="Imagen de publicación"
+                  style="aspect-ratio: 1/1; object-fit: cover; transition: transform 0.3s ease;"
+                  #zoomedImg
+                />
+              </div>
             </div>
           </div>
           <button
@@ -42,7 +59,7 @@
       <div class="w-100 w-md-50 position-relative">
 
         <!-- Usuario arriba a la derecha -->
-        <div class="position-absolute top-0 end-0 d-flex align-items-start bg-white p-2 rounded shadow-sm">
+        <div class="position-absolute top-0 end-0 d-flex align-items-start bg-white p-2 mt-5 rounded shadow-sm" style="z-index: 10;">
           <!-- Avatar -->
           <div class="avatar-perfil position-relative me-2">
             <img *ngIf="publication.user.avatar_url; else initials" [src]="publication.user.avatar_url" alt="Avatar" class="img-avatar">
@@ -63,7 +80,6 @@
                 <i class="bi bi-patch-check-fill text-info"></i>
               </ng-container>
             </div>
-            <!-- Rating debajo del nombre -->
             <div>
               <ng-container *ngFor="let star of [].constructor(5); let i = index">
                 <i [ngClass]="getStarClass(publication.user.rating, i)"></i>
@@ -99,12 +115,54 @@
 
         <hr />
 
-        <!-- Descripción -->
-        <h6>Lo que tenés que saber de este producto: </h6>
-        <p class="text-dark" style="font-size: 0.8rem;">- {{ publication.description }}</p>
+        <!-- Descripción y contactos -->
+        <div class="d-flex gap-3">
+          <div class="flex-grow-1">
+            <h6>Lo que tenés que saber de este producto: </h6>
+            <p class="text-dark" style="font-size: 0.8rem;">- {{ publication.description }}</p>
+          </div>
+
+          <div style="min-width: 180px;">
+            <h6 class="mb-3">Contactar al vendedor</h6>
+            <div class="d-flex flex-column gap-2">
+              <ng-container *ngFor="let contact of publication.contacts">
+                <a
+                  [href]="getContactLink(contact)"
+                  target="_blank"
+                  rel="noopener"
+                  class="contact-link d-flex align-items-center text-decoration-none"
+                >
+                  <i [ngClass]="getContactIcon(contact.contact_type)" class="me-2"></i>
+                  <span>{{ contact.contact_value }}</span>
+                </a>
+              </ng-container>
+            </div>
+          </div>
+        </div>
 
       </div>
-
     </div>
   </div>
 </div>
+<div
+  #liveToast
+  class="toast align-items-center border-0 position-fixed"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  style="bottom: 1rem; left: 50%; transform: translateX(-50%); min-width: 300px;"
+>
+  <div class="d-flex">
+    <div class="toast-body">{{ toastMessage }}</div>
+    <button
+      type="button"
+      class="btn-close btn-close-white me-2 m-auto"
+      data-bs-dismiss="toast"
+      aria-label="Close"
+      (click)="hideToast()"
+    ></button>
+  </div>
+</div>
+
+
+
