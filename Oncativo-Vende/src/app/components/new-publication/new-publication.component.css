@@ -1,4 +1,5 @@
 .fondo-gris {
   background-color: #f8f9fa; 
   padding: 20px 0;
+  min-height: 100vh;
 }

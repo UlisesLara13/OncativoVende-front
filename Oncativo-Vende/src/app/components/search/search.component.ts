@@ -11,11 +11,12 @@ import { CategoryGet } from '../../models/CategoryGet';
 import { UtilsService } from '../../services/utils.service';
 import { LocationGet } from '../../models/LocationGet';
 import { TagGet } from '../../models/TagGet';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, CommonModule, PipesModule],
+  imports: [FormsModule, CommonModule, PipesModule,NgSelectModule],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
 })
@@ -26,17 +27,22 @@ export class SearchComponent implements OnInit {
   locations: LocationGet[] = [];
   tags: TagGet[] = [];
   searchText: string | null = null;
-  category: string | null = null;
   location: string | null = null;
   minPrice: number | null = null;
   maxPrice: number | null = null;
-  tag: string | null = null;
+  category: string[] = [];
+  tag: string[] = [];
   sortDir: string = 'desc';
   sortBy: string = 'createdAt';
   currentPage: number = 1;
   totalPages: number = 0;
   itemsPerPage: number = 12; 
   isLastPage: boolean = false;
+  orderByOptions = [
+  { label: 'Fecha de publicación', value: 'createdAt' },
+  { label: 'Precio', value: 'price' },
+  { label: 'Título', value: 'title' }
+];
 
   constructor(
     private publicationsService: PublicationsService,
@@ -48,14 +54,13 @@ export class SearchComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.searchText = params['searchText'] || '';
-      this.category = params['category'] || '';
-      this.location = params['location'] || '';
+      this.category = Array.isArray(params['category']) ? params['category'] : (params['category'] ? [params['category']] : []);
+      this.location = params['location'];
       this.minPrice = params['minPrice'] ? +params['minPrice'] : null;
       this.maxPrice = params['maxPrice'] ? +params['maxPrice'] : null;
-      this.tag = params['tag'] || '';
+      this.tag = Array.isArray(params['tag']) ? params['tag'] : (params['tag'] ? [params['tag']] : []);
       this.sortBy = params['sortBy'] || 'createdAt';
       this.sortDir = params['sortDir'] || 'desc';
-      
       this.loadCategories();
       this.loadLocations();
       this.loadTags();
@@ -70,8 +75,12 @@ export class SearchComponent implements OnInit {
     searchDto.searchTerm = this.searchText;
   }
 
-  if (this.category) {
-    searchDto.category = this.category;
+  if (this.category && this.category.length > 0) {
+    searchDto.categories = this.category;  
+  }
+
+  if (this.tag && this.tag.length > 0) {
+    searchDto.tags = this.tag;  
   }
 
   if (this.location) {
@@ -86,9 +95,7 @@ export class SearchComponent implements OnInit {
     searchDto.maxPrice = this.maxPrice;
   }
 
-  if (this.tag) {
-    searchDto.tag = this.tag;
-  }
+
 
   if (this.sortBy) {
     searchDto.sortBy = this.sortBy;
@@ -100,6 +107,8 @@ export class SearchComponent implements OnInit {
 
   console.log('Search DTO:', searchDto); // Línea de depuración
   console.log('publications', this.publications); // Línea de depuración
+  console.log(this.category); // Línea de depuración
+  console.log(this.tag); // Línea de depuración
 
   // Realizar la llamada al servicio con el objeto SearchDto creado
   this.publicationsService.getFilteredPublications(searchDto).subscribe((response: PaginatedPublications) => {

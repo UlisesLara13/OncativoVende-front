@@ -40,3 +40,17 @@
   background-color: #f8f9fa; 
   padding: 20px 0;
 }
+
+
+input::placeholder,
+select::placeholder,
+textarea::placeholder,
+.ng-select .ng-placeholder {
+  color: #b0b0b0; 
+  opacity: 1; 
+}
+
+.ng-select .ng-placeholder {
+  color: #b0b0b0;
+}
+

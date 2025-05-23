@@ -6,11 +6,13 @@ import { PublicationsService } from '../../services/publications.service';
 import { FileService } from '../../services/file.service';
 import { UtilsService } from '../../services/utils.service';
 import { AuthService } from '../../services/auth.service';
+import { NgSelectModule } from '@ng-select/ng-select';
+
 
 @Component({
   selector: 'app-new-publication',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule,ReactiveFormsModule,NgSelectModule],
   templateUrl: './new-publication.component.html',
   styleUrls: ['./new-publication.component.css']
 })
@@ -18,13 +20,30 @@ export class NewPublicationComponent implements OnInit {
   step = 1;
   form: FormGroup;
 
-  selectedImages: File[] = [];
   uploadedImagePaths: string[] = [];
 
   locations: { id: number; description: string }[] = [];
   categories: { id: number; description: string }[] = [];
   tags: { id: number; description: string }[] = [];
   contactTypes: { id: number; description: string }[] = [];
+  imageSlots: (File | null)[] = [null, null, null];
+  selectedImages: File[] = [];
+
+  conditionOptions = [
+    { id: 1, description: "Nuevo" },
+    { id: 2, description: "Usado" }
+  ];
+
+  priceOptions = [
+    { id: 4, description: "Precio negociable" },
+    { id: 5, description: "Precio fijo" }
+  ];
+
+  shippingOptions = [
+    { id: 3, description: "Envío incluido" },
+    { id: 6, description: "Retiro en mano" },
+    { id: 7, description: "Punto de encuentro" }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -34,15 +53,19 @@ export class NewPublicationComponent implements OnInit {
     private authService: AuthService,
   ) {
     this.form = this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
-      price: [null, [Validators.required, Validators.min(0)]],
+      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
+      price: [null, [Validators.required, Validators.min(1)]],
       location_id: [null, Validators.required],
-      categories: [[], Validators.required],
-      tags: [[]],
+      categories: [null, Validators.required],
+      conditionTag: [null, Validators.required],
+      priceTag: [null, Validators.required],
+      shippingTag: [[], Validators.required],
       contacts: this.fb.array([])
     });
+
   }
+
 
   ngOnInit(): void {
     this.loadSelectData();
@@ -51,10 +74,10 @@ export class NewPublicationComponent implements OnInit {
     }
   }
 
+
   loadSelectData(): void {
     this.utilsService.getLocations().subscribe(data => this.locations = data);
     this.publicationService.getCategories().subscribe(data => this.categories = data);
-    this.utilsService.getTags().subscribe(data => this.tags = data);
     this.utilsService.getContactsTypes().subscribe(data => this.contactTypes = data);
   }
 
@@ -73,17 +96,18 @@ export class NewPublicationComponent implements OnInit {
     this.contacts.removeAt(index);
   }
 
-  onImageSelected(event: any): void {
-    const files: FileList = event.target.files;
-    for (let i = 0; i < files.length; i++) {
-      this.selectedImages.push(files[i]);
-    }
+  onCategoriesChange(selected: any[]) {
+  if (selected.length > 2) {
+    selected.pop();
+    this.form.get('categories')?.setValue(selected);
   }
+}
 
   nextStep(): void {
   console.log('👉 Valores del formulario al intentar avanzar:', this.form.value);   
+
   if (this.step === 1) {
-    const requiredFields = ['title', 'description', 'price', 'location_id', 'categories'];
+    const requiredFields = ['title', 'description', 'price', 'location_id', 'categories', 'conditionTag', 'priceTag', 'shippingTag'];
     const allValid = requiredFields.every(field => this.form.get(field)?.valid);
 
     if (allValid) {
@@ -94,7 +118,12 @@ export class NewPublicationComponent implements OnInit {
     }
 
   } else if (this.step === 2) {
-    this.uploadImages();
+    if (this.selectedImages.length > 0) {
+      this.uploadImages(); // Solo sube si hay imágenes
+    } else {
+      this.uploadedImagePaths = []; // Limpia cualquier valor previo
+      this.step++;
+    }
   }
 }
 
@@ -105,22 +134,24 @@ export class NewPublicationComponent implements OnInit {
   }
 
   uploadImages(): void {
-    const userId = this.authService.getUser().id;
-    const tempPublicationId = Date.now(); // para simular un id temporal
+  const userId = this.authService.getUser().id;
+  const tempPublicationId = Date.now();
 
-    const uploadPromises = this.selectedImages.map((file, index) =>
-      this.fileService.uploadPublicationPic(tempPublicationId, userId, index + 1, file).toPromise()
-    );
+  const validFiles = this.imageSlots.filter((f): f is File => f instanceof File);
 
-    Promise.all(uploadPromises)
-      .then(urls => {
-        this.uploadedImagePaths = urls.filter((url): url is string => typeof url === 'string');
-        this.step++;
-      })
-      .catch(err => {
-        console.error('Error al subir imágenes', err);
-        alert('Error al subir imágenes, intenta nuevamente.');
-      });
+  const uploadPromises = validFiles.map((file, index) =>
+    this.fileService.uploadPublicationPic(tempPublicationId, userId, index + 1, file).toPromise()
+  );
+
+  Promise.all(uploadPromises)
+    .then(urls => {
+      this.uploadedImagePaths = urls.filter((url): url is string => typeof url === 'string');
+      this.step++;
+    })
+    .catch(err => {
+      console.error('Error al subir imágenes', err);
+      alert('Error al subir imágenes, intenta nuevamente.');
+    });
   }
 
   submit(): void {
@@ -142,7 +173,7 @@ export class NewPublicationComponent implements OnInit {
       price: this.form.value.price,
       location_id: this.form.value.location_id,
       categories: this.form.value.categories,
-      tags: this.form.value.tags,
+      tags: [this.form.value.conditionTag, this.form.value.priceTag, this.form.value.shippingTag],
       images: this.uploadedImagePaths,
       contacts: contacts
     };
@@ -167,4 +198,55 @@ export class NewPublicationComponent implements OnInit {
   getImagePreview(file: File): string {
     return URL.createObjectURL(file);
   }
+
+  onValidate(controlName: string) {
+    const control = this.form.get(controlName);
+    return {
+      'is-invalid': control?.invalid && (control?.dirty || control?.touched),
+      'is-valid': control?.valid
+    }
+  }
+
+  onSlotImageSelected(event: any, index: number): void {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.imageSlots[index] = file;
+    }
+  }
+
+    removeImageSlot(index: number): void {
+      this.imageSlots[index] = null;
+    }
+
+  showError(controlName: string): string {
+    const control = this.form.get(controlName);
+  
+    if (control && control.errors) {
+      const [errorKey] = Object.keys(control.errors);
+  
+      switch (errorKey) {
+        case 'required':
+          return 'Este campo no puede estar vacío.';
+        case 'email':
+          return 'Formato de correo electrónico inválido.';
+        case 'minlength':
+          return `El valor ingresado es demasiado corto. Mínimo ${control.errors['minlength'].requiredLength} caracteres.`;
+        case 'maxlength':
+          return `El valor ingresado es demasiado largo. Máximo ${control.errors['maxlength'].requiredLength} caracteres.`;
+        case 'min':
+          return `El valor es menor que el mínimo permitido (${control.errors['min'].min}).`;
+        case 'pattern':
+          return 'El formato ingresado no es válido.';
+        case 'requiredTrue':
+          return 'Debe aceptar el campo requerido para continuar.';
+        case 'date':
+          return 'La fecha ingresada es inválida.';
+        default:
+          return 'Error no identificado en el campo.';
+      }
+    }
+  
+    return '';
+  }
+
 }

@@ -20,34 +20,35 @@
               </div>
 
               <div class="mb-3">
-                <label for="category" class="form-label"><i class="bi bi-folder"></i> Categoría</label>
-                <select
-                  id="category"
+              <label for="categories" class="form-label"><i class="bi bi-bookmarks"></i> Categorías</label>
+                <ng-select
+                  [items]="categories"
+                  bindLabel="description"
+                  bindValue="description"
                   [(ngModel)]="category"
-                  name="category"
-                  class="form-select"
+                  name="categories"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  placeholder="Selecciona categorías"
+                  class="w-100"
                 >
-                  <option value="">Seleccionar categoría</option>
-                  <option *ngFor="let cat of categories" [value]="cat.description">
-                    {{ cat.description }}
-                  </option>
-                </select>
-              </div>
+                </ng-select>
+            </div>
 
               <div class="mb-3">
-                <label for="location" class="form-label"><i class="bi bi-geo-alt"></i> Localidad</label>
-                <select
-                  id="location"
+              <label for="location" class="form-label"><i class="bi bi-geo-alt"></i> Localidad</label>
+                <ng-select
+                  [items]="locations"
+                  bindLabel="description"
+                  bindValue="description"
                   [(ngModel)]="location"
                   name="location"
-                  class="form-select"
+                  [clearable]="true"
+                  placeholder="Seleccionar localidad"
+                  class="w-100"
                 >
-                  <option value="">Seleccionar localidad</option>
-                  <option *ngFor="let loc of locations" [value]="loc.description">
-                    {{ loc.description }}
-                  </option>
-                </select>
-              </div>
+                </ng-select>
+            </div>
 
               <div class="mb-3">
                 <label for="minPrice" class="form-label"><i class="bi bi-currency-dollar"></i> Precio Mínimo</label>
@@ -76,53 +77,57 @@
               </div>
 
               <div class="mb-3">
-                <label for="tag" class="form-label"><i class="bi bi-tag"></i> Etiquetas</label>
-                <select
-                  id="tag"
+              <label for="tags" class="form-label"><i class="bi bi-tags"></i> Tags</label>
+                <ng-select
+                  [items]="tags"
+                  bindLabel="description"
+                  bindValue="description"
                   [(ngModel)]="tag"
-                  name="tag"
-                  class="form-select"
+                  [multiple]="true"
+                  name="tags"
+                  [closeOnSelect]="false"
+                  placeholder="Seleccionar tags"
+                  class="w-100"
                 >
-                  <option value="">Seleccionar Etiqueta</option>
-                  <option *ngFor="let tag of tags" [value]="tag.description">
-                    {{ tag.description }}
-                  </option>
-                </select>
-              </div>
+                </ng-select>
+            </div>
 
-              <div class="mb-3">
-                <label for="orderBy" class="form-label"><i class="bi bi-arrow-down-up"></i> Ordenar por</label>
-                <div class="input-group">
-                  <select
-                    id="orderBy"
-                    [(ngModel)]="sortBy"
-                    name="sortBy"
-                    class="form-select"
-                  >
-                    <option value="createdAt">Fecha de publicación</option>
-                    <option value="price">Precio</option>
-                    <option value="title">Título</option>
-                  </select>
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    (click)="sortDir = 'asc'"
-                    [class.active]="sortDir === 'asc'"
-                    title="Ascendente"
-                  >
-                    <i class="bi bi-arrow-up-short"></i>
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    (click)="sortDir = 'desc'"
-                    [class.active]="sortDir === 'desc'"
-                    title="Descendente"
-                  >
-                    <i class="bi bi-arrow-down-short"></i>
-                  </button>
-                </div>
-              </div>
+            <div class="mb-3">
+            <label for="orderBy" class="form-label"><i class="bi bi-arrow-down-up"></i> Ordenar por</label>
+            <div class="d-flex align-items-center gap-2">
+              <ng-select
+                [items]="orderByOptions"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="sortBy"
+                name="sortBy"
+                [clearable]="false"
+                placeholder="Ordenar por"
+                class="flex-grow-1"
+                [ngStyle]="{'color': !sortBy || sortBy === '' ? '#b0b0b0' : 'black'}"
+              >
+              </ng-select>
+
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                (click)="sortDir = 'asc'"
+                [class.active]="sortDir === 'asc'"
+                title="Ascendente"
+              >
+                <i class="bi bi-arrow-up-short"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                (click)="sortDir = 'desc'"
+                [class.active]="sortDir === 'desc'"
+                title="Descendente"
+              >
+                <i class="bi bi-arrow-down-short"></i>
+              </button>
+            </div>
+          </div>
 
               <button type="submit" class="btn btn-primary w-100 mt-2">
                 Aplicar Filtros

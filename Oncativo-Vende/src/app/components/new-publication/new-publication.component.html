@@ -6,91 +6,146 @@
       <!-- Navegación de pasos -->
       <ul class="nav nav-pills mb-4">
         <li class="nav-item">
-          <button class="nav-link" [class.active]="step === 1" disabled>Paso 1</button>
+          <button class="nav-link" [class.active]="step === 1" disabled>1</button>
         </li>
         <li class="nav-item">
-          <button class="nav-link" [class.active]="step === 2" disabled>Paso 2</button>
+          <button class="nav-link" [class.active]="step === 2" disabled>2</button>
         </li>
         <li class="nav-item">
-          <button class="nav-link" [class.active]="step === 3" disabled>Paso 3</button>
+          <button class="nav-link" [class.active]="step === 3" disabled>3</button>
         </li>
       </ul>
 
       <form [formGroup]="form" novalidate>
 
         <!-- PASO 1: Datos principales -->
-        <div *ngIf="step === 1">
-          <div class="mb-3">
-            <label class="form-label">Título</label>
-            <input type="text" class="form-control" formControlName="title" />
-            <div class="text-danger" *ngIf="form.get('title')?.touched && form.get('title')?.invalid">
-              Título es obligatorio.
-            </div>
-          </div>
+      <div *ngIf="step === 1">
 
-          <div class="mb-3">
-            <label class="form-label">Descripción</label>
-            <textarea class="form-control" formControlName="description"></textarea>
-            <div class="text-danger" *ngIf="form.get('description')?.touched && form.get('description')?.invalid">
-              Descripción es obligatoria.
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Precio</label>
-            <input type="number" class="form-control" formControlName="price" />
-            <div class="text-danger" *ngIf="form.get('price')?.touched && form.get('price')?.invalid">
-              Precio debe ser mayor que 0.
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Localidad</label>
-            <select class="form-control" formControlName="location_id">
-              <option value="">Seleccione...</option>
-              <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.description }}</option>
-            </select>
-            <div class="text-danger" *ngIf="form.get('location_id')?.touched && form.get('location_id')?.invalid">
-              Debe seleccionar una localidad.
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Categorías</label>
-            <select class="form-control" multiple formControlName="categories">
-              <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.description }}</option>
-            </select>
-            <div class="text-danger" *ngIf="form.get('categories')?.touched && form.get('categories')?.invalid">
-              Debe seleccionar al menos una categoría.
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Etiquetas</label>
-            <select class="form-control" multiple formControlName="tags">
-              <option *ngFor="let tag of tags" [value]="tag.id">{{ tag.description }}</option>
-            </select>
-          </div>
-
-          <button type="button" class="btn btn-primary" (click)="nextStep()">Siguiente</button>
+        <!-- Título -->
+        <div class="mb-3">
+          <label class="form-label">Título</label>
+          <input type="text" class="form-control" formControlName="title" [ngClass]="onValidate('title')">
+          <div class="invalid-feedback">{{showError('title')}}</div>
         </div>
 
-        <!-- PASO 2: Imágenes -->
-        <div *ngIf="step === 2">
-          <div class="mb-3">
-            <label class="form-label">Imágenes</label>
-            <input type="file" class="form-control" (change)="onImageSelected($event)" multiple />
+        <!-- Descripción -->
+        <div class="mb-3">
+          <label class="form-label">Descripción</label>
+          <textarea class="form-control" formControlName="description" rows="4" [ngClass]="onValidate('description')"></textarea>
+          <div class="invalid-feedback">{{showError('description')}}</div>
+        </div>
+
+        <!-- Fila: Precio / Localidad -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Precio</label>
+            <input type="number" class="form-control" formControlName="price" [ngClass]="onValidate('price')" />
+            <div class="invalid-feedback">{{showError('price')}}</div>
           </div>
 
-          <div class="row">
-            <div class="col-4" *ngFor="let img of selectedImages">
-              <img [src]="getImagePreview(img)" class="img-fluid rounded mb-2 border" style="max-height: 200px;" />
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Localidad</label>
+            <ng-select
+              [items]="locations"
+              bindLabel="description"
+              bindValue="id"
+              formControlName="location_id"
+              placeholder="Seleccione localidad"
+              class="w-100"
+              [ngClass]="onValidate('location_id')"
+            >
+            </ng-select>
+            <div class="invalid-feedback">{{showError('location_id')}}</div>
+          </div>
+        </div>
+
+        <!-- Fila: Categorías / Etiquetas -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Categorías</label>
+            <ng-select
+              [items]="categories"
+              bindLabel="description"
+              bindValue="id"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              placeholder="Selecciona categorías"
+              formControlName="categories"
+              [ngClass]="onValidate('categories')"
+              (change)="onCategoriesChange($event)"
+              class="w-100"
+            >
+            </ng-select>
+            <div class="invalid-feedback">{{showError('categories')}}</div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Etiquetas</label>
+
+            <!-- Condición -->
+            <ng-select
+              [items]="conditionOptions"
+              bindLabel="description"
+              bindValue="id"
+              placeholder="Seleccione condición"
+              [ngClass]="onValidate('conditionTag')"
+              formControlName="conditionTag"
+              class="w-100 mb-2"
+            ></ng-select>
+            <div class="invalid-feedback">{{showError('conditionTag')}}</div>
+
+            <!-- Precio -->
+            <ng-select
+              [items]="priceOptions"
+              bindLabel="description"
+              bindValue="id"
+              placeholder="Seleccione tipo de precio"
+              [ngClass]="onValidate('priceTag')"
+              formControlName="priceTag"
+              class="w-100 mb-2"
+            ></ng-select>
+            <div class="invalid-feedback">{{showError('priceTag')}}</div>
+
+            <!-- Envío -->
+            <ng-select
+              [items]="shippingOptions"
+              bindLabel="description"
+              bindValue="id"
+              placeholder="Seleccione opción de envío"
+              formControlName="shippingTag"
+              [ngClass]="onValidate('shippingTag')"
+              class="w-100"
+            ></ng-select>
+            <div class="invalid-feedback">{{showError('shippingTag')}}</div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <!-- PASO 2: Imágenes -->
+      <div *ngIf="step === 2" class="row mb-3">
+        <div class="col-4" *ngFor="let img of imageSlots; let i = index">
+          <div class="position-relative border rounded p-1 text-center" style="height: 210px;">
+            <div *ngIf="img; else emptySlot">
+              <img [src]="getImagePreview(img)" class="img-fluid rounded" style="max-height: 180px;" />
+              <button type="button" class="btn-close position-absolute top-0 end-0 m-1" aria-label="Close"
+                      (click)="removeImageSlot(i)"></button>
             </div>
+            <ng-template #emptySlot>
+              <label class="d-flex align-items-center justify-content-center h-100 w-100 text-muted"
+                    style="cursor: pointer;">
+                <input type="file" (change)="onSlotImageSelected($event, i)" hidden />
+                <span class="text-center">+ Agregar imagen</span>
+              </label>
+            </ng-template>
           </div>
-
+        </div>
+        <div class="text-end mt-3 w-100">
           <button type="button" class="btn btn-secondary me-2" (click)="prevStep()">Anterior</button>
           <button type="button" class="btn btn-primary" (click)="nextStep()">Siguiente</button>
         </div>
+      </div>
 
         <!-- PASO 3: Contactos -->
         <div *ngIf="step === 3" formArrayName="contacts">
