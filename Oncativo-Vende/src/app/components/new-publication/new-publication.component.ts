@@ -7,6 +7,8 @@ import { FileService } from '../../services/file.service';
 import { UtilsService } from '../../services/utils.service';
 import { AuthService } from '../../services/auth.service';
 import { NgSelectModule } from '@ng-select/ng-select';
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -50,6 +52,7 @@ export class NewPublicationComponent implements OnInit {
     private publicationService: PublicationsService,
     private fileService: FileService,
     private utilsService: UtilsService,
+    private router: Router,
     private authService: AuthService,
   ) {
     this.form = this.fb.group({
@@ -73,6 +76,10 @@ export class NewPublicationComponent implements OnInit {
       this.addContact();
     }
   }
+
+trackByIndex(index: number, item: any): any {
+  return index;
+}
 
 
   loadSelectData(): void {
@@ -104,7 +111,10 @@ export class NewPublicationComponent implements OnInit {
 }
 
   nextStep(): void {
-  console.log('👉 Valores del formulario al intentar avanzar:', this.form.value);   
+  console.log('👉 Valores del formulario al intentar avanzar:', this.form.value); 
+  console.log(this.selectedImages);
+  console.log(this.imageSlots);
+  const hasFilesToUpload = this.imageSlots.some(img => img instanceof File);
 
   if (this.step === 1) {
     const requiredFields = ['title', 'description', 'price', 'location_id', 'categories', 'conditionTag', 'priceTag', 'shippingTag'];
@@ -118,10 +128,10 @@ export class NewPublicationComponent implements OnInit {
     }
 
   } else if (this.step === 2) {
-    if (this.selectedImages.length > 0) {
-      this.uploadImages(); // Solo sube si hay imágenes
+    if (hasFilesToUpload) {
+      this.uploadImages(); 
     } else {
-      this.uploadedImagePaths = []; // Limpia cualquier valor previo
+      this.uploadedImagePaths = []; 
       this.step++;
     }
   }
@@ -138,6 +148,7 @@ export class NewPublicationComponent implements OnInit {
   const tempPublicationId = Date.now();
 
   const validFiles = this.imageSlots.filter((f): f is File => f instanceof File);
+  console.log('Archivos a subir:', validFiles);
 
   const uploadPromises = validFiles.map((file, index) =>
     this.fileService.uploadPublicationPic(tempPublicationId, userId, index + 1, file).toPromise()
@@ -180,13 +191,21 @@ export class NewPublicationComponent implements OnInit {
 
     this.publicationService.createPublication(publication).subscribe({
       next: res => {
-        alert('Publicación creada con éxito');
         this.form.reset();
         this.selectedImages = [];
         this.uploadedImagePaths = [];
         this.step = 1;
         this.contacts.clear();
         this.addContact();
+        Swal.fire({
+          icon: 'success',
+          title: '¡Completado!',
+          text: 'Publicación creada con éxito',
+          showConfirmButton: false,
+          timer: 1500
+        }).then(() => {
+          this.router.navigate(['/home']);
+        });
       },
       error: err => {
         console.error('Error al crear la publicación', err);

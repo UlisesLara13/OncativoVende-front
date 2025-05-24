@@ -50,13 +50,14 @@ export class MyProfileComponent implements OnInit {
 
   getStarClass(rating: number, index: number): string {
     if (index < Math.floor(rating)) {
-      return 'bi bi-star-fill text-warning'; // Estrella llena
+      return 'bi bi-star-fill text-primary'; 
     } else if (index < Math.ceil(rating)) {
-      return 'bi bi-star-half text-warning'; // Media estrella
+      return 'bi bi-star-half text-primary'; 
     } else {
-      return 'bi bi-star text-muted'; // Estrella vacía
+      return 'bi bi-star text-muted'; 
     }
   }
+
 
   onChangeAvatar(): void {
     const input = document.createElement('input');

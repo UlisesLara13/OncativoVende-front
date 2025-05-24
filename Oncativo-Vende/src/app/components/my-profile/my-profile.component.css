@@ -1,5 +1,5 @@
 .fondo-gris {
-    height: 88vh;
+    height: 100vh;
     background-color: #f8f9fa;
   }
   
@@ -23,7 +23,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    position: relative; /* agregado para overlay */
+    position: relative; 
   }
   
   .img-avatar {
@@ -38,8 +38,7 @@
     font-size: 36px;
     color: black;
   }
-  
-  /* Overlay de la cámara cuando pasas el mouse por el avatar */
+
   .avatar-overlay {
     position: absolute;
     top: 0;
@@ -60,19 +59,11 @@
   .avatar-perfil:hover .avatar-overlay {
     opacity: 1;
   }
-  
-  /* Estilo de las estrellas */
-  .bi-star-fill {
-    font-size: 1.2rem;
-    color: gold;
-  }
-  
-  /* Botones del perfil */
+
   .perfil-container .btn {
     border-radius: 8px;
   }
   
-  /* Espaciado entre secciones dentro de la card */
   .perfil-container hr {
     margin: 1.5rem 0;
   }

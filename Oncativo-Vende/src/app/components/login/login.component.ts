@@ -70,7 +70,7 @@ export class LoginComponent {
       next: async (data) => {
         await this.authService.login(data);
         this.errorLog = false;
-        this.router.navigate(['home']);
+        this.router.navigate(['/home']);
       
       },
       error: (error) => {

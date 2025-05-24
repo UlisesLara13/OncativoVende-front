@@ -1,90 +1,90 @@
-<div class="container-fluid d-flex justify-content-center align-items-center fondo-gris" style="min-height: 100vh;">
-    <div class="card perfil-card p-4 col-md-4 col-lg-4">
-      
-      <!-- Avatar clickeable -->
-      <div class="text-center mb-3">
-        <div class="avatar-perfil mx-auto position-relative" (click)="onChangeAvatar()" style="cursor: pointer;">
-          <img *ngIf="user.avatar_url; else initials" [src]="user.avatar_url" alt="Avatar" class="img-avatar">
-          <ng-template #initials>
-            <div class="avatar-initials">
-              {{ getInitials(user.name, user.surname) }}
-            </div>
-          </ng-template>
-          <div class="avatar-overlay">
-            <i class="bi bi-camera-fill"></i> <!-- ícono de cámara (usando Bootstrap Icons) -->
-          </div>
-        </div>
+<div class="container-fluid d-flex justify-content-center align-items-start fondo-gris" style="min-height: 100vh; padding-top: 2rem;">
+  <div class="card perfil-card p-4 col-md-4 col-lg-4">
+    
+    <!-- Avatar clickeable -->
+    <div class="text-center mb-3">
+    <div class="avatar-perfil mx-auto position-relative" (click)="onChangeAvatar()" style="cursor: pointer;">
+      <img *ngIf="user.avatar_url; else initials" [src]="user.avatar_url" alt="Avatar" class="img-avatar">
+      <ng-template #initials>
+      <div class="avatar-initials">
+        {{ getInitials(user.name, user.surname) }}
       </div>
-  
-      <!-- Nombre completo -->
-      <h4 class="text-center mb-2">{{ user.name }} {{ user.surname }}</h4>
-      <p class="text-center text-muted">{{ user.location }}</p>
-  
-      <hr>
-  
-      <!-- Información de usuario -->
-      <div class="mb-2">
-        <strong>Usuario:</strong> {{ user.username }}
+      </ng-template>
+      <div class="avatar-overlay">
+      <i class="bi bi-camera-fill"></i> 
       </div>
-      <div class="mb-2">
-        <strong>Email:</strong> {{ user.email }}
-      </div>
-  
-      <div class="mb-2 d-flex align-items-center">
-        <strong class="me-2">Rating:</strong>
-        <ng-container *ngFor="let star of [].constructor(5); let i = index">
-          <i [ngClass]="getStarClass(user.rating, i)"></i>
-        </ng-container>
-      </div>
-
-      <div class="mb-2 d-flex align-items-center">
-        <strong class="me-2">Suscripción:</strong>
-        <ng-container [ngSwitch]="user.subscription.toLowerCase()">
-      
-          <!-- Bronce -->
-          <button *ngSwitchCase="'bronce'" class="btn btn-sm me-2"
-                  style="border: 1px solid #cd7f32; background-color: transparent; color: #cd7f32;">
-            <i class="bi bi-gem me-1" style="color: #cd7f32;"></i>Bronce
-          </button>
-      
-          <!-- Plata -->
-          <button *ngSwitchCase="'plata'" class="btn btn-sm me-2"
-                  style="border: 1px solid #c0c0c0; background-color: transparent; color: #c0c0c0;">
-            <i class="bi bi-gem me-1" style="color: #c0c0c0;"></i>Plata
-          </button>
-      
-          <!-- Oro -->
-          <button *ngSwitchCase="'oro'" class="btn btn-sm me-2"
-                  style="border: 1px solid gold; background-color: transparent; color: gold;">
-            <i class="bi bi-gem me-1" style="color: gold;"></i>Oro
-          </button>
-      
-          <!-- Sin suscripción -->
-          <button *ngSwitchDefault class="btn btn-sm me-2"
-                  style="border: 1px solid #0dcaf0; background-color: transparent; color: #0dcaf0;">
-            <i class="bi bi-gem me-1" style="color: #0dcaf0;"></i>Obtener Suscripción
-          </button>
-      
-        </ng-container>
-      </div>      
-  
-      <hr>
-  
-      <!-- Botones -->
-      <div class="d-grid gap-2">
-        <button type="button" class="btn btn-primary" [routerLink]="'/profile/edit'">
-          Modificar Datos Personales
-        </button>
-  
-        <button type="button" class="btn btn-secondary" [routerLink]="'/profile/change-password'">
-          Modificar Contraseña
-        </button>
-  
-        <button type="button" class="btn btn-light" [routerLink]="'/home'">
-          Volver
-        </button>
-      </div>
-  
     </div>
-  </div>
+    </div>
   
+    <!-- Nombre completo -->
+    <h4 class="text-center mb-2">{{ user.name }} {{ user.surname }}</h4>
+    <p class="text-center text-muted"><i class="bi bi-geo-alt"></i> {{ user.location }}</p>
+  
+    <hr>
+  
+    <!-- Información de usuario -->
+    <div class="mb-2">
+    <strong>Usuario:</strong> {{ user.username }}
+    </div>
+    <div class="mb-2">
+    <strong>Email:</strong> {{ user.email }}
+    </div>
+  
+    <div class="mb-2 d-flex align-items-center">
+    <strong class="me-2">Rating:</strong>
+    <ng-container *ngFor="let star of [].constructor(5); let i = index">
+      <i [ngClass]="getStarClass(user.rating, i)"></i>
+    </ng-container>
+    <span class="text-secondary ms-2" style="font-size: 0.7rem; color: gray;">({{user.rating}})</span>
+    </div>
+
+    <div class="mb-2 d-flex align-items-center">
+    <strong class="me-2">Suscripción:</strong>
+    <ng-container [ngSwitch]="user.subscription.toLowerCase()">
+    
+      <!-- Bronce -->
+      <button *ngSwitchCase="'bronce'" class="btn btn-sm me-2"
+          style="border: 1px solid #cd7f32; background-color: transparent; color: #cd7f32;">
+      <i class="bi bi-gem me-1" style="color: #cd7f32;"></i>Bronce
+      </button>
+    
+      <!-- Plata -->
+      <button *ngSwitchCase="'plata'" class="btn btn-sm me-2"
+          style="border: 1px solid #c0c0c0; background-color: transparent; color: #c0c0c0;">
+      <i class="bi bi-gem me-1" style="color: #c0c0c0;"></i>Plata
+      </button>
+    
+      <!-- Oro -->
+      <button *ngSwitchCase="'oro'" class="btn btn-sm me-2"
+          style="border: 1px solid gold; background-color: transparent; color: gold;">
+      <i class="bi bi-gem me-1" style="color: gold;"></i>Oro
+      </button>
+    
+      <!-- Sin suscripción -->
+      <button *ngSwitchDefault class="btn btn-sm me-2"
+          style="border: 1px solid #0dcaf0; background-color: transparent; color: #0dcaf0;">
+      <i class="bi bi-gem me-1" style="color: #0dcaf0;"></i>Obtener Suscripción
+      </button>
+    
+    </ng-container>
+    </div>      
+  
+    <hr>
+  
+    <!-- Botones -->
+    <div class="d-grid gap-2">
+    <button type="button" class="btn btn-primary" [routerLink]="'/profile/edit'">
+      Modificar Datos Personales
+    </button>
+  
+    <button type="button" class="btn btn-secondary" [routerLink]="'/profile/change-password'">
+      Modificar Contraseña
+    </button>
+  
+    <button type="button" class="btn btn-light" [routerLink]="'/home'">
+      Volver
+    </button>
+    </div>
+  
+  </div>
+  </div>

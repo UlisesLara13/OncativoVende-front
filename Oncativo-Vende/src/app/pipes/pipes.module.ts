@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
-import { DecimalFormatPipe } from './decimal-format.pipe'; 
+import { DecimalFormatPipe } from './decimal-format.pipe';
 
 @NgModule({
-  declarations: [DecimalFormatPipe],  
+  imports: [DecimalFormatPipe],  
   exports: [DecimalFormatPipe]        
 })
 export class PipesModule {}

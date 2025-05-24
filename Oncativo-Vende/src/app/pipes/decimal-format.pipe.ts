@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'decimalFormat'
+  name: 'decimalFormat',
+  standalone: true
 })
 export class DecimalFormatPipe implements PipeTransform {
 

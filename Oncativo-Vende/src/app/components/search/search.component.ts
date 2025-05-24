@@ -96,7 +96,6 @@ export class SearchComponent implements OnInit {
   }
 
 
-
   if (this.sortBy) {
     searchDto.sortBy = this.sortBy;
   }
@@ -104,6 +103,8 @@ export class SearchComponent implements OnInit {
   if (this.sortDir) {
     searchDto.sortDir = this.sortDir;
   }
+
+  searchDto.page = this.currentPage - 1; 
 
   console.log('Search DTO:', searchDto); // Línea de depuración
   console.log('publications', this.publications); // Línea de depuración
@@ -115,6 +116,7 @@ export class SearchComponent implements OnInit {
     this.publications = response.content;
     this.totalPages = response.totalPages || 0;
     this.isLastPage = this.currentPage >= this.totalPages;
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   });
 }
 

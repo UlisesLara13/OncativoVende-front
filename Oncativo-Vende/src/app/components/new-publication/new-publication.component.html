@@ -119,13 +119,16 @@
             <div class="invalid-feedback">{{showError('shippingTag')}}</div>
 
           </div>
+        <div class="text-end mt-3 w-100">
+          <button type="button" class="btn btn-primary" (click)="nextStep()">Siguiente</button>
+        </div>
         </div>
       </div>
 
 
       <!-- PASO 2: Imágenes -->
       <div *ngIf="step === 2" class="row mb-3">
-        <div class="col-4" *ngFor="let img of imageSlots; let i = index">
+        <div class="col-4" *ngFor="let img of imageSlots; let i = index; trackBy: trackByIndex">
           <div class="position-relative border rounded p-1 text-center" style="height: 210px;">
             <div *ngIf="img; else emptySlot">
               <img [src]="getImagePreview(img)" class="img-fluid rounded" style="max-height: 180px;" />
@@ -156,10 +159,15 @@
           >
             <div class="row">
               <div class="col-md-5 mb-2">
-                <select class="form-control" formControlName="contact_type_id">
-                  <option value="">Seleccione tipo</option>
-                  <option *ngFor="let ct of contactTypes" [value]="ct.id">{{ ct.description }}</option>
-                </select>
+                <ng-select
+                  [items]="contactTypes"
+                  bindLabel="description"
+                  bindValue="id"
+                  placeholder="Seleccione tipo de contacto"
+                  formControlName="contact_type_id"
+                  class="w-100"
+                >
+                </ng-select>
               </div>
 
               <div class="col-md-5 mb-2">

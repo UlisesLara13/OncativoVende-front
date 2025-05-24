@@ -38,7 +38,8 @@
       
           <div class="col">
             <div class="card card-custom text-center p-3 h-100" (click)="onCategoryChange('Vehículos')">
-              <h1 class="text-primary"><i class="bi bi-car-front"></i></h1>
+              <!-- <h1 class="text-primary"><i class="bi bi-car-front"></i></h1> -->
+                            <img src="assets/Utils/cars.webp" class="d-block mx-auto" style="width: 100px; height: 100px; object-fit: cover;" alt="">
               <h5>Vehículos</h5>
               <hr>
               Vehículos de todo tipo, desde autos hasta motos y bicicletas. Encuentra el medio de transporte ideal para vos.
@@ -47,7 +48,8 @@
       
           <div class="col">
             <div class="card card-custom text-center p-3 h-100" (click)="onCategoryChange('Electrónica')">
-              <h1 class="text-primary"><i class="bi bi-plug"></i></h1>
+              <!-- <h1 class="text-primary"><i class="bi bi-plug"></i></h1> -->
+              <img src="assets/Utils/electronic.webp" class="d-block mx-auto" style="width: 100px; height: 100px; object-fit: scale-down;" alt="">
               <h5>Electrónica</h5>
               <hr>
               Dispositivos electrónicos de última generación. Desde smartphones hasta electrodomésticos, ¡todo lo que necesitas!
@@ -56,7 +58,8 @@
       
           <div class="col">
             <div class="card card-custom text-center p-3 h-100" (click)="onCategoryChange('Entretenimiento')" >
-              <h1 class="text-primary"><i class="bi bi-controller"></i></h1>
+              <!-- <h1 class="text-primary"><i class="bi bi-controller"></i></h1> -->
+              <img src="assets/Utils/entre.jpg" class="d-block mx-auto" style="width: 100px; height: 100px; object-fit:scale-down;" alt="">
               <h5>Entretenimiento</h5>
               <hr>
               Disfruta de la mejor experiencia de entretenimiento con nuestros productos. Desde consolas de videojuegos hasta equipos de sonido.
@@ -65,7 +68,8 @@
       
           <div class="col">
             <div class="card card-custom text-center p-3 h-100" (click)="onPriceChange('20000')">
-              <h1 class="text-primary"><i class="bi bi-cash-stack"></i></h1>
+              <!-- <h1 class="text-primary"><i class="bi bi-cash-stack"></i></h1> -->
+              <img src="assets/Utils/20k.png" class="d-block mx-auto" style="width: 100px; height: 100px; object-fit: scale-down;" alt="">
               <h5>Menos de $20.000</h5>
               <hr>
               Encuentra productos increíbles a precios accesibles. Todo lo que necesitas por menos de $20.000.
@@ -74,7 +78,8 @@
       
           <div class="col">
             <div class="card card-custom text-center p-3 h-100"(click)="onTagChange('Nuevo')" >
-              <h1 class="text-primary"><i class="bi bi-star-fill"></i></h1>
+              <!-- <h1 class="text-primary"><i class="bi bi-star-fill"></i></h1> -->
+                              <img src="assets/Utils/new.png" class="d-block mx-auto" style="width: 100px; height: 100px; object-fit: scale-down;" alt="">
               <h5>Productos Nuevos</h5>
               <hr>
               Productos nuevos y de calidad para todos los gustos.
@@ -98,17 +103,17 @@
             </button>
             <div class="card-carousel" #carouselContainer>
               <div class="card card-custom-size" *ngFor="let pub of publications" (click)="goToPublication(pub.id)">
-                <img [src]="pub.images[0]" class="card-img-top" alt="assets/Publications/0-notfound.jpg">
+                <img [src]="pub.images[0]" class="card-img-top">
                 <div class="card-body">
                   <p class="card-title text-truncate">{{ pub.title }}</p>
                   <p class="text-secondary small">Por {{pub.user.name}} {{pub.user.surname}} 
                     @if (pub.user.verified) {<i class="bi bi-patch-check-fill text-info"></i> }</p>
-                  <p *ngFor="let tag of pub.tags" 
+                  <span *ngFor="let tag of pub.tags" 
                     [ngClass]="getTagClass(tag)" 
-                    class="d-inline-block me-1">
+                    class="badge-tag d-inline-block me-1">
                     {{ tag }}
-                  </p>
-                  <h3>$ {{ pub.price | decimalFormat }}</h3>
+                  </span>
+                  <h3 class="mt-2">$ {{ pub.price | decimalFormat }}</h3>
                   <p class="text-secondary small">
                     <i class="bi bi-geo-alt me-1"></i>{{ pub.location }}
                   </p>

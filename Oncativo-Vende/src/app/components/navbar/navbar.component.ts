@@ -51,9 +51,19 @@ export class NavbarComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.authService.logOut();
-        this.router.navigate(['/home']);
+        this.refreshPage("/home");
       }
     });
+  }
+
+  refreshPage(link: string) {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([link]);
+    });
+  }
+
+  goToLogin() {
+    this.refreshPage("/login");
   }
 
   selectCategory(category: any) {

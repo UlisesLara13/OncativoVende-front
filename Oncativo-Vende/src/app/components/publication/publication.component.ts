@@ -8,12 +8,19 @@ import { CommonModule } from '@angular/common';
 import { FavoriteService } from '../../services/favorite.service';
 import { UserLoged } from '../../models/UserLoged';
 import { Toast } from 'bootstrap';
+import { RatingGet } from '../../models/RatingGet';
+import { RatingPost } from '../../models/RatingPost';
+import { RatingService } from '../../services/rating.service';
+import { FormsModule } from '@angular/forms';
+import { DecimalFormatPipe } from '../../pipes/decimal-format.pipe';
+
+
 
 
 @Component({
   selector: 'app-publication',
   standalone: true,
-  imports: [PipesModule,CommonModule],
+  imports: [PipesModule, CommonModule, FormsModule, DecimalFormatPipe],
   templateUrl: './publication.component.html',
   styleUrl: './publication.component.css'
 })
@@ -26,6 +33,12 @@ export class PublicationComponent implements OnInit {
   userLoged: UserLoged = new UserLoged();
   toastMessage = '';
   toastInstance: any;
+  ratings: RatingGet[] = [];
+  newRating: RatingPost = new RatingPost();
+  existingRating: RatingGet | null = null;
+  reviewsToShow = 5;
+  hoveredRating = 0;
+  selectedImage: string | null = null;
   
 
   constructor(
@@ -33,6 +46,7 @@ export class PublicationComponent implements OnInit {
     private publicationService: PublicationsService,
     private authService: AuthService,
     private favoriteService: FavoriteService,
+    private ratingService: RatingService,
     private router: Router,
   ) {}
 
@@ -68,22 +82,45 @@ toggleFavorite() {
   }
 }
 
+submitRating() {
+  this.newRating = {
+    rater_user_id: this.userLoged.id,
+    rated_user_id: this.publication.user.id,
+    rating: this.newRating.rating,
+    comment: this.newRating.comment
+  };
+
+  this.ratingService.addRating(this.newRating).subscribe(() => {
+    this.loadRatings();
+    this.toastMessage = '¡Reseña enviada con éxito!';
+    this.showToast(this.toastMessage, true);
+    setTimeout(() => {
+      this.refreshPage();
+    }, 1000);
+  });
+}
+
+openImage(img: string) {
+  this.selectedImage = img;
+}
+
+closeImage() {
+  this.selectedImage = null;
+}
+
 showToast(message: string, success: boolean) {
   this.toastMessage = message;
 
   const toastEl = this.toastElement.nativeElement;
 
-  // Quitar clases previas
   toastEl.classList.remove('bg-success', 'bg-dark', 'text-white');
 
-  // Agregar clase según éxito o no
   if (success) {
     toastEl.classList.add('bg-success', 'text-white'); // fondo verde
   } else {
     toastEl.classList.add('bg-dark', 'text-white');    // fondo negro
   }
 
-  // Crear instancia solo una vez
   if (!this.toastInstance) {
     this.toastInstance = new Toast(toastEl);
   }
@@ -95,6 +132,50 @@ hideToast() {
   if (this.toastInstance) {
     this.toastInstance.hide();
   }
+}
+
+loadMore() {
+  this.reviewsToShow += 5;
+  }
+
+setRating(index: number, event: MouseEvent) {
+  const element = event.target as HTMLElement;
+  const { left, width } = element.getBoundingClientRect();
+  const x = event.clientX - left;
+  const isHalf = x < width / 2;
+  this.newRating.rating = isHalf ? index + 0.5 : index + 1;
+}
+
+onHover(index: number, event: MouseEvent) {
+  const element = event.target as HTMLElement;
+  const { left, width } = element.getBoundingClientRect();
+  const x = event.clientX - left;
+  const isHalf = x < width / 2;
+  this.hoveredRating = isHalf ? index + 0.5 : index + 1;
+}
+
+refreshPage() {
+  this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+    this.router.navigate(['/publication', this.publication.id]);
+  });
+}
+
+onLeave() {
+  this.hoveredRating = 0;
+}
+
+loadExistingRating() {
+  this.ratingService.hasRating(this.publication.user.id, this.userLoged.id).subscribe((data) => {
+    if (data) {
+      this.existingRating = data;
+    }
+  });
+}
+
+loadRatings() {
+  this.ratingService.getRatingsByUser(this.publication.user.id).subscribe((data) => {
+    this.ratings = data;
+  });
 }
 
 zoomImage(event: MouseEvent) {
@@ -139,6 +220,8 @@ loadPublication(id: string) {
       this.favoriteService.isFavorite(dto).subscribe((result) => {
         this.isFavorite = result;
       });
+      this.loadRatings();
+      this.loadExistingRating();
     },
     error: (err) => {
       console.error('Error al cargar la publicación:', err);
@@ -149,9 +232,9 @@ loadPublication(id: string) {
 
   getStarClass(rating: number, index: number): string {
     if (index < Math.floor(rating)) {
-      return 'bi bi-star-fill text-warning'; 
+      return 'bi bi-star-fill text-primary'; 
     } else if (index < Math.ceil(rating)) {
-      return 'bi bi-star-half text-warning'; 
+      return 'bi bi-star-half text-primary'; 
     } else {
       return 'bi bi-star text-muted';
     }
