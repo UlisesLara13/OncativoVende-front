@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
 import { MercadoPagoService } from '../../services/mercado-pago.service';
 import { UserGet } from '../../models/UserGet';
 import { UsersService } from '../../services/users.service';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-subscriptions',
@@ -62,24 +61,18 @@ export class SubscriptionsComponent implements OnInit {
     return dateStr ? dateStr.replace(/-/g, '/') : '';
   }
 
- pay(nombre: string, monto: number): void {
-  const container = document.getElementById('wallet_container');
-  if (container) container.innerHTML = ''; 
+  pay(nombre: string, monto: number): void {
+    const email = this.userEmail;
 
-  const email = this.userEmail || ''; 
-
-  this.mpService.createPayment(monto, nombre, email).subscribe({
-    next: (response) => {
-      const script = document.createElement('script');
-      script.src = 'https://www.mercadopago.com.ar/integrations/v1/web-payment-checkout.js';
-      script.setAttribute('data-preference-id', response.preferenceId);
-      script.setAttribute('data-button-label', `Pagar ${nombre}`);
-      container?.appendChild(script);
-    },
-    error: (error) => {
-      console.error('Error al generar la preferencia de pago:', error);
-    }
-  });
+    this.mpService.createPayment(monto, nombre, email, this.userLoged.id.toString()).subscribe({
+      next: (response) => {
+        this.authService.logOut();
+        window.location.href = response.initPoint;
+      },
+      error: (error) => {
+        console.error('Error al generar la preferencia de pago:', error);
+      }
+    });
 }
 
 }

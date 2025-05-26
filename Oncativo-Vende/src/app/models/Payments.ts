@@ -2,6 +2,7 @@ export interface PaymentRequest {
   amount: number;
   description: string;
   payerEmail?: string;
+  externalReference: string;
   items?: PaymentItem[];
 }
 

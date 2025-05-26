@@ -33,10 +33,17 @@ export class NavbarComponent implements OnInit {
   searchText: string = '';
 
   ngOnInit(): void {
-    this.userLoged = this.authService.getUser();
-    this.loadUserProfileImage(this.userLoged.id);
-    this.loadCategories();
-  }
+  this.authService.user$.subscribe((user) => {
+    if (user) {
+      this.userLoged = user;
+      this.loadUserProfileImage(user.id);
+    } else {
+      this.user = new UserGet(); 
+    }
+  });
+
+  this.loadCategories();
+}
 
   logout(): void {
     Swal.fire({
@@ -101,7 +108,7 @@ export class NavbarComponent implements OnInit {
   }
 
   setName(): string {
-    return `${this.user.surname}, ${this.user.name}`;
+    return `${this.user.name} ${this.user.surname}`;
   }
 
   getProfileImage(): string {

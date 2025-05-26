@@ -13,11 +13,12 @@ export class MercadoPagoService {
     private readonly http: HttpClient = inject(HttpClient);
     private readonly url = 'http://localhost:8080/payments';
 
-  createPayment(price: number,type: string , userEmail: string): Observable<PaymentResponse> {
+  createPayment(price: number,type: string , userEmail: string, userId: string): Observable<PaymentResponse> {
     const paymentRequest: PaymentRequest = {
       amount: price,
       description: `${type}`,
       payerEmail: userEmail,
+      externalReference: userId,
       items: [
         {
           title: `Suscripción ${type}`,
