@@ -11,12 +11,18 @@ import { SearchComponent } from './components/search/search.component';
 import { NewPublicationComponent } from './components/new-publication/new-publication.component';
 import { roleGuard } from './guards/role.guard';
 import { PublicationComponent } from './components/publication/publication.component';
+import { SubscriptionsComponent } from './components/subscriptions/subscriptions.component';
+import { PaymentSuccessComponent } from './components/payment-success/payment-success.component';
+import { PaymentFailureComponent } from './components/payment-failure/payment-failure.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
     { path: 'login', component: LoginComponent, canActivate: [loginBlockGuard] },
     { path: 'register', component: RegisterComponent, canActivate: [loginBlockGuard] },
     { path: 'profile', component: MyProfileComponent, canActivate: [authGuard] },
+    { path: 'subscriptions', component: SubscriptionsComponent, canActivate: [authGuard]},
+    { path: 'payment-success', component: PaymentSuccessComponent },
+    { path: 'payment-failure', component: PaymentFailureComponent },
     { path: 'publication/:id', component: PublicationComponent},
     { path: 'unauthorized', component: UnauthorizedComponent },
     { path: 'new-publication', component: NewPublicationComponent, canActivate: [authGuard, roleGuard], data: { roles: ['PREMIUM'] } },

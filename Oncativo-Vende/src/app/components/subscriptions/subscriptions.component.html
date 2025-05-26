@@ -1,0 +1,119 @@
+
+<div class="fondo-gris" style="min-height: 100vh;">
+@if (authService.hasRole("PREMIUM")) {
+    <div class="container py-5">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex align-items-center justify-content-between bg-primary text-white">
+        <div>
+            <i class="bi bi-star-fill me-2"></i>
+            <strong>Suscripción Activa</strong>
+        </div>
+        <span class="badge bg-light text-dark">Activa</span>
+        </div>
+        <div class="card-body">
+        <p class="mb-2">
+            <i class="bi bi-calendar-check me-2 text-success"></i>
+            <strong>Inicio:</strong> {{formatDate(existingSubscription.start_date)}}
+        </p>
+        <p class="mb-2">
+            <i class="bi bi-calendar-x me-2 text-danger"></i>
+            <strong>Fin:</strong> {{formatDate(existingSubscription.end_date)}}
+        </p>
+        <p class="mb-2">
+            <i class="bi bi-star me-2 text-warning"></i>
+            <strong>Tipo de suscripción:</strong>
+            <ng-container [ngSwitch]="existingSubscription.subscription_type.description.toLowerCase()">
+            <!-- Bronce -->
+            <i *ngSwitchCase="'bronce'" class="bi bi-gem me-1 ms-2" style="color: #cd7f32;"> Bronce</i>
+            
+            <!-- Plata -->
+            <i *ngSwitchCase="'plata'" class="bi bi-gem me-1 ms-2" style="color: silver;"> Plata</i>
+
+            <!-- Oro -->
+            <i *ngSwitchCase="'oro'" class="bi bi-gem me-1 ms-2" style="color: gold;"> Oro</i>    
+            </ng-container>
+        </p>
+        <p class="text-muted">
+            <i class="bi bi-info-circle me-2"></i>
+            Luego del plazo de finalizacíon podes volver a adquirir una nueva suscripción.
+        </p>
+        </div>
+    </div>
+    </div>
+</div>
+</div>
+}
+@else {
+<div class="container-fluid py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+      <h1 class="display-4 fw-bold">Suscripciones</h1>
+      <p class="lead">Elige el plan que mejor se adapte a tus necesidades para empezar a publicar tus productos</p>
+    </div>
+  </div>
+<!-- Suscripciones -->
+<div class="container py-5">
+  <div class="row justify-content-center g-4">
+
+    <!-- Bronce -->
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm h-100 text-center">
+        <div class="card-header bg-bronce text-white fs-5 fw-bold">Suscripción Bronce</div>
+        <div class="card-body">
+          <h1 class="card-title">$1500</h1>
+          <h6>$1500 / mes</h6>
+          <ul class="list-unstyled mt-3 mb-4">
+            <li><i class="bi bi-check-lg text-success"></i> 1 mes de servicio</li>
+            <li><i class="bi bi-x text-danger"></i> Sin ahorro</li>
+          </ul>
+          <button class="btn btn-outline-bronce" (click)="pay('Suscripción Bronce', 1)">Elegir Bronce</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plata -->
+    <div class="col-md-4">
+      <div class="card border-0 shadow h-100 text-center">
+        <div class="card-header bg-plata text-white fs-5 fw-bold">Suscripción Plata</div>
+        <div class="card-body">
+          <h1 class="card-title">$7500</h1>
+          <h6>$1250 / mes</h6>
+          <ul class="list-unstyled mt-3 mb-4">
+            <li><i class="bi bi-check-lg text-success"></i> 6 meses de servicio</li>
+            <li><i class="bi bi-check-lg text-success"></i> Ahorro de $250 / mes</li>
+          </ul>
+          <button class="btn btn-outline-plata" (click)="pay('Suscripción Plata', 7500)">Elegir Plata</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Oro -->
+    <div class="col-md-4">
+      <div class="card border-0 shadow-lg h-100 text-center">
+        <div class="card-header bg-oro text-white fs-5 fw-bold">Suscripción Oro</div>
+        <div class="card-body">
+          <h1 class="card-title">$12000</h1>
+          <h6>$1000 / mes</h6>
+          <ul class="list-unstyled mt-3 mb-4">
+            <li><i class="bi bi-check-lg text-success"></i> 12 meses de servicio</li>
+            <li><i class="bi bi-check-lg text-success"></i> Ahorro de $500 / mes</li>
+          </ul>
+          <button class="btn btn-outline-oro" (click)="pay('Oro', 12000)">Elegir Oro</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Contenedor de Wallet (único) -->
+  <div class="row mt-5">
+    <div class="col-12 d-flex justify-content-center">
+      <div id="wallet_container"></div>
+    </div>
+  </div>
+</div>
+</div>   
+ }
+</div>
