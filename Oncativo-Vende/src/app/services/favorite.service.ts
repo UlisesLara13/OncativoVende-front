@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { FavoritePost } from '../models/FavoritePost';
 import { Observable } from 'rxjs';
+import { PublicationGet } from '../models/PublicationGet';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,10 @@ export class FavoriteService {
 
   deleteFavorite(dto: FavoritePost): Observable<any> {
     return this.http.post(`${this.url}/delete`, dto);
+  }
+
+  getFavoritesByUser(userId : number): Observable<PublicationGet[]> {
+    return this.http.get<PublicationGet[]>(`${this.url}/user/${userId}`);
   }
   
 }

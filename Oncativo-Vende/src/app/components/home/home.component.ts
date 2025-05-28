@@ -37,11 +37,11 @@ export class HomeComponent {
   }
 
   scrollLeft() {
-    this.carouselContainer.nativeElement.scrollBy({ left: -300, behavior: 'smooth' });
+    this.carouselContainer.nativeElement.scrollBy({ left: -800, behavior: 'smooth' });
   }
 
   scrollRight() {
-    this.carouselContainer.nativeElement.scrollBy({ left: 300, behavior: 'smooth' });
+    this.carouselContainer.nativeElement.scrollBy({ left: 800, behavior: 'smooth' });
   }
 
   goToPublication(id: number): void {

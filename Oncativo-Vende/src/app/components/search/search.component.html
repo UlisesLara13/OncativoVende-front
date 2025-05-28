@@ -1,9 +1,9 @@
 <div class="fondo-gris">
-  <div class="container mt-1">
-    <div class="bg-white rounded shadow p-4">
+  <div class="container-fluid py-2">
+    <div class="p-4">
     <div class="row">
       <!-- Filtros -->
-      <div class="col-md-4">
+      <div class="col-md-3">
           <div class="card border-1 shadow-sm p-3">
             <h5 class="mb-3 border-bottom pb-2">Filtros</h5>
             <form (ngSubmit)="applyFilters()">
@@ -94,7 +94,7 @@
 
             <div class="mb-3">
             <label for="orderBy" class="form-label"><i class="bi bi-arrow-down-up text-primary"></i> Ordenar por</label>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-1">
               <ng-select
                 [items]="orderByOptions"
                 bindLabel="label"
@@ -137,10 +137,10 @@
         </div>
 
       <!-- Publicaciones -->
-      <div class="col-md-8">
-        <div class="row row-cols-1 row-cols-md-3 gx-1 gy-3">
-          <div class="col" *ngFor="let pub of publications">
-            <div class="card card-custom-size" (click)="goToPublication(pub.id)">
+        <div class="col-md-9">
+          <div class="d-flex flex-wrap justify-content-center gap-4">
+            <div class="card card-custom-size" *ngFor="let pub of publications" (click)="goToPublication(pub.id)">
+              <div class="card card-custom-size" (click)="goToPublication(pub.id)">
               <img
                 [src]="pub.images && pub.images.length > 0 ? pub.images[0] : 'assets/not-found.jpg'"
                 class="card-img-top"

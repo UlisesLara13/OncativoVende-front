@@ -74,7 +74,8 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%); 
-  background-color: rgba(255, 255, 255, 0.8); 
+  background-color: rgba(255, 255, 255, 0.8);
+  color: var(--bs-primary); 
   border: none;
   padding: 10px;
   width: 40px; 
@@ -83,7 +84,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10; 
+  z-index: 10;
+  transition: box-shadow 0.3s ease;
+}
+
+.carousel-arrow:hover {
+  box-shadow: 0 0.3rem 1rem rgba(0, 0, 0, 0.582);
 }
   
 .left-arrow {

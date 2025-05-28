@@ -14,12 +14,14 @@ import { PublicationComponent } from './components/publication/publication.compo
 import { SubscriptionsComponent } from './components/subscriptions/subscriptions.component';
 import { PaymentSuccessComponent } from './components/payment-success/payment-success.component';
 import { PaymentFailureComponent } from './components/payment-failure/payment-failure.component';
+import { MyFavoritesComponent } from './components/my-favorites/my-favorites.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
     { path: 'login', component: LoginComponent, canActivate: [loginBlockGuard] },
     { path: 'register', component: RegisterComponent, canActivate: [loginBlockGuard] },
     { path: 'profile', component: MyProfileComponent, canActivate: [authGuard] },
+    { path: 'my-favorites', component: MyFavoritesComponent, canActivate: [authGuard] },
     { path: 'subscriptions', component: SubscriptionsComponent, canActivate: [authGuard]},
     { path: 'payment-success', component: PaymentSuccessComponent },
     { path: 'payment-failure', component: PaymentFailureComponent },

@@ -1,0 +1,43 @@
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-body p {
+  margin-bottom: 0.5rem;
+}
+
+.pub-card {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pub-card:hover {
+  background-color: #f8f9fa;
+}
+
+.eliminar-text {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.eliminar-text:hover {
+  text-decoration: underline;
+}
+
+.fondo-gris {
+    background-color: #f8f9fa;
+}
+
+.pub-title {
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+.clickable-area:hover .pub-title {
+  color: var(--bs-primary);
+  text-decoration: underline;
+}
+
+.eliminar-text {
+  cursor: pointer;
+}
