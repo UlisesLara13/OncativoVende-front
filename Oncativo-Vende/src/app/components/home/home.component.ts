@@ -45,8 +45,12 @@ export class HomeComponent {
   }
 
   goToPublication(id: number): void {
+    this.publicationService.addView(id).subscribe({
+      next: () => {
         this.router.navigate(['/publication', id]).then(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      },
     });
   }
 

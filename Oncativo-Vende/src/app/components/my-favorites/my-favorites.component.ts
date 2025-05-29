@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { PipesModule } from '../../pipes/pipes.module';
 import { CommonModule } from '@angular/common';
 import { Toast } from 'bootstrap';
+import { PublicationsService } from '../../services/publications.service';
 
 @Component({
   selector: 'app-my-favorites',
@@ -23,6 +24,7 @@ export class MyFavoritesComponent implements OnInit {
   displayedFavorites = this.favorites.slice(0, this.showCount);
   private readonly favoriteService = inject(FavoriteService);
   private readonly authService = inject(AuthService);
+  private readonly publicationService = inject(PublicationsService);
   private readonly router = inject(Router);
   @ViewChild('liveToast', { static: false }) toastElement!: ElementRef<HTMLDivElement>;
 
@@ -51,8 +53,12 @@ export class MyFavoritesComponent implements OnInit {
   }
 
   goToPublication(id: number): void {
-    this.router.navigate(['/publication', id]).then(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.publicationService.addView(id).subscribe({
+      next: () => {
+        this.router.navigate(['/publication', id]).then(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      },
     });
   }
 

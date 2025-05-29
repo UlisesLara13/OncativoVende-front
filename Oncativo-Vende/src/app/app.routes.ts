@@ -15,6 +15,7 @@ import { SubscriptionsComponent } from './components/subscriptions/subscriptions
 import { PaymentSuccessComponent } from './components/payment-success/payment-success.component';
 import { PaymentFailureComponent } from './components/payment-failure/payment-failure.component';
 import { MyFavoritesComponent } from './components/my-favorites/my-favorites.component';
+import { MyPublicationsComponent } from './components/my-publications/my-publications.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
@@ -22,6 +23,7 @@ export const routes: Routes = [
     { path: 'register', component: RegisterComponent, canActivate: [loginBlockGuard] },
     { path: 'profile', component: MyProfileComponent, canActivate: [authGuard] },
     { path: 'my-favorites', component: MyFavoritesComponent, canActivate: [authGuard] },
+    { path: 'my-publications', component: MyPublicationsComponent, canActivate: [authGuard] },
     { path: 'subscriptions', component: SubscriptionsComponent, canActivate: [authGuard]},
     { path: 'payment-success', component: PaymentSuccessComponent },
     { path: 'payment-failure', component: PaymentFailureComponent },

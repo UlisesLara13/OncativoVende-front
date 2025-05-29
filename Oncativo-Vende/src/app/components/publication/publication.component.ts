@@ -82,6 +82,10 @@ toggleFavorite() {
   }
 }
 
+isLoggedIn(): boolean {
+  return this.authService.isLoggedIn();
+}
+
 submitRating() {
   this.newRating = {
     rater_user_id: this.userLoged.id,

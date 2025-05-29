@@ -177,8 +177,12 @@ export class SearchComponent implements OnInit {
     }
 
   goToPublication(id: number): void {
+    this.publicationsService.addView(id).subscribe({
+      next: () => {
         this.router.navigate(['/publication', id]).then(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      },
     });
   }
 

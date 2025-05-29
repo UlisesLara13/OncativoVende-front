@@ -17,9 +17,14 @@
     </div>
   
     <!-- Nombre completo -->
-    <h4 class="text-center mb-2">{{ user.name }} {{ user.surname }}</h4>
-    <p class="text-center text-muted"><i class="bi bi-geo-alt"></i> {{ user.location }}</p>
-  
+    <div class="text-center mb-2">
+      <h4 class="mb-1">{{ user.name }} {{ user.surname }}</h4>
+      <div class="d-flex justify-content-center">
+      <i class="bi bi-pencil-square text-primary mb-3" 
+         style="cursor: pointer; font-size: 15px;"> Editar</i>
+      </div>
+    </div>
+    <p class="text-center text-muted" style="font-size: 0.9rem;"><i class="bi bi-geo-alt"></i> {{ user.location }}</p>
     <hr>
   
     <!-- Información de usuario -->
@@ -44,25 +49,25 @@
     
       <!-- Bronce -->
       <button *ngSwitchCase="'bronce'" class="btn btn-sm me-2"
-          style="border: 1px solid #cd7f32; background-color: transparent; color: #cd7f32;">
+          style="border: 1px solid #cd7f32; background-color: transparent; color: #cd7f32;" [routerLink]="'/subscriptions'">
       <i class="bi bi-gem me-1" style="color: #cd7f32;"></i>Bronce
       </button>
     
       <!-- Plata -->
       <button *ngSwitchCase="'plata'" class="btn btn-sm me-2"
-          style="border: 1px solid silver; background-color: transparent; color: silver;">
+          style="border: 1px solid silver; background-color: transparent; color: silver;" [routerLink]="'/subscriptions'">
       <i class="bi bi-gem me-1" style="color: silver;"></i>Plata
       </button>
     
       <!-- Oro -->
       <button *ngSwitchCase="'oro'" class="btn btn-sm me-2"
-          style="border: 1px solid gold; background-color: transparent; color: gold;">
+          style="border: 1px solid gold; background-color: transparent; color: gold;" [routerLink]="'/subscriptions'">
       <i class="bi bi-gem me-1" style="color: gold;"></i>Oro
       </button>
     
       <!-- Sin suscripción -->
       <button *ngSwitchDefault class="btn btn-sm me-2"
-          style="border: 1px solid #0dcaf0; background-color: transparent; color: #0dcaf0;">
+          style="border: 1px solid #0dcaf0; background-color: transparent; color: #0dcaf0;" [routerLink]="'/subscriptions'">
       <i class="bi bi-gem me-1" style="color: #0dcaf0;"></i>Obtener Suscripción
       </button>
     
@@ -73,9 +78,6 @@
   
     <!-- Botones -->
     <div class="d-grid gap-2">
-    <button type="button" class="btn btn-primary" [routerLink]="'/profile/edit'">
-      Modificar Datos Personales
-    </button>
   
     <button type="button" class="btn btn-secondary" [routerLink]="'/profile/change-password'">
       Modificar Contraseña

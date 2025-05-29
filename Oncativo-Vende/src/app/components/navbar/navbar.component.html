@@ -5,20 +5,26 @@
       <img src="assets/logo2.png" alt="OncativoVende" style="height: 35px; width: auto;" class="me-2">
     </a>
 
-    <!-- Centro: Input de búsqueda y botón de categorías -->
-    <div class="d-flex justify-content-center align-items-center w-50 mx-auto">
-      <!-- Input de búsqueda -->
-      <form class="d-flex w-100 me-2" (ngSubmit)="onSearch()">
-  <input
-    class="form-control form-control-sm rounded ps-3 placeholder-dark mb-2 mt-2"
-    type="search"
-    placeholder="Buscar productos o servicios"
-    aria-label="Buscar"
-    [(ngModel)]="searchText"
-    name="searchText"
-    required
-  >
-</form>
+<!-- Centro: Input de búsqueda y botón de categorías -->
+<div class="d-flex justify-content-center align-items-center w-50 mx-auto">
+  <form class="d-flex w-100 me-2 position-relative" (ngSubmit)="onSearch()">
+    <input
+      class="form-control form-control-sm rounded ps-3 pe-5 py-1 placeholder-secondary"
+      type="search"
+      placeholder="Buscar productos o servicios"
+      aria-label="Buscar"
+      [(ngModel)]="searchText"
+      name="searchText"
+      required
+    />
+    <!-- Separador y lupa -->
+    <span
+      class="position-absolute end-0 top-0 h-100 d-flex align-items-center me-3"
+    >
+      <span class="text-secondary me-2">|</span>
+      <i class="bi bi-search text-secondary" style="font-size: 1rem; cursor: pointer;" (click)="onSearch()"></i>
+    </span>
+  </form>
 
 <!-- Select de categorías -->
 <div class="dropdown mb-2 mt-2 me-2">

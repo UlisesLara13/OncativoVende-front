@@ -77,7 +77,7 @@
               </div>
 
               <div class="mb-3">
-              <label for="tags" class="form-label"><i class="bi bi-tags text-primary"></i> Tags</label>
+              <label for="tags" class="form-label"><i class="bi bi-tags text-primary"></i> Etiquetas</label>
                 <ng-select
                   [items]="tags"
                   bindLabel="description"
@@ -137,10 +137,21 @@
         </div>
 
       <!-- Publicaciones -->
+      @if (publications.length === 0) 
+      {
+        <div class="col-md-9 card bg-white p-4 rounded border-1 shadow-sm">
+          <div class="text-center mt-5">
+            <img src="assets/Utils/not-found.png" alt="No hay resultados" width="200" />
+            <h4 class="mt-3">No se encontraron publicaciones</h4>
+            <p>Intenta ajustar tus filtros o buscar con otras palabras.</p>
+          </div>
+        </div>
+        }
+      @else{
         <div class="col-md-9">
           <div class="d-flex flex-wrap justify-content-center gap-4">
             <div class="card card-custom-size" *ngFor="let pub of publications" (click)="goToPublication(pub.id)">
-              <div class="card card-custom-size" (click)="goToPublication(pub.id)">
+              <div class="card card-custom-size">
               <img
                 [src]="pub.images && pub.images.length > 0 ? pub.images[0] : 'assets/not-found.jpg'"
                 class="card-img-top"
@@ -188,6 +199,8 @@
           </button>
         </div>
       </div>
+      }
+        
     </div>
   </div>
   </div>

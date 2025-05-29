@@ -58,7 +58,6 @@ export class MyProfileComponent implements OnInit {
     }
   }
 
-
   onChangeAvatar(): void {
     const input = document.createElement('input');
     input.type = 'file';

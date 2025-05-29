@@ -6,6 +6,7 @@ import { PublicationGet } from '../models/PublicationGet';
 import { SearchDto } from '../models/SearchDto';
 import { PaginatedPublications } from '../models/PaginatedPublications';
 import { PublicationPost } from '../models/PublicationPost';
+import { SearchByUserDto } from '../models/SearchByUserDto';
 
 @Injectable({
   providedIn: 'root'
@@ -32,8 +33,24 @@ export class PublicationsService {
     return this.http.post<PaginatedPublications>(`${this.publicationsUrl}/filter`, search);
   }
 
+  getFilteredPublicationsByUserId(search: SearchByUserDto, userId: number): Observable<PaginatedPublications> {
+  return this.http.post<PaginatedPublications>(`${this.publicationsUrl}/filter/user/${userId}`, search);
+  }
+
   createPublication(data: PublicationPost): Observable<PublicationGet> {
   return this.http.post<PublicationGet>(`${this.publicationsUrl}`, data);
+  }
+
+  addView(id: number): Observable<void> {
+    return this.http.post<void>(`${this.publicationsUrl}/add-view/${id}`, null);
+  }
+
+  deletePublication(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.publicationsUrl}/${id}`);
+  }
+
+  reactivatePublication(id: number): Observable<void> {
+    return this.http.post<void>(`${this.publicationsUrl}/reactivate/${id}`, null);
   }
   
 
