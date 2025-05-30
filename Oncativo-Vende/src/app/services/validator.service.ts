@@ -33,6 +33,20 @@ export class ValidatorService {
     };
   }
 
+  validateUniqueEmailExceptCurrent(userId: number): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    const email = control.value;
+
+    return this.http.get<{ isUnique: boolean }>(
+      `${this.urlUser}/email/current?email=${encodeURIComponent(email)}&userId=${userId}`
+    ).pipe(
+      map(response => response.isUnique ? null : { emailTaken: true }),
+      catchError(() => of({ serverError: true }))
+    );
+  };
+}
+
+
   matchFields(field1: string, field2: string): ValidatorFn {
     return (formGroup: AbstractControl): ValidationErrors | null => {
       const control1 = formGroup.get(field1);

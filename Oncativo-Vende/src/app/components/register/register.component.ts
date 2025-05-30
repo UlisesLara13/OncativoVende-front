@@ -32,7 +32,7 @@ export class RegisterComponent {
         [Validators.required, Validators.minLength(5)], 
         [this.validatorService.validateUniqueUsername()]
       ],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(8),Validators.maxLength(30)]],
       confirmPassword: ['', [Validators.required]]
     }, {
       validators: [this.validatorService.matchFields('password', 'confirmPassword')]

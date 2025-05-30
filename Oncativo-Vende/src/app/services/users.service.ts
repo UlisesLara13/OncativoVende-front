@@ -3,6 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserPost } from '../models/UserPost';
 import { UserGet } from '../models/UserGet';
+import { ChangePassword } from '../models/ChangePassword';
+import { PersonalDataPut } from '../models/PersonalDataPut';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +30,14 @@ export class UsersService {
     return this.http.put<void>(`http://localhost:8080/users/avatar/${userId}`, avatarUrl, {
       headers: { 'Content-Type': 'text/plain' } // Porque el body es un string
     });
+  }
+
+  updatePersonalData(personalDataPut: PersonalDataPut, userId: number): Observable<UserGet> {
+    return this.http.put<UserGet>(`${this.url}/personal-data/${userId}`, personalDataPut);
+  }
+
+  changePassword(changePassword: ChangePassword): Observable<void> {
+    return this.http.post<void>(`${this.url}/change-password`, changePassword);
   }
 
 }

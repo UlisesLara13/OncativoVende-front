@@ -13,17 +13,16 @@ export class AuthService {
   private readonly http: HttpClient = inject(HttpClient);
   private readonly url = 'http://localhost:8080/auth/';
 
-  // Nuevo: observable reactivo del usuario
   private currentUserSubject = new BehaviorSubject<UserLoged | null>(this.getToken() ? this.getUser() : null);
   public user$ = this.currentUserSubject.asObservable();
 
-  constructor() { }
+  constructor() {}
 
   async login(data: any): Promise<void> {
     this.saveToken(data.token);
     const user = this.getUser();
     this.saveActualRoles(user.roles);
-    this.currentUserSubject.next(user); // Notificar al observable
+    this.currentUserSubject.next(user);
   }
 
   getUser(): UserLoged {
@@ -57,7 +56,7 @@ export class AuthService {
   logOut(): void {
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('jwtRoles');
-    this.currentUserSubject.next(null); // Notificar al observable que no hay usuario
+    this.currentUserSubject.next(null);
   }
 
   isLoggedIn(): boolean {
@@ -75,7 +74,7 @@ export class AuthService {
       exp: Math.floor(Date.now() / 1000) + (60 * 60)
     };
 
-    const secret = 'your-256-bit-secret'; 
+    const secret = 'your-256-bit-secret';
     const token = KJUR.jws.JWS.sign('HS256', JSON.stringify(header), JSON.stringify(payload), secret);
     localStorage.setItem('jwtRoles', token);
   }

@@ -21,7 +21,7 @@
       <h4 class="mb-1">{{ user.name }} {{ user.surname }}</h4>
       <div class="d-flex justify-content-center">
       <i class="bi bi-pencil-square text-primary mb-3" 
-         style="cursor: pointer; font-size: 15px;"> Editar</i>
+         style="cursor: pointer; font-size: 15px;" (click)="openEditProfileModal()"> Editar</i>
       </div>
     </div>
     <p class="text-center text-muted" style="font-size: 0.9rem;"><i class="bi bi-geo-alt"></i> {{ user.location }}</p>
@@ -79,7 +79,7 @@
     <!-- Botones -->
     <div class="d-grid gap-2">
   
-    <button type="button" class="btn btn-secondary" [routerLink]="'/profile/change-password'">
+    <button type="button" class="btn btn-secondary" (click)="openChangePasswordModal()">
       Modificar Contraseña
     </button>
   
@@ -90,3 +90,17 @@
   
   </div>
   </div>
+  @if (showChangePasswordModal) {
+  <app-change-password
+    [email]="user.email"
+    (close)="closeChangePasswordModal()">
+  </app-change-password>
+}
+  @if (showEditProfileModal) {
+  <app-update-personal-data
+    [userId]="user.id"
+    [userData]="userData"
+    (closeModal)="handleEditProfileModalClose()">
+  </app-update-personal-data>
+   }
+

@@ -7,11 +7,13 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FileService } from '../../services/file.service';
 import Swal from 'sweetalert2';
+import { ChangePasswordComponent } from "../change-password/change-password.component";
+import { UpdatePersonalDataComponent } from "../update-personal-data/update-personal-data.component";
 
 @Component({
   selector: 'app-my-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ChangePasswordComponent, UpdatePersonalDataComponent],
   templateUrl: './my-profile.component.html',
   styleUrls: ['./my-profile.component.css']
 })
@@ -25,6 +27,9 @@ export class MyProfileComponent implements OnInit {
   user: UserGet = new UserGet();
   userLoged: UserLoged = new UserLoged();
   selectedFile: File | null = null;
+  showChangePasswordModal = false;
+  showEditProfileModal = false
+  userData!: UserGet;
 
   ngOnInit(): void {
     this.userLoged = this.authService.getUser();
@@ -42,6 +47,14 @@ export class MyProfileComponent implements OnInit {
     });
   }
 
+  handleEditProfileModalClose(): void {
+  this.showEditProfileModal = false; 
+  this.refreshPage();
+}
+  refreshPage(): void {
+    window.location.reload();
+  }
+
   getInitials(name: string, surname: string): string {
     const firstLetterName = name ? name.charAt(0).toUpperCase() : '';
     const firstLetterSurname = surname ? surname.charAt(0).toUpperCase() : '';
@@ -56,6 +69,23 @@ export class MyProfileComponent implements OnInit {
     } else {
       return 'bi bi-star text-muted'; 
     }
+  }
+
+  openEditProfileModal(): void {
+    this.userData = { ...this.user };
+    this.showEditProfileModal = true;
+  }
+  
+  closeEditProfileModal(): void {
+    this.showEditProfileModal = false;
+  }
+
+  openChangePasswordModal(): void {
+    this.showChangePasswordModal = true;
+  }
+
+  closeChangePasswordModal(): void {
+    this.showChangePasswordModal = false;
   }
 
   onChangeAvatar(): void {

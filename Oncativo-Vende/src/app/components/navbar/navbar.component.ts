@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -25,6 +25,7 @@ export class NavbarComponent implements OnInit {
   authService = inject(AuthService);
   publicationsService = inject(PublicationsService);
   usersService = inject(UsersService);
+  private cdr = inject(ChangeDetectorRef);
 
   userLoged: UserLoged = new UserLoged();
   selectedCategory: string = '';
@@ -36,10 +37,13 @@ export class NavbarComponent implements OnInit {
   this.authService.user$.subscribe((user) => {
     if (user) {
       this.userLoged = user;
+      console.log('Navbar recibe:', user);
       this.loadUserProfileImage(user.id);
+
     } else {
       this.user = new UserGet(); 
     }
+    
   });
 
   this.loadCategories();
