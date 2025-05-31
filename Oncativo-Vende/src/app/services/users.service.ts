@@ -28,7 +28,7 @@ export class UsersService {
 
   updateAvatarUrl(userId: number, avatarUrl: string): Observable<void> {
     return this.http.put<void>(`http://localhost:8080/users/avatar/${userId}`, avatarUrl, {
-      headers: { 'Content-Type': 'text/plain' } // Porque el body es un string
+      headers: { 'Content-Type': 'text/plain' } 
     });
   }
 

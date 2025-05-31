@@ -4,6 +4,8 @@ import { KJUR } from 'jsrsasign';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LoginUser } from '../models/LoginUser';
+import { RecoveryEmailPost } from '../models/RecoveryEmailPost';
+import { ResetPasswordPost } from '../models/ResetPasswordPost';
 
 @Injectable({
   providedIn: 'root'
@@ -96,6 +98,14 @@ export class AuthService {
 
   verifyLogin(user: LoginUser): Observable<LoginUser> {
     return this.http.post<LoginUser>(this.url + "login", user);
+  }
+
+  recoverPassword(email: RecoveryEmailPost): Observable<void> {
+    return this.http.post<void>(this.url + "recover-password", email);
+  }
+
+  resetPassword(resetDto: ResetPasswordPost): Observable<void> {
+    return this.http.post<void>(this.url + "reset-password", resetDto);
   }
 
 }
