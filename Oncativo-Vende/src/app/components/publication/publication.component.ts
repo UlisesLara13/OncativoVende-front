@@ -13,22 +13,23 @@ import { RatingPost } from '../../models/RatingPost';
 import { RatingService } from '../../services/rating.service';
 import { FormsModule } from '@angular/forms';
 import { DecimalFormatPipe } from '../../pipes/decimal-format.pipe';
-
-
-
+import { ViewMapComponent } from "../view-map/view-map.component";
 
 @Component({
   selector: 'app-publication',
   standalone: true,
-  imports: [PipesModule, CommonModule, FormsModule, DecimalFormatPipe],
+  imports: [PipesModule, CommonModule, FormsModule, DecimalFormatPipe, ViewMapComponent],
   templateUrl: './publication.component.html',
   styleUrl: './publication.component.css'
 })
 export class PublicationComponent implements OnInit {
 
   publication!: PublicationGet;
+
   @ViewChildren('zoomedImg') zoomedImgs!: QueryList<ElementRef<HTMLImageElement>>;
   @ViewChild('liveToast', { static: false }) toastElement!: ElementRef<HTMLDivElement>;
+  @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
+
   isFavorite = false;
   userLoged: UserLoged = new UserLoged();
   toastMessage = '';

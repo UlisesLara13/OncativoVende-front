@@ -6,111 +6,100 @@
       </div>
     </div>
   }
-  @else{
-      <div class="container">
-    <div class="bg-white shadow rounded p-4 position-relative" style="padding-top: 4rem;">
-      
-      <!-- Botón Favorito -->
-      <div class="position-absolute top-0 end-0 m-2 p-2" style="z-index: 10;">
-        <button (click)="toggleFavorite()" 
-                [class.favorited]="isFavorite"
-                class="btn btn-link p-0"
-                aria-label="Agregar a favoritos"
-                style="font-size: 1.8rem; line-height: 1;">
-          <i class="bi" [ngClass]="isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
-        </button>
-      </div>
+  @else {
+    <div class="container">
+      <div class="bg-white shadow rounded-4 p-4 position-relative">
 
-      <!-- Fila superior: Carrusel + Información -->
-      <div class="row">
-        <!-- Carrusel -->
-        <div class="col-md-4 mb-2 d-flex justify-content-center">
-          <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner rounded">
-              <div
-                class="carousel-item"
-                [class.active]="i === 0"
-                *ngFor="let img of publication.images; let i = index"
-              >
+        <!-- Botón Favorito -->
+        <div class="position-absolute top-0 end-0 m-3">
+          <button (click)="toggleFavorite()" 
+                  class="btn btn-link p-0"
+                  [class.favorited]="isFavorite"
+                  aria-label="Agregar a favoritos"
+                  style="font-size: 1.8rem;">
+            <i class="bi" [ngClass]="isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+          </button>
+        </div>
+
+        <!-- PRIMERA FILA: Carrusel + Información básica -->
+        <div class="row g-4 mb-4">
+          <!-- Carrusel - Mitad izquierda -->
+          <div class="col-md-6">
+            <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner rounded">
+              <div class="carousel-item" [class.active]="i === 0" *ngFor="let img of publication.images; let i = index">
+                <div class="background-blur" [ngStyle]="{ 'background-image': 'url(' + img + ')' }"></div>
+
                 <div class="zoom-wrapper"
-                     (mousemove)="zoomImage($event)"
-                     (mouseleave)="resetZoom()"
-                     style="position: relative; overflow: hidden;">
+                    (mousemove)="zoomImage($event)"
+                    (mouseleave)="resetZoom()"
+                    style="position: relative; overflow: hidden;">
                   <img
                     [src]="img"
                     class="zoom-img"
                     #zoomedImg
                     alt="Imagen de publicación"
-                    style="aspect-ratio: 1/1; object-fit: cover; cursor: zoom-in;"
+                    style="cursor: zoom-in;"
                     (click)="openImage(img)"
                   />
                 </div>
               </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselImages" data-bs-slide="next">
-              <span class="carousel-control-next-icon"></span>
-            </button>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselImages" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Información básica - Mitad derecha -->
+          <div class="col-md-6">
+            <h4 class="fw-bold">{{ publication.title }}</h4>
+            
+            <div class="mb-3 mt-3">
+              <span *ngFor="let tag of publication.tags" [ngClass]="getTagClass(tag)" class="badge me-1">
+                {{ tag }}
+              </span>
+            </div>
+
+            <h2 class="text mb-3">$ {{ publication.price | decimalFormat }}</h2>
+
+            <p class="text-muted mt-3" style="font-size: 0.75rem;">
+              Fecha de publicación: {{ formatDate(publication.created_at) }}
+            </p>
           </div>
         </div>
 
-        <!-- Información de la publicación -->
-        <div class="col-md-8 mb-6">
-          <div class="d-flex align-items-center mb-2">
-            <h4 class="mb-0">{{ publication.title }}</h4>
+        <!-- SEGUNDA FILA: Descripción + Mapa -->
+        <div class="row mb-4">
+          <!-- Descripción - Ocupa más espacio -->
+          <div class="col-md-8">
+            <h5 class="mb-4 justify-content-center d-flex">Descripción</h5>
+            <p style="font-size: 0.95rem;" class="text-dark">{{ publication.description }}</p>
           </div>
 
-          <div class="mb-2 mt-3">
-            <span *ngFor="let tag of publication.tags" [ngClass]="getTagClass(tag)" class="badge me-1">
-              {{ tag }}
-            </span>
-          </div>
-
-          <h2 class="text mb-3">$ {{ publication.price | decimalFormat }}</h2>
-
-          <p class="text-secondary mb-1">
-            <i class="bi bi-geo-alt me-1"></i> {{ publication.location }}
-          </p>
-
-          <hr />
-
-          <div class="d-flex gap-3">
-            <div class="flex-grow-1 me-3">
-              <h6>Lo que tenés que saber de este producto:</h6>
-              <p class="text-dark" style="font-size: 0.8rem;">- {{ publication.description }}</p>
+          <!-- Mapa - Pegado al borde derecho -->
+          <div class="col-md-4 pe-0">
+            <div>
+            <div>Ubicación: <i class="bi bi-geo-alt ms-2 text-danger"></i> {{ publication.location }}</div>
             </div>
-            <div style="min-width: 180px;">
-              <h6 class="mb-2">Contactar al vendedor</h6>
-              <div class="d-flex flex-column gap-2">
-                <ng-container *ngFor="let contact of publication.contacts">
-                  <a
-                    [href]="getContactLink(contact)"
-                    target="_blank"
-                    rel="noopener"
-                    class="contact-link d-flex align-items-center text-decoration-none"
-                  >
-                    <i [ngClass]="getContactIcon(contact.contact_type)" class="me-2"></i>
-                    <span>{{ contact.contact_value }}</span>
-                  </a>
-                </ng-container>
-              </div>
-            </div>
+            <app-view-map 
+              class="rounded overflow-hidden w-100" 
+              [latitude]="+(publication.latitude)" 
+              [longitude]="+(publication.longitude)">
+            </app-view-map>
           </div>
-          <p class="text-secondary mb-1 mt-2" style="font-size: 0.7rem;">Fecha de publicación: {{ formatDate(publication.created_at) }}</p>
         </div>
-      </div>
 
-      <hr class="my-4" />
+        <hr class="my-4" />
 
-      <!-- Sección inferior: Vendedor + Reseñas -->
-      <div class="row">
-        <div class="col-12">
-
-          <!-- Información del vendedor -->
-          <div class="user-info mb-4">
-            <h5>Información del vendedor</h5>
+        <!-- TERCERA FILA: Info Vendedor + Contactos -->
+        <div class="row">
+          <!-- Info Vendedor - Ocupa más espacio -->
+          <div class="col-md-8">
+            <h5 class="mb-3">Información del vendedor</h5>
             <div class="d-flex align-items-center mb-2">
               <div class="avatar-perfil me-3">
                 <img *ngIf="publication.user.avatar_url; else initials" [src]="publication.user.avatar_url" alt="Avatar" class="img-avatar">
@@ -121,129 +110,116 @@
                 </ng-template>
               </div>
               <div>
-                <div class="d-flex align-items-center">
-                  <strong class="me-2">{{ publication.user.name }} {{ publication.user.surname }}</strong>
-                  <i *ngIf="publication.user.verified" class="bi bi-patch-check-fill text-info"></i>
-                </div>
-                <div class="d-flex align-items-center"></div>
+                <strong>{{ publication.user.name }} {{ publication.user.surname }}</strong>
+                <i *ngIf="publication.user.verified" class="bi bi-patch-check-fill text-info ms-1"></i>
+                <div class="mt-1">
                   <ng-container *ngFor="let star of [].constructor(5); let i = index">
-                  <i [ngClass]="getStarClass(publication.user.rating, i)"></i>
+                    <i [ngClass]="getStarClass(publication.user.rating, i)"></i>
                   </ng-container>
-                  <span class="text-secondary ms-2" style="font-size: 0.7rem; color: gray;">({{publication.user.rating}})</span>
+                  <small class="ms-2 text-muted">({{publication.user.rating}})</small>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Reseñas -->
-          <div class="user-reviews mb-2">
-            <h6>Últimas reseñas</h6>
+          <!-- Contactos - Pegado al borde derecho -->
+          <div class="col-md-4 pe-0">
+            <h5 class="mb-3">Contactar</h5>
+            <div class="d-flex flex-column gap-2">
+              <ng-container *ngFor="let contact of publication.contacts">
+                <a [href]="getContactLink(contact)"
+                   target="_blank"
+                   rel="noopener"
+                   class="d-flex align-items-center text-decoration-none">
+                  <i [ngClass]="getContactIcon(contact.contact_type)" class="me-2"></i>
+                  {{ contact.contact_value }}
+                </a>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-4" />
+
+        <!-- Reseñas -->
+        <div class="row g-4">
+          <div class="col-12">
+            <h5 class="mb-3">Últimas reseñas</h5>
             <div *ngIf="(ratings?.length || 0) > 0; else noReviews">
-              <div *ngFor="let rating of ratings | slice:0:reviewsToShow" class="border rounded p-2 m-1">
+              <div *ngFor="let rating of ratings | slice:0:reviewsToShow" class="border rounded-3 p-3 mb-2">
                 <div class="d-flex justify-content-between">
-                  <p style="margin: 0;">{{ rating.rater_user.name }} {{ rating.rater_user.surname }}</p>
-                  <small style="margin: 0;">{{ formatDate(rating.created_at) }}</small>
+                  <strong>{{ rating.rater_user.name }} {{ rating.rater_user.surname }}</strong>
+                  <small>{{ formatDate(rating.created_at) }}</small>
                 </div>
-                <div class="mb-2">
+                <div>
                   <ng-container *ngFor="let star of [].constructor(5); let i = index">
                     <i [ngClass]="getStarClass(rating.rating, i)"></i>
                   </ng-container>
                 </div>
                 <p class="mb-0">{{ rating.comment }}</p>
               </div>
-
-              <div *ngIf="ratings.length > reviewsToShow" class="text-end mt-1">
-                <small 
-                  style="color: gray; cursor: pointer; user-select: none;" 
-                  (click)="loadMore()">
-                  Ver más
-                </small>
+              <div *ngIf="ratings.length > reviewsToShow" class="text-end">
+                <small (click)="loadMore()" style="cursor: pointer; color: gray;">Ver más</small>
               </div>
             </div>
-
             <ng-template #noReviews>
               <p class="text-muted">Este vendedor aún no tiene reseñas.</p>
             </ng-template>
           </div>
-          <hr class="mt-3">
+        </div>
 
-          @if (userLoged.id != publication.user.id && isLoggedIn()) {
-            @if (existingRating != null) {
-              <div class="existing-review mb-4">
-              <h6>Tu reseña a este usuario:</h6>
-              <div class="border rounded p-2">
+        <hr class="mt-4" />
+
+        <!-- Enviar reseña -->
+        @if (userLoged.id != publication.user.id && isLoggedIn()) {
+          @if (existingRating != null) {
+            <div class="mt-4">
+              <h6>Tu reseña</h6>
+              <div class="border rounded-3 p-3">
                 <div class="d-flex justify-content-between">
-                <p style="margin: 0;">{{ existingRating.rater_user.name }} {{ existingRating.rater_user.surname }}</p>
-                <small style="margin: 0;">{{ formatDate(existingRating.created_at) }}</small>
+                  <strong>{{ existingRating.rater_user.name }} {{ existingRating.rater_user.surname }}</strong>
+                  <small>{{ formatDate(existingRating.created_at) }}</small>
                 </div>
-                <div class="mb-2">
-                <ng-container *ngFor="let star of [].constructor(5); let i = index">
-                  <i [ngClass]="getStarClass(existingRating.rating, i)"></i>
-                </ng-container>
-                </div>
-                <p class="mb-0">{{ existingRating.comment }}</p>
-              </div>
-              </div>
-            }
-            @else {
-          <div class="add-review">
-            <h6>Enviar una reseña</h6>
-            <form (ngSubmit)="submitRating()" #ratingForm="ngForm">
-              <div class="mb-2">
-                <div class="d-flex">
-                  <ng-container *ngFor="let i of [0, 1, 2, 3, 4]">
-                    <i
-                      class="bi"
-                      [ngClass]="getStarClass(hoveredRating || newRating.rating, i)"
-                      (mousemove)="onHover(i, $event)"
-                      (mouseleave)="onLeave()"
-                      (click)="setRating(i, $event)"
-                      style="font-size: 1.8rem; cursor: pointer; margin-right: 4px;"></i>
+                <div>
+                  <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                    <i [ngClass]="getStarClass(existingRating.rating, i)"></i>
                   </ng-container>
                 </div>
+                <p>{{ existingRating.comment }}</p>
               </div>
-
-              <div class="mb-2">
-                <label class="form-label">Comentario:</label>
-                <textarea class="form-control" [(ngModel)]="newRating.comment" name="comment" rows="3" required></textarea>
-              </div>
-
-              <div class="text-end">
-                <button type="submit" class="btn btn-primary" [disabled]="ratingForm.invalid">Enviar reseña</button>
-              </div>
-            </form>
-          </div>
-            }
+            </div>
+          }
+          @else {
+            <div class="mt-4">
+              <h6>Dejá tu reseña</h6>
+              <form (ngSubmit)="submitRating()" #ratingForm="ngForm">
+                <div class="mb-2">
+                  <ng-container *ngFor="let i of [0, 1, 2, 3, 4]">
+                    <i class="bi"
+                       [ngClass]="getStarClass(hoveredRating || newRating.rating, i)"
+                       (mousemove)="onHover(i, $event)"
+                       (mouseleave)="onLeave()"
+                       (click)="setRating(i, $event)"
+                       style="font-size: 1.5rem; cursor: pointer;"></i>
+                  </ng-container>
+                </div>
+                <div class="mb-3">
+                  <textarea class="form-control" [(ngModel)]="newRating.comment" name="comment" rows="3" required></textarea>
+                </div>
+                <div class="text-end">
+                  <button class="btn btn-primary" type="submit" [disabled]="ratingForm.invalid">Enviar</button>
+                </div>
+              </form>
+            </div>
+          }
         }
 
+        <!-- Lightbox -->
+        <div *ngIf="selectedImage" class="custom-lightbox" (click)="closeImage()">
+          <img [src]="selectedImage" class="lightbox-img" />
         </div>
-      </div>
 
+      </div>
     </div>
   }
-
-    <div *ngIf="selectedImage" class="custom-lightbox" (click)="closeImage()">
-      <img [src]="selectedImage" class="lightbox-img" />
-    </div>
-  </div>
-  <div
-  #liveToast
-  class="toast align-items-center border-0 position-fixed"
-  role="alert"
-  aria-live="assertive"
-  aria-atomic="true"
-  style="bottom: 1rem; left: 50%; transform: translateX(-50%); min-width: 300px;"
->
-  <div class="d-flex">
-    <div class="toast-body">{{ toastMessage }}</div>
-    <button
-      type="button"
-      class="btn-close btn-close-white me-2 m-auto"
-      data-bs-dismiss="toast"
-      aria-label="Close"
-      (click)="hideToast()"
-    ></button>
-  </div>
 </div>
-
-

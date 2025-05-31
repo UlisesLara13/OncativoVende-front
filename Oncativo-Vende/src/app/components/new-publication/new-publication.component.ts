@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { PublicationPost } from '../../models/PublicationPost';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -9,18 +9,22 @@ import { AuthService } from '../../services/auth.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
-
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-new-publication',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule,NgSelectModule],
+  imports: [CommonModule, ReactiveFormsModule, NgSelectModule],
   templateUrl: './new-publication.component.html',
   styleUrls: ['./new-publication.component.css']
 })
-export class NewPublicationComponent implements OnInit {
+export class NewPublicationComponent implements OnInit, AfterViewInit {
+  @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
+  
   step = 1;
   form: FormGroup;
+  private map!: L.Map;
+  private marker!: L.Marker;
 
   uploadedImagePaths: string[] = [];
 
@@ -64,11 +68,11 @@ export class NewPublicationComponent implements OnInit {
       conditionTag: [null, Validators.required],
       priceTag: [null, Validators.required],
       shippingTag: [[], Validators.required],
+      latitude: [null, Validators.required],
+      longitude: [null, Validators.required],
       contacts: this.fb.array([])
     });
-
   }
-
 
   ngOnInit(): void {
     this.loadSelectData();
@@ -77,10 +81,73 @@ export class NewPublicationComponent implements OnInit {
     }
   }
 
-trackByIndex(index: number, item: any): any {
-  return index;
-}
+  ngAfterViewInit(): void {
 
+  }
+
+  initMap(): void {
+    // Coordenadas por defecto (Córdoba, Argentina)
+    const defaultLat = -31.4201;
+    const defaultLng = -64.1888;
+
+    this.map = L.map(this.mapContainer.nativeElement).setView([defaultLat, defaultLng], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(this.map);
+
+    const customIcon = L.divIcon({
+      className: 'custom-marker',
+      html: '<div style="background-color: #007bff; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
+    });
+
+    this.marker = L.marker([defaultLat, defaultLng], { 
+      icon: customIcon, 
+      draggable: true 
+    }).addTo(this.map);
+
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+      const { lat, lng } = e.latlng;
+      this.updateMarkerPosition(lat, lng);
+    });
+
+    this.marker.on('dragend', (e: L.DragEndEvent) => {
+      const { lat, lng } = e.target.getLatLng();
+      this.updateMarkerPosition(lat, lng);
+    });
+
+    this.getCurrentLocation();
+  }
+
+  getCurrentLocation(): void {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          this.map.setView([lat, lng], 15);
+          this.updateMarkerPosition(lat, lng);
+        },
+        (error) => {
+          console.log('No se pudo obtener la ubicación actual:', error);
+        }
+      );
+    }
+  }
+
+  updateMarkerPosition(lat: number, lng: number): void {
+    this.marker.setLatLng([lat, lng]);
+    this.form.patchValue({
+      latitude: lat,
+      longitude: lng
+    });
+  }
+
+  trackByIndex(index: number, item: any): any {
+    return index;
+  }
 
   loadSelectData(): void {
     this.utilsService.getLocations().subscribe(data => this.locations = data);
@@ -104,38 +171,45 @@ trackByIndex(index: number, item: any): any {
   }
 
   onCategoriesChange(selected: any[]) {
-  if (selected.length > 2) {
-    selected.pop();
-    this.form.get('categories')?.setValue(selected);
+    if (selected.length > 2) {
+      selected.pop();
+      this.form.get('categories')?.setValue(selected);
+    }
   }
-}
 
   nextStep(): void {
-  console.log('👉 Valores del formulario al intentar avanzar:', this.form.value); 
-  console.log(this.selectedImages);
-  console.log(this.imageSlots);
-  const hasFilesToUpload = this.imageSlots.some(img => img instanceof File);
+    console.log('👉 Valores del formulario al intentar avanzar:', this.form.value);
+    const hasFilesToUpload = this.imageSlots.some(img => img instanceof File);
 
-  if (this.step === 1) {
-    const requiredFields = ['title', 'description', 'price', 'location_id', 'categories', 'conditionTag', 'priceTag', 'shippingTag'];
-    const allValid = requiredFields.every(field => this.form.get(field)?.valid);
+    if (this.step === 1) {
+      const requiredFields = ['title', 'description', 'price', 'location_id', 'categories', 'conditionTag', 'priceTag', 'shippingTag'];
+      const allValid = requiredFields.every(field => this.form.get(field)?.valid);
 
-    if (allValid) {
-      this.step++;
-    } else {
-      requiredFields.forEach(field => this.form.get(field)?.markAsTouched());
-      console.warn('Faltan campos obligatorios en el paso 1');
-    }
+      if (allValid) {
+        this.step++;
+        setTimeout(() => {
+          this.initMap();
+        }, 100);
+      } else {
+        requiredFields.forEach(field => this.form.get(field)?.markAsTouched());
+        console.warn('Faltan campos obligatorios en el paso 1');
+      }
 
-  } else if (this.step === 2) {
-    if (hasFilesToUpload) {
-      this.uploadImages(); 
-    } else {
-      this.uploadedImagePaths = []; 
-      this.step++;
+    } else if (this.step === 2) {
+      if (this.form.get('latitude')?.value && this.form.get('longitude')?.value) {
+        this.step++;
+      } else {
+        alert('Por favor, selecciona una ubicación en el mapa.');
+      }
+    } else if (this.step === 3) {
+      if (hasFilesToUpload) {
+        this.uploadImages();
+      } else {
+        this.uploadedImagePaths = [];
+        this.step++;
+      }
     }
   }
-}
 
   prevStep(): void {
     if (this.step > 1) {
@@ -144,25 +218,25 @@ trackByIndex(index: number, item: any): any {
   }
 
   uploadImages(): void {
-  const userId = this.authService.getUser().id;
-  const tempPublicationId = Date.now();
+    const userId = this.authService.getUser().id;
+    const tempPublicationId = Date.now();
 
-  const validFiles = this.imageSlots.filter((f): f is File => f instanceof File);
-  console.log('Archivos a subir:', validFiles);
+    const validFiles = this.imageSlots.filter((f): f is File => f instanceof File);
+    console.log('Archivos a subir:', validFiles);
 
-  const uploadPromises = validFiles.map((file, index) =>
-    this.fileService.uploadPublicationPic(tempPublicationId, userId, index + 1, file).toPromise()
-  );
+    const uploadPromises = validFiles.map((file, index) =>
+      this.fileService.uploadPublicationPic(tempPublicationId, userId, index + 1, file).toPromise()
+    );
 
-  Promise.all(uploadPromises)
-    .then(urls => {
-      this.uploadedImagePaths = urls.filter((url): url is string => typeof url === 'string');
-      this.step++;
-    })
-    .catch(err => {
-      console.error('Error al subir imágenes', err);
-      alert('Error al subir imágenes, intenta nuevamente.');
-    });
+    Promise.all(uploadPromises)
+      .then(urls => {
+        this.uploadedImagePaths = urls.filter((url): url is string => typeof url === 'string');
+        this.step++;
+      })
+      .catch(err => {
+        console.error('Error al subir imágenes', err);
+        alert('Error al subir imágenes, intenta nuevamente.');
+      });
   }
 
   submit(): void {
@@ -186,6 +260,8 @@ trackByIndex(index: number, item: any): any {
       categories: this.form.value.categories,
       tags: [this.form.value.conditionTag, this.form.value.priceTag, this.form.value.shippingTag],
       images: this.uploadedImagePaths,
+      latitude: this.form.value.latitude,
+      longitude: this.form.value.longitude,
       contacts: contacts
     };
 
@@ -208,8 +284,13 @@ trackByIndex(index: number, item: any): any {
         });
       },
       error: err => {
-        console.error('Error al crear la publicación', err);
-        alert('Error al crear la publicación. Intenta más tarde.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al crear la publicación',
+          text: err.error.message || 'Ocurrió un error inesperado. Inténtalo de nuevo más tarde.',
+          showConfirmButton:false,
+          timer: 2000
+        });
       }
     });
   }
@@ -233,16 +314,16 @@ trackByIndex(index: number, item: any): any {
     }
   }
 
-    removeImageSlot(index: number): void {
-      this.imageSlots[index] = null;
-    }
+  removeImageSlot(index: number): void {
+    this.imageSlots[index] = null;
+  }
 
   showError(controlName: string): string {
     const control = this.form.get(controlName);
-  
+
     if (control && control.errors) {
       const [errorKey] = Object.keys(control.errors);
-  
+
       switch (errorKey) {
         case 'required':
           return 'Este campo no puede estar vacío.';
@@ -264,8 +345,7 @@ trackByIndex(index: number, item: any): any {
           return 'Error no identificado en el campo.';
       }
     }
-  
+
     return '';
   }
-
 }

@@ -9,6 +9,7 @@ export interface PublicationGet {
     verified: boolean;
     avatar_url: string | null;
     rating: number;
+    views: number;
         };
     title: string;
     description: string;
@@ -20,4 +21,6 @@ export interface PublicationGet {
     tags: string[];
     contacts: ContactGet[];
     images: string[];
+    latitude: string;
+    longitude: string;
     }

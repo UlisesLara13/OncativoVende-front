@@ -6,6 +6,38 @@
   height: 350px;
 }
 
+.carousel-item {
+  position: relative;
+  height: 100%;
+}
+
+.background-blur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(20px) brightness(0.6);
+  z-index: 0;
+}
+
+.zoom-wrapper {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.zoom-wrapper img.zoom-img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
 .custom-lightbox {
   position: fixed;
   top: 0;
@@ -24,14 +56,14 @@
   max-width: 90%;
   max-height: 90%;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .carousel-inner .carousel-item img {
-  width: 350px;
   height: 350px;
-  object-fit: cover;
-  display: block;
+  width: 100%;
+  border-radius: 0.5rem;
+  object-fit: contain;
 }
 
 .badge {
@@ -96,4 +128,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(41%) sepia(76%) saturate(500%) hue-rotate(180deg);
 }
