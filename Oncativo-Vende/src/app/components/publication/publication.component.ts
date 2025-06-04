@@ -14,11 +14,14 @@ import { RatingService } from '../../services/rating.service';
 import { FormsModule } from '@angular/forms';
 import { DecimalFormatPipe } from '../../pipes/decimal-format.pipe';
 import { ViewMapComponent } from "../view-map/view-map.component";
+import { ReportModalComponent } from "../report-modal/report-modal.component";
+import { UtilsService } from '../../services/utils.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-publication',
   standalone: true,
-  imports: [PipesModule, CommonModule, FormsModule, DecimalFormatPipe, ViewMapComponent],
+  imports: [PipesModule, CommonModule, FormsModule, DecimalFormatPipe, ViewMapComponent, ReportModalComponent],
   templateUrl: './publication.component.html',
   styleUrl: './publication.component.css'
 })
@@ -40,6 +43,9 @@ export class PublicationComponent implements OnInit {
   reviewsToShow = 5;
   hoveredRating = 0;
   selectedImage: string | null = null;
+  showReportModal = false;
+  publicationToReport: number = 0;
+  currentUserId = 0;
   
 
   constructor(
@@ -48,6 +54,7 @@ export class PublicationComponent implements OnInit {
     private authService: AuthService,
     private favoriteService: FavoriteService,
     private ratingService: RatingService,
+    private utilsService: UtilsService,
     private router: Router,
   ) {}
 
@@ -61,7 +68,9 @@ ngOnInit(): void {
     }
   });
   this.userLoged = this.authService.getUser();
+  this.currentUserId = this.userLoged.id;
 }
+
 
 toggleFavorite() {
   const userId = this.userLoged.id;
@@ -87,6 +96,35 @@ isLoggedIn(): boolean {
   return this.authService.isLoggedIn();
 }
 
+openReportModal(publicationId: number) {
+  this.publicationToReport = publicationId;
+  this.utilsService.userAlreadyReported(this.userLoged.id, publicationId).subscribe({
+      next: (alreadyReported) => {
+        if (alreadyReported) {
+          Swal.fire({
+            title: 'Ya reportaste esta publicación',
+            icon: 'info',
+            text: 'No podés volver a reportarla, nos encargaremos de revisarla.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        } else {
+          this.showReportModal = true; 
+        }
+      },
+      error: () => {
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo verificar el estado del reporte.',
+          icon: 'error',
+          showConfirmButton: false,
+          timer: 2000
+        });
+      }
+    });
+  }
+
+
 submitRating() {
   this.newRating = {
     rater_user_id: this.userLoged.id,
@@ -108,6 +146,36 @@ submitRating() {
 openImage(img: string) {
   this.selectedImage = img;
 }
+
+sharePublication() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Mirá esta publicación',
+      text: 'Te comparto este contenido:',
+      url: window.location.href
+    })
+    .then(() => console.log('Compartido exitosamente'))
+    .catch((error) => console.error('Error al compartir:', error));
+  } else {
+    this.copyToClipboard(window.location.href);
+  }
+}
+
+copyToClipboard(text: string) {
+  navigator.clipboard.writeText(text).then(() => {
+    this.showToast('Enlace copiado al portapapeles',true);
+  });
+}
+
+  goToEditPublication(id: number): void {
+    this.publicationService.addView(id).subscribe({
+      next: () => {
+        this.router.navigate(['/publication', id, 'edit']).then(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      },
+    });
+  }
 
 closeImage() {
   this.selectedImage = null;
@@ -265,7 +333,7 @@ loadPublication(id: string) {
     case 'teléfono':
       return `tel:${value}`;
     case 'facebook':
-      return `https://facebook.com/${value}`;
+      return `${value}`;
     case 'instagram':
       return `https://instagram.com/${value}`;
     default:

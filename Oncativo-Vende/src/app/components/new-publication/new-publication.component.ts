@@ -10,6 +10,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
+import { UsersService } from '../../services/users.service';
+import { UserGet } from '../../models/UserGet';
 
 @Component({
   selector: 'app-new-publication',
@@ -21,7 +23,7 @@ import * as L from 'leaflet';
 export class NewPublicationComponent implements OnInit, AfterViewInit {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
   
-  step = 1;
+  step = 2;
   form: FormGroup;
   private map!: L.Map;
   private marker!: L.Marker;
@@ -34,6 +36,8 @@ export class NewPublicationComponent implements OnInit, AfterViewInit {
   contactTypes: { id: number; description: string }[] = [];
   imageSlots: (File | null)[] = [null, null, null];
   selectedImages: File[] = [];
+  userData!: UserGet;
+  user: UserGet = new UserGet();
 
   conditionOptions = [
     { id: 1, description: "Nuevo" },
@@ -51,10 +55,21 @@ export class NewPublicationComponent implements OnInit, AfterViewInit {
     { id: 7, description: "Punto de encuentro" }
   ];
 
+  locationCoordinates: { [key: number]: [number, number] } = {
+    1: [-31.9135, -63.6823], // Oncativo
+    2: [-32.0418, -63.5714], // Oliva
+    3: [-31.8431, -63.7454], // Manfredi
+    4: [-31.7773, -63.8028], // Laguna Larga
+    5: [-31.6824, -63.8852], // Pilar
+    6: [-31.6536, -63.9105], // Río Segundo
+    7: [-31.5645, -63.5399], // Villa del Rosario
+  };
+
   constructor(
     private fb: FormBuilder,
     private publicationService: PublicationsService,
     private fileService: FileService,
+    private userService: UsersService,
     private utilsService: UtilsService,
     private router: Router,
     private authService: AuthService,
@@ -76,50 +91,63 @@ export class NewPublicationComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadSelectData();
-    if (this.contacts.length === 0) {
-      this.addContact();
-    }
+    this.loadUserData(this.authService.getUser().id);
   }
 
   ngAfterViewInit(): void {
-
+    this.form.get('location_id')?.valueChanges.subscribe(() => {
+      if (this.map) {
+        this.map.remove(); 
+      }
+      this.initMap(); 
+    });
   }
 
-  initMap(): void {
-    // Coordenadas por defecto (Córdoba, Argentina)
-    const defaultLat = -31.4201;
-    const defaultLng = -64.1888;
-
-    this.map = L.map(this.mapContainer.nativeElement).setView([defaultLat, defaultLng], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(this.map);
-
-    const customIcon = L.divIcon({
-      className: 'custom-marker',
-      html: '<div style="background-color: #007bff; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
-      iconSize: [20, 20],
-      iconAnchor: [10, 10]
+    loadUserData(userId: number): void {
+    this.userService.getUserById(userId).subscribe({
+      next: (userData: UserGet) => {
+        this.user = userData;
+        if (this.contacts.length === 0) {
+        this.addContact();
+        }
+      }
     });
-
-    this.marker = L.marker([defaultLat, defaultLng], { 
-      icon: customIcon, 
-      draggable: true 
-    }).addTo(this.map);
-
-    this.map.on('click', (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      this.updateMarkerPosition(lat, lng);
-    });
-
-    this.marker.on('dragend', (e: L.DragEndEvent) => {
-      const { lat, lng } = e.target.getLatLng();
-      this.updateMarkerPosition(lat, lng);
-    });
-
-    this.getCurrentLocation();
   }
+
+initMap(): void {
+  const locationId = this.form.get('location_id')?.value;
+  const coords = this.locationCoordinates[locationId] || [-31.9135, -63.6823]; // Oncativo por defecto
+
+  this.map = L.map(this.mapContainer.nativeElement).setView(coords, 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(this.map);
+
+  const customIcon = L.divIcon({
+    className: 'custom-marker',
+    html: '<div style="background-color: #007bff; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+  });
+
+  this.marker = L.marker(coords, {
+    icon: customIcon,
+    draggable: true
+  }).addTo(this.map);
+
+  this.map.on('click', (e: L.LeafletMouseEvent) => {
+    const { lat, lng } = e.latlng;
+    this.updateMarkerPosition(lat, lng);
+  });
+
+  this.marker.on('dragend', (e: L.DragEndEvent) => {
+    const { lat, lng } = e.target.getLatLng();
+    this.updateMarkerPosition(lat, lng);
+  });
+
+  this.getCurrentLocation();
+}
 
   getCurrentLocation(): void {
     if (navigator.geolocation) {
@@ -160,15 +188,105 @@ export class NewPublicationComponent implements OnInit, AfterViewInit {
   }
 
   addContact(): void {
-    this.contacts.push(this.fb.group({
-      contact_type_id: [null, Validators.required],
-      contact_value: ['', Validators.required]
-    }));
+  const contactForm = this.fb.group({
+    contact_type_id: [5, Validators.required],
+    contact_value: [this.user.email, Validators.required]
+  });
+
+  this.contacts.push(contactForm);
+}
+
+removeContact(index: number): void {
+  this.contacts.removeAt(index);
+}
+
+onContactTypeChange(index: number): void {
+  const control = this.contacts.at(index);
+  const tipo = control.get('contact_type_id')?.value;
+
+  control.get('contact_value')?.clearValidators();
+
+  switch (tipo) {
+    case 1: // Whatsapp
+      control.get('contact_value')?.setValidators([
+        Validators.required,
+        Validators.pattern(/^[0-9]{7,15}$/)
+      ]);
+      break; 
+    case 2: // Facebook
+      control.get('contact_value')?.setValidators([
+        Validators.required,
+        Validators.pattern(/^https?:\/\/.+$/)
+      ]);
+      break;
+    case 3: // Teléfono
+      control.get('contact_value')?.setValidators([
+        Validators.required,
+        Validators.pattern(/^[0-9]{7,15}$/)
+      ]);
+      break;
+    case 4: // Instagram
+      control.get('contact_value')?.setValidators([
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9._]+$/)
+      ]);
+      break;
+    case 5: // Email
+      control.get('contact_value')?.setValidators([
+        Validators.required,
+        Validators.email
+      ]);
+      break;
+    default:
+      control.get('contact_value')?.setValidators(Validators.required);
   }
 
-  removeContact(index: number): void {
-    this.contacts.removeAt(index);
+  control.get('contact_value')?.updateValueAndValidity();
+}
+
+
+getPlaceholder(index: number): string {
+  const tipo = this.contacts.at(index).get('contact_type_id')?.value;
+  switch (tipo) {
+    case 1: return 'Ej: 3511234567';
+    case 2: return 'Ej: https://facebook.com/usuario';
+    case 3: return 'Ej: 3544123456';
+    case 4: return 'Ej: nombre.usuario';
+    case 5: return 'Ej: usuario@dominio.com';
+    default: return '';
   }
+}
+
+getHelpText(index: number): string | null {
+  const tipo = this.contacts.at(index).get('contact_type_id')?.value;
+  switch (tipo) {
+    case 4: return 'No incluyas el @, solo el nombre de usuario.';
+    case 2: return 'Incluye el enlace completo a tu perfil.';
+    case 1:
+    case 3: return 'Solo números, sin espacios ni símbolos.';
+    default: return null;
+  }
+}
+
+showErrorAt(arrayName: string, index: number, controlName: string): string {
+  const array = this.form.get(arrayName) as FormArray;
+  const control = array.at(index).get(controlName);
+
+  if (control && control.errors) {
+    const [errorKey] = Object.keys(control.errors);
+    switch (errorKey) {
+      case 'required':
+        return 'Este campo no puede estar vacío.';
+      case 'email':
+        return 'Formato de correo electrónico inválido.';
+      case 'pattern':
+        return 'El formato ingresado no es válido.';
+      default:
+        return 'Error no identificado en el campo.';
+    }
+  }
+  return '';
+}
 
   onCategoriesChange(selected: any[]) {
     if (selected.length > 2) {
@@ -178,11 +296,8 @@ export class NewPublicationComponent implements OnInit, AfterViewInit {
   }
 
   nextStep(): void {
-    console.log('👉 Valores del formulario al intentar avanzar:', this.form.value);
-    const hasFilesToUpload = this.imageSlots.some(img => img instanceof File);
-
     if (this.step === 1) {
-      const requiredFields = ['title', 'description', 'price', 'location_id', 'categories', 'conditionTag', 'priceTag', 'shippingTag'];
+      const requiredFields = ['title', 'description', 'price', 'categories', 'conditionTag', 'priceTag', 'shippingTag'];
       const allValid = requiredFields.every(field => this.form.get(field)?.valid);
 
       if (allValid) {
@@ -196,13 +311,24 @@ export class NewPublicationComponent implements OnInit, AfterViewInit {
       }
 
     } else if (this.step === 2) {
-      if (this.form.get('latitude')?.value && this.form.get('longitude')?.value) {
-        this.step++;
-      } else {
-        alert('Por favor, selecciona una ubicación en el mapa.');
-      }
+    const latitude = this.form.get('latitude')?.value;
+    const longitude = this.form.get('longitude')?.value;
+    const locationIdValid = this.form.get('location_id')?.valid;
+
+    if (latitude && longitude && locationIdValid) {
+      this.step++;
+    } else {
+      this.form.get('location_id')?.markAsTouched();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Ubicación requerida',
+        text: 'Por favor, selecciona una ubicación válida en las opciones disponibles.',
+        showConfirmButton: false,
+        timer: 2000
+      });
+    }
     } else if (this.step === 3) {
-      if (hasFilesToUpload) {
+      if (this.hasAtLeastOneImage()) {
         this.uploadImages();
       } else {
         this.uploadedImagePaths = [];
@@ -216,6 +342,10 @@ export class NewPublicationComponent implements OnInit, AfterViewInit {
       this.step--;
     }
   }
+
+hasAtLeastOneImage(): boolean {
+  return this.imageSlots.some(img => img != null);
+}
 
   uploadImages(): void {
     const userId = this.authService.getUser().id;

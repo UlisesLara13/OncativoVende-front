@@ -27,9 +27,12 @@ export class ViewMapComponent implements OnInit, AfterViewInit {
       console.warn('Coordenadas no proporcionadas para el mapa');
       return;
     }
+
+    const latOffset = (Math.random() - 0.5) * 0.005; 
+    const lngOffset = (Math.random() - 0.5) * 0.005;
     
-    const approxLat = this.latitude;
-    const approxLng = this.longitude; 
+    const approxLat = this.latitude + latOffset;
+    const approxLng = this.longitude + lngOffset; 
 
     this.map = L.map(this.mapContainer.nativeElement, {
       center: [approxLat, approxLng],

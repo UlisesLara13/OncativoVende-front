@@ -137,6 +137,16 @@ getDaysByDate(dateStr: string): number {
     });
   }
 
+    goToEditPublication(id: number): void {
+    this.publicationService.addView(id).subscribe({
+      next: () => {
+        this.router.navigate(['/publication', id, 'edit']).then(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      },
+    });
+  }
+
   toggleDropdown(pubId: number) {
     if (this.dropdownOpenId === pubId) {
       this.dropdownOpenId = null;
@@ -149,7 +159,7 @@ getDaysByDate(dateStr: string): number {
     this.dropdownOpenId = null;
   }
 
-  darDeBaja(pubId: number) {
+  unactivatePublication(pubId: number) {
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Esta acción va a dar de baja tu publicacíon.',
@@ -187,7 +197,7 @@ getDaysByDate(dateStr: string): number {
     });
   }
 
-  reactivar(pubId: number) {
+  activatePublication(pubId: number) {
     if (this.authService.hasRole("PREMIUM")) {
       this.publicationService.reactivatePublication(pubId).subscribe({
         next: () => {
@@ -222,11 +232,6 @@ getDaysByDate(dateStr: string): number {
       return;
 
     }
-  }
-
-  editarPublicacion(pubId: number) {
-    console.log('Editar publicación:', pubId);
-    // Implementar lógica para editar publicación
   }
 
 }

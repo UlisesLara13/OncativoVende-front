@@ -10,5 +10,7 @@ export interface PublicationPost {
     contacts: {
     contact_type_id: number;
     contact_value: string;
+    latitude?: number;
+    longitude?: number;
     }[];
 }
