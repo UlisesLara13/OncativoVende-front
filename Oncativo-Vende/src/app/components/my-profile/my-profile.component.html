@@ -1,106 +1,159 @@
-<div class="container-fluid d-flex justify-content-center align-items-start fondo-gris" style="min-height: 100vh; padding-top: 2rem;">
-  <div class="card perfil-card p-4 col-md-4 col-lg-4">
+<div class="container-fluid d-flex justify-content-center align-items-start fondo-gris" style="min-height: 100vh; padding: 2rem 1rem;">
+  <div class="card perfil-card shadow-lg col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
     
-    <!-- Avatar clickeable -->
-    <div class="text-center mb-3">
-    <div class="avatar-perfil mx-auto position-relative" (click)="onChangeAvatar()" style="cursor: pointer;">
-      <img *ngIf="user.avatar_url; else initials" [src]="user.avatar_url" alt="Avatar" class="img-avatar">
-      <ng-template #initials>
-      <div class="avatar-initials">
-        {{ getInitials(user.name, user.surname) }}
+    <!-- Header del perfil -->
+    <div class="card-header bg-primary text-white text-center py-4 position-relative">
+      <div class="position-absolute top-0 end-0 p-3">
+        <i class="bi bi-pencil-square text-white" 
+           style="cursor: pointer; font-size: 1.2rem;" 
+           (click)="openEditProfileModal()" 
+           title="Editar perfil"></i>
       </div>
-      </ng-template>
-      <div class="avatar-overlay">
-      <i class="bi bi-camera-fill"></i> 
+      
+      <!-- Avatar -->
+      <div class="avatar-perfil mx-auto mb-3 position-relative" 
+           (click)="onChangeAvatar()" 
+           style="cursor: pointer;">
+        <img *ngIf="user.avatar_url; else initials" 
+             [src]="user.avatar_url" 
+             alt="Avatar" 
+             class="img-avatar">
+        <ng-template #initials>
+          <div class="avatar-initials">
+            {{ getInitials(user.name, user.surname) }}
+          </div>
+        </ng-template>
+        <div class="avatar-overlay">
+          <i class="bi bi-camera-fill"></i>
+        </div>
+      </div>
+      
+      <!-- Nombre completo -->
+      <h3 class="mb-1 fw-bold">{{ user.name }} {{ user.surname }}</h3>
+      <p class="mb-0 opacity-75">
+        <i class="bi bi-geo-alt me-1"></i>{{ user.location }}
+      </p>
+    </div>
+    
+    <!-- Cuerpo del perfil -->
+    <div class="card-body p-4">
+      
+      <!-- Información básica -->
+      <div class="row g-3 mb-4">
+        <div class="col-12">
+          <div class="info-item">
+            <div class="info-label">
+              <i class="bi bi-person-circle me-2 text-primary"></i>
+              <strong>Usuario:</strong><div class="info-value">{{ user.username }}</div>
+            </div>
+            
+          </div>
+        </div>
+        
+        <div class="col-12">
+          <div class="info-item">
+            <div class="info-label">
+              <i class="bi bi-envelope me-2 text-primary"></i>
+              <strong>Email:</strong><div class="info-value">{{ user.email }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Rating y Suscripción -->
+      <div class="row g-3 mb-4">
+        <div class="col-12">
+          <div class="rating-container p-3 bg-light rounded">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <strong class="me-3">Rating:</strong>
+                <div class="d-flex align-items-center">
+                  <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                    <i [ngClass]="getStarClass(user.rating, i)" class="me-1"></i>
+                  </ng-container>
+                </div>
+              </div>
+              <span class="badge bg-primary fs-6">{{user.rating}}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-12">
+          <div class="subscription-container p-3 bg-light rounded">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <strong class="me-3">Suscripción:</strong>
+                <div class="d-flex align-items-center">
+                  <ng-container [ngSwitch]="user.subscription.toLowerCase()">
+                    <!-- Bronce -->
+                    <div *ngSwitchCase="'bronce'" class="subscription-badge bronce">
+                      <i class="bi bi-gem me-2"></i>
+                      <span class="fw-semibold">Bronce</span>
+                    </div>
+                    
+                    <!-- Plata -->
+                    <div *ngSwitchCase="'plata'" class="subscription-badge plata">
+                      <i class="bi bi-gem me-2"></i>
+                      <span class="fw-semibold">Plata</span>
+                    </div>
+                    
+                    <!-- Oro -->
+                    <div *ngSwitchCase="'oro'" class="subscription-badge oro">
+                      <i class="bi bi-gem me-2"></i>
+                      <span class="fw-semibold">Oro</span>
+                    </div>
+                    
+                    <!-- Sin suscripción -->
+                    <div *ngSwitchDefault class="subscription-badge sin-suscripcion">
+                      <i class="bi bi-x-circle me-2"></i>
+                      <span class="fw-semibold">Sin suscripción</span>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              
+              <!-- Botón separado para gestionar suscripción -->
+              <a [routerLink]="'/subscriptions'" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-gear me-1"></i>
+                Gestionar
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Botones de acción -->
+      <div class="d-grid gap-3">
+        <button type="button" 
+                class="btn btn-outline-primary d-flex align-items-center justify-content-center" 
+                (click)="openChangePasswordModal()">
+          <i class="bi bi-key me-2"></i>
+          Modificar Contraseña
+        </button>
+        
+        <button type="button" 
+                class="btn btn-secondary d-flex align-items-center justify-content-center" 
+                [routerLink]="'/home'">
+          <i class="bi bi-arrow-left me-2"></i>
+          Volver
+        </button>
       </div>
     </div>
-    </div>
-  
-    <!-- Nombre completo -->
-    <div class="text-center mb-2">
-      <h4 class="mb-1">{{ user.name }} {{ user.surname }}</h4>
-      <div class="d-flex justify-content-center">
-      <i class="bi bi-pencil-square text-primary mb-3" 
-         style="cursor: pointer; font-size: 15px;" (click)="openEditProfileModal()"> Editar</i>
-      </div>
-    </div>
-    <p class="text-center text-muted" style="font-size: 0.9rem;"><i class="bi bi-geo-alt"></i> {{ user.location }}</p>
-    <hr>
-  
-    <!-- Información de usuario -->
-    <div class="mb-2">
-    <strong>Usuario:</strong> {{ user.username }}
-    </div>
-    <div class="mb-2">
-    <strong>Email:</strong> {{ user.email }}
-    </div>
-  
-    <div class="mb-2 d-flex align-items-center">
-    <strong class="me-2">Rating:</strong>
-    <ng-container *ngFor="let star of [].constructor(5); let i = index">
-      <i [ngClass]="getStarClass(user.rating, i)"></i>
-    </ng-container>
-    <span class="text-secondary ms-2" style="font-size: 0.7rem; color: gray;">({{user.rating}})</span>
-    </div>
+  </div>
+</div>
 
-    <div class="mb-2 d-flex align-items-center">
-    <strong class="me-2">Suscripción:</strong>
-    <ng-container [ngSwitch]="user.subscription.toLowerCase()">
-    
-      <!-- Bronce -->
-      <button *ngSwitchCase="'bronce'" class="btn btn-sm me-2"
-          style="border: 1px solid #cd7f32; background-color: transparent; color: #cd7f32;" [routerLink]="'/subscriptions'">
-      <i class="bi bi-gem me-1" style="color: #cd7f32;"></i>Bronce
-      </button>
-    
-      <!-- Plata -->
-      <button *ngSwitchCase="'plata'" class="btn btn-sm me-2"
-          style="border: 1px solid silver; background-color: transparent; color: silver;" [routerLink]="'/subscriptions'">
-      <i class="bi bi-gem me-1" style="color: silver;"></i>Plata
-      </button>
-    
-      <!-- Oro -->
-      <button *ngSwitchCase="'oro'" class="btn btn-sm me-2"
-          style="border: 1px solid gold; background-color: transparent; color: gold;" [routerLink]="'/subscriptions'">
-      <i class="bi bi-gem me-1" style="color: gold;"></i>Oro
-      </button>
-    
-      <!-- Sin suscripción -->
-      <button *ngSwitchDefault class="btn btn-sm me-2"
-          style="border: 1px solid #0dcaf0; background-color: transparent; color: #0dcaf0;" [routerLink]="'/subscriptions'">
-      <i class="bi bi-gem me-1" style="color: #0dcaf0;"></i>Obtener Suscripción
-      </button>
-    
-    </ng-container>
-    </div>      
-  
-    <hr>
-  
-    <!-- Botones -->
-    <div class="d-grid gap-2">
-  
-    <button type="button" class="btn btn-secondary" (click)="openChangePasswordModal()">
-      Modificar Contraseña
-    </button>
-  
-    <button type="button" class="btn btn-light" [routerLink]="'/home'">
-      Volver
-    </button>
-    </div>
-  
-  </div>
-  </div>
-  @if (showChangePasswordModal) {
-  <app-change-password
-    [email]="user.email"
-    (close)="closeChangePasswordModal()">
-  </app-change-password>
+<!-- Modales (mantienen la funcionalidad original) -->
+@if (showChangePasswordModal) {
+<app-change-password
+  [email]="user.email"
+  (close)="closeChangePasswordModal()">
+</app-change-password>
 }
-  @if (showEditProfileModal) {
-  <app-update-personal-data
-    [userId]="user.id"
-    [userData]="userData"
-    (closeModal)="handleEditProfileModalClose()">
-  </app-update-personal-data>
-   }
 
+@if (showEditProfileModal) {
+<app-update-personal-data
+  [userId]="user.id"
+  [userData]="userData"
+  (closeModal)="handleEditProfileModalClose()">
+</app-update-personal-data>
+}

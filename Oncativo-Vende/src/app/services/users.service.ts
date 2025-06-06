@@ -5,13 +5,18 @@ import { UserPost } from '../models/UserPost';
 import { UserGet } from '../models/UserGet';
 import { ChangePassword } from '../models/ChangePassword';
 import { PersonalDataPut } from '../models/PersonalDataPut';
+import { UserFilterDto } from '../models/UserFilterDto';
+import { PaginatedUsers } from '../models/PaginatedUsers';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
 
-  private readonly http: HttpClient = inject(HttpClient);
+  private readonly _http: HttpClient = inject(HttpClient);
+  public get http(): HttpClient {
+    return this._http;
+  }
   private readonly url = 'http://localhost:8080/users';
 
   postUser(user: UserPost): Observable<UserGet> {    
@@ -27,7 +32,7 @@ export class UsersService {
   }
 
   updateAvatarUrl(userId: number, avatarUrl: string): Observable<void> {
-    return this.http.put<void>(`http://localhost:8080/users/avatar/${userId}`, avatarUrl, {
+    return this.http.put<void>(`${this.url}/avatar/${userId}`, avatarUrl, {
       headers: { 'Content-Type': 'text/plain' } 
     });
   }
@@ -38,6 +43,26 @@ export class UsersService {
 
   changePassword(changePassword: ChangePassword): Observable<void> {
     return this.http.post<void>(`${this.url}/change-password`, changePassword);
+  }
+
+  getFilteredUsers(search: UserFilterDto): Observable<PaginatedUsers> {
+    return this.http.post<PaginatedUsers>(`${this.url}/filter`, search);
+  }
+
+  verifyUser(userId: number): Observable<void> {
+    return this.http.put<void>(`${this.url}/verify/${userId}`, null);
+  }
+
+  unverifyUser(userId: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/unverify/${userId}`);
+  }
+
+  deleteUser(userId: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${userId}`);
+  }
+
+  activateUser(userId: number): Observable<void> {
+    return this.http.put<void>(`${this.url}/activate/${userId}`, null);
   }
 
 }

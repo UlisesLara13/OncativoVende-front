@@ -23,7 +23,7 @@ import { UserGet } from '../../models/UserGet';
 export class NewPublicationComponent implements OnInit, AfterViewInit {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
   
-  step = 2;
+  step = 1;
   form: FormGroup;
   private map!: L.Map;
   private marker!: L.Marker;

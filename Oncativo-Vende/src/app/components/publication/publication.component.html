@@ -1,3 +1,4 @@
+<!-- Tu template original sin cambios estructurales -->
 <div class="bg-light min-vh-100 py-3">
   @if (publication.active == false && publication.user.id != userLoged.id) { 
     <div class="container">
@@ -109,7 +110,7 @@
           <!-- Mapa - Pegado al borde derecho -->
           <div class="col-md-4 pe-0">
             <div>
-            <div>Ubicación: <i class="bi bi-geo-alt ms-2 text-danger"></i> {{ publication.location }}</div>
+            <small><i class="bi bi-geo-alt text-danger"></i>  Localidad de {{ publication.location }}</small>
             </div>
             <app-view-map 
               class="rounded overflow-hidden w-100" 
@@ -150,13 +151,13 @@
 
           <!-- Contactos - Pegado al borde derecho -->
           <div class="col-md-4 pe-0">
-            <h5 class="mb-3">Contactar</h5>
+            <h5 class="mb-3">Contactar <i class="bi bi-chat-dots"></i></h5>
             <div class="d-flex flex-column gap-2">
               <ng-container *ngFor="let contact of publication.contacts">
                 <a [href]="getContactLink(contact)"
                    target="_blank"
                    rel="noopener"
-                   class="d-flex align-items-center text-decoration-none">
+                   class="d-flex align-items-center text-decoration-none contact-link">
                   <i [ngClass]="getContactIcon(contact.contact_type)" class="me-2"></i>
                   {{ contact.contact_value }}
                 </a>
@@ -172,7 +173,7 @@
           <div class="col-12">
             <h5 class="mb-3">Últimas reseñas</h5>
             <div *ngIf="(ratings?.length || 0) > 0; else noReviews">
-              <div *ngFor="let rating of ratings | slice:0:reviewsToShow" class="border rounded-3 p-3 mb-2">
+              <div *ngFor="let rating of ratings | slice:0:reviewsToShow" class="border rounded-3 p-3 mb-2 review-card">
                 <div class="d-flex justify-content-between">
                   <strong>{{ rating.rater_user.name }} {{ rating.rater_user.surname }}</strong>
                   <small>{{ formatDate(rating.created_at) }}</small>
@@ -201,7 +202,7 @@
           @if (existingRating != null) {
             <div class="mt-4">
               <h6>Tu reseña</h6>
-              <div class="border rounded-3 p-3">
+              <div class="border rounded-3 p-3 review-card">
                 <div class="d-flex justify-content-between">
                   <strong>{{ existingRating.rater_user.name }} {{ existingRating.rater_user.surname }}</strong>
                   <small>{{ formatDate(existingRating.created_at) }}</small>

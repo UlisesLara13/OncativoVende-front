@@ -1,3 +1,4 @@
+/* Tus estilos originales sin cambios */
 .carousel-inner img {
   border-radius: 0.5rem;
 }
@@ -71,6 +72,7 @@
   padding: 0.4em 0.6em;
   border-radius: 0.5rem;
 }
+
 .img-avatar {
   width: 50px;
   border: 0.3px solid black;
@@ -100,18 +102,6 @@
   will-change: transform;
 }
 
-
-.contact-link {
-  color: #212529; 
-  text-decoration: none;
-  transition: color 0.2s ease, text-decoration 0.2s ease;
-
-  &:hover {
-    color: #0d6efd; 
-    text-decoration: underline !important;;
-  }
-}
-
 .avatar-initials {
     font-size: 30px;
     color: black;
@@ -133,4 +123,60 @@
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   filter: invert(41%) sepia(76%) saturate(500%) hue-rotate(180deg);
+}
+
+.bg-white.shadow {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+}
+
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.contact-link {
+  color: #212529; 
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.contact-link:hover {
+  color: #0d6efd; 
+  text-decoration: underline !important;
+  background-color: #f8f9fa;
+}
+
+.review-card {
+  transition: all 0.2s ease;
+}
+
+.review-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.btn-link {
+  transition: all 0.2s ease;
+}
+
+.btn-link:hover {
+  transform: scale(1.1);
+}
+
+.badge {
+  transition: all 0.2s ease;
+}
+
+.badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
 }

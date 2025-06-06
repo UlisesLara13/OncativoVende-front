@@ -17,6 +17,7 @@ import { PaymentFailureComponent } from './components/payment-failure/payment-fa
 import { MyFavoritesComponent } from './components/my-favorites/my-favorites.component';
 import { MyPublicationsComponent } from './components/my-publications/my-publications.component';
 import { EditPublicationComponent } from './components/edit-publication/edit-publication.component';
+import { UsersListComponent } from './components/users-list/users-list.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
@@ -32,6 +33,7 @@ export const routes: Routes = [
     { path: 'publication/:id/edit', component: EditPublicationComponent, canActivate: [authGuard, roleGuard], data: { roles: ['PREMIUM'] } },
     { path: 'unauthorized', component: UnauthorizedComponent },
     { path: 'new-publication', component: NewPublicationComponent, canActivate: [authGuard, roleGuard], data: { roles: ['PREMIUM'] } },
+    { path: 'admin/users', component: UsersListComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] } },
     { path: 'not-found', component: NotFoundComponent },
     { path: 'search', component: SearchComponent },
     { path: '', redirectTo: 'home', pathMatch: 'full' },

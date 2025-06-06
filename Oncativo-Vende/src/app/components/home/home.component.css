@@ -1,7 +1,4 @@
-.fondo-gris {
-    background-color: #f8f9fa;
-}
-  
+
   body {
     background-color: #f8f9fa; /* fondo suave que combine */
   }
@@ -11,8 +8,7 @@
   }
 
   .card-custom {
-    border: 1px solid #dee2e6; /* Borde sutil */
-    border-radius: 0.75rem;
+    border: 1px solid #dee2e6; 
     transition: box-shadow 0.3s ease;
     height: 100%;
     cursor: pointer;

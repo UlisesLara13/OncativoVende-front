@@ -66,16 +66,27 @@
               {{ setName() }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" [routerLink]="'/profile'">Mi perfil</a></li>
-              <li><a class="dropdown-item" [routerLink]="'/my-favorites'">Mis favoritos</a></li>
-              <li><a class="dropdown-item" [routerLink]="'/my-publications'">Mis publicaciones</a></li>
-              <li><a class="dropdown-item" [routerLink]="'/subscriptions'">Gestionar suscripciones</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/profile'" style="font-size: 0.9rem;">Mi perfil</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/my-favorites'" style="font-size: 0.9rem;">Mis favoritos</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/my-publications'" style="font-size: 0.9rem;">Mis publicaciones</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/subscriptions'" style="font-size: 0.9rem;">Gestionar suscripciones</a></li>
                 @if (authService.hasRole("PREMIUM")) {
                 <li><hr class="my-1"></li>
-                <li><a class="dropdown-item d-flex justify-content-between align-items-center" [routerLink]="'/new-publication'"> Crear publicación<i class="bi bi-clipboard-plus ms-1"></i></a></li>
+                <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/new-publication'"> Crear publicación<i class="bi bi-clipboard-plus ms-1"></i></a></li>
+                }
+                @if (authService.hasRole("ADMIN")){
+                  <li><hr class="my-1"></li>
+                  <li class="dropdown-header text-primary fw-bold" style="font-size: 0.9rem;">Opciones de administración</li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/users'"> Gestionar usuarios<i class="bi bi-person-lines-fill text-primary"></i></a></li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/publications'"> Gestionar publicaciones<i class="bi bi-card-list text-primary"></i></a></li>
+                }
+                @if (authService.hasRole("MODERADOR") || authService.hasRole("ADMIN")) {
+                  <li><hr class="my-1"></li>
+                  <li class="dropdown-header text-warning fw-bold" style="font-size: 0.9rem;">Opciones de moderación</li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/moderator/reports'"> Ver reportes<i class="bi bi-exclamation-triangle-fill text-warning"></i></a></li>
                 }
                 <li><hr class="my-1"></li>
-                <li><a class="dropdown-item d-flex justify-content-between align-items-center" (click)="logout()" style="cursor: pointer;">Cerrar sesión<i class="bi bi-box-arrow-left ms-2"></i></a></li>
+                <li><a class="dropdown-item d-flex justify-content-between align-items-center" (click)="logout()" style="cursor: pointer; font-size: 0.9rem;">Cerrar sesión<i class="bi bi-box-arrow-left ms-2 text-danger"></i></a></li>
             </ul>
           </li>
         </ng-container>

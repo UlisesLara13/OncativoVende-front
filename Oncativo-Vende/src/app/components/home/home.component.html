@@ -103,7 +103,20 @@
             </button>
             <div class="card-carousel" #carouselContainer>
               <div class="card card-custom-size" *ngFor="let pub of publications" (click)="goToPublication(pub.id)">
-                <img [src]="pub.images[0]" class="card-img-top">
+                                  <div class="position-relative overflow-hidden">
+                    <img
+                      [src]="pub.images && pub.images.length > 0 ? pub.images[0] : 'assets/not-found.jpg'"
+                      class="card-img-top publication-image"
+                      alt="Imagen de publicación"
+                      style="height: 200px; object-fit: contain;"
+                    />
+                    <!-- Badge de precio -->
+                    <div class="position-absolute top-0 end-0 m-3">
+                      <span class="badge bg-dark bg-opacity-75 text-white fs-6 px-3 py-2 rounded-pill">
+                        ${{ pub.price | decimalFormat }}
+                      </span>
+                    </div>
+                  </div>
                 <div class="card-body">
                   <p class="card-title text-truncate">{{ pub.title }}</p>
                   <p class="text-secondary small">Por {{pub.user.name}} {{pub.user.surname}} 
@@ -113,9 +126,8 @@
                     class="badge-tag d-inline-block me-1">
                     {{ tag }}
                   </span>
-                  <h3 class="mt-2">$ {{ pub.price | decimalFormat }}</h3>
-                  <p class="text-secondary small">
-                    <i class="bi bi-geo-alt me-1"></i>{{ pub.location }}
+                  <p class="text-secondary small mt-3">
+                    <i class="bi bi-geo-alt-fill me-1 text-primary"></i>{{ pub.location }}
                   </p>
                 </div>
               </div>

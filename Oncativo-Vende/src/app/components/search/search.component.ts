@@ -30,6 +30,7 @@ export class SearchComponent implements OnInit {
   location: string | null = null;
   minPrice: number | null = null;
   maxPrice: number | null = null;
+  totalItems: number = 0;
   category: string[] = [];
   tag: string[] = [];
   sortDir: string = 'desc';
@@ -111,19 +112,38 @@ export class SearchComponent implements OnInit {
   console.log(this.category); // Línea de depuración
   console.log(this.tag); // Línea de depuración
 
-  // Realizar la llamada al servicio con el objeto SearchDto creado
   this.publicationsService.getFilteredPublications(searchDto).subscribe((response: PaginatedPublications) => {
     this.publications = response.content;
     this.totalPages = response.totalPages || 0;
+    this.totalItems = response.totalElements || 0;
     this.isLastPage = this.currentPage >= this.totalPages;
     window.scrollTo({ top: 0, behavior: 'smooth' })
   });
 }
 
-  loadPage(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-    this.loadPublications();
+  changePage(newPage: number): void {
+    if (newPage >= 1 && newPage <= this.totalPages) {
+      this.currentPage = newPage;
+      this.loadPublications();
+    }
+  }
+
+  getPages(): number[] {
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = startPage + maxPagesToShow - 1;
+
+    if (endPage > this.totalPages) {
+      endPage = this.totalPages;
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    const pages: number[] = [];
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    return pages;
   }
 
   applyFilters(): void {
