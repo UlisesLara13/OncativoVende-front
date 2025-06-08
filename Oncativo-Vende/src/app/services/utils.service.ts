@@ -5,6 +5,8 @@ import { LocationGet } from '../models/LocationGet';
 import { TagGet } from '../models/TagGet';
 import { ContactTypeGet } from '../models/ContactTypeGet';
 import { ReportPost } from '../models/ReportPost';
+import { ReportFilterDto } from '../models/ReportFilterDto';
+import { PaginatedReports } from '../models/PaginatedReports';
 
 @Injectable({
   providedIn: 'root'
@@ -36,5 +38,11 @@ export class UtilsService {
   userAlreadyReported(userId: number, publicationId: number): Observable<boolean> {
     return this.http.get<boolean>(`${this.reportsUrl}/user/${userId}/publication/${publicationId}`);
   }
+
+  getFilteredReports(filter: ReportFilterDto): Observable<PaginatedReports> {
+  return this.http.post<PaginatedReports>(`${this.reportsUrl}/filter`, filter);
+}
+
+
 
 }

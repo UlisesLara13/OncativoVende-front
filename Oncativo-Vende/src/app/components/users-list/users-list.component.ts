@@ -137,6 +137,102 @@ export class UsersListComponent implements OnInit {
     }
   }
 
+  viewUserDetails(user: UserGet): void {
+  Swal.fire({
+    title: 'Detalles del Usuario',
+    html: `
+      <div class="text-start">
+        <!-- Sección Avatar y Nombre -->
+        <div class="d-flex align-items-center mb-3">
+          ${user.avatar_url && user.avatar_url.trim() !== '' ? 
+            `<img src="${this.getAvatarUrl(user)}" alt="${user.name} ${user.surname}" 
+                  class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">` :
+            `<div class="rounded-circle bg-light text-dark d-flex align-items-center justify-content-center me-3" 
+                  style="width: 60px; height: 60px; font-size: 24px; border: 1px solid #ddd;">
+              ${this.getInitials(user)}
+             </div>`
+          }
+          <div>
+            <h5 class="mb-1">${user.name} ${user.surname} 
+              ${user.verified ? '<i class="bi bi-patch-check-fill text-info"></i>' : ''}
+            </h5>
+            <small class="text-muted">@${user.username}</small>
+          </div>
+        </div>
+        
+        <hr>
+        
+        <!-- Sección Información Personal -->
+        <div class="mb-3">
+          <h6 class="text-primary fw-bold mb-2">Información Personal</h6>
+          <p class="mb-1"><strong>Email:</strong> ${user.email}</p>
+          ${user.location ? `<p class="mb-1"><strong>Ubicación:</strong> ${user.location}</p>` : ''}
+        </div>
+
+        <hr>
+
+        <!-- Sección Cuenta y Permisos -->
+        <div class="mb-3">
+          <h6 class="text-primary fw-bold mb-2">Cuenta y Permisos</h6>
+          <p class="mb-1"><strong>Roles:</strong> ${user.roles.join(', ')}</p>
+          <p class="mb-1"><strong>Estado:</strong> 
+            <span class="text-${user.active ? 'success' : 'danger'}">
+              <i class="bi bi-${user.active ? 'check-circle-fill' : 'x-circle-fill'}"></i>
+              ${user.active ? 'Activo' : 'Inactivo'}
+            </span>
+          </p>
+          <p class="mb-1"><strong>Verificado:</strong> 
+            <span class="text-${user.verified ? 'success' : 'danger'}">
+              <i class="bi bi-${user.verified ? 'check-circle-fill' : 'x-circle-fill'}"></i>
+              ${user.verified ? 'Sí' : 'No'}
+            </span>
+          </p>
+          <p class="mb-1"><strong>Suscripción:</strong> 
+            ${user.subscription && user.subscription !== 'NO' ? 
+              `<span class="text-success">
+                <i class="bi bi-check-circle-fill"></i>
+                ${user.subscription}
+              </span>` :
+              `<span class="text-danger">
+                <i class="bi bi-x-circle-fill"></i>
+                No
+              </span>`
+            }
+          </p>
+        </div>
+
+        <hr>
+
+        <!-- Sección Estadísticas -->
+        <div class="mb-3">
+          <h6 class="text-primary fw-bold mb-2">Estadísticas</h6>
+          <p class="mb-1"><strong>Rating:</strong> 
+            <span class="badge bg-warning text-dark">
+              <i class="bi bi-star-fill"></i> ${user.rating}/5
+            </span>
+          </p>
+        </div>
+
+        <hr>
+
+        <!-- Sección Fechas -->
+        <div>
+          <h6 class="text-primary fw-bold mb-2">Información de Registro</h6>
+          <p class="mb-1"><strong>Fecha de registro:</strong> ${this.formatDate(user.created_at)}</p>
+          <p class="mb-0"><strong>Días desde el registro:</strong> ${this.getDaysByDate(user.created_at)} días</p>
+        </div>
+      </div>
+    `,
+    icon: 'info',
+    showCloseButton: true,
+    showConfirmButton: false,
+    width: '650px',
+    customClass: {
+      popup: 'text-start'
+    }
+  });
+}
+
   getPages(): number[] {
     const maxPagesToShow = 5;
     let startPage = Math.max(1, this.page - Math.floor(maxPagesToShow / 2));

@@ -197,6 +197,14 @@
                   [class.show]="dropdownOpenId === user.id"
                   style="position: absolute; top: 100%; right: 0; z-index: 1000;"
                 >
+                 <li>
+                    <button
+                      class="dropdown-item"
+                      (click)="viewUserDetails(user); closeDropdown(); $event.stopPropagation()"
+                    >
+                      <i class="bi bi-eye me-2"></i> Ver detalles
+                    </button>
+                </li>
                   <li>
                     @if(user.verified) {
                       <button
