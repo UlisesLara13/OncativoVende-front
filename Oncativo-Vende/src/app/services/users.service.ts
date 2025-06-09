@@ -7,6 +7,7 @@ import { ChangePassword } from '../models/ChangePassword';
 import { PersonalDataPut } from '../models/PersonalDataPut';
 import { UserFilterDto } from '../models/UserFilterDto';
 import { PaginatedUsers } from '../models/PaginatedUsers';
+import { UserUpdateAdmin } from '../models/UserUpdateAdmin';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,10 @@ export class UsersService {
 
   getUsers(): Observable<UserGet[]> {
     return this.http.get<UserGet[]>(this.url);
+  }
+
+  putUser(user: UserUpdateAdmin, userId: number): Observable<UserGet> {
+    return this.http.put<UserGet>(`${this.url}/${userId}`, user);
   }
 
   getUserById(id: number): Observable<UserGet> {

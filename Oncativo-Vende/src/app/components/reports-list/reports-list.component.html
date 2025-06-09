@@ -87,7 +87,8 @@
         <div
           *ngFor="let report of reports; trackBy: trackByReportId"
           class="list-group-item mb-2 border rounded shadow-sm"
-          style="cursor: default;"
+          style="cursor: pointer;"
+          (click)="viewReportDetails(report); closeDropdown(); $event.stopPropagation()"
         >
             <div class="row align-items-center">
               <!-- Usuario Reportador -->
@@ -139,7 +140,12 @@
                     </div>
                   </ng-template>
                   <div>
-                    <h6 class="mb-0 text-truncate" style="font-size: 0.9rem; max-width: 150px;">{{ report.publication.title }}</h6>
+                      <h6 
+                        class="mb-0 text-truncate publication-title" 
+                        title="Ir a la publicación"
+                        (click)="goToPublication(report.publication.id)">
+                        {{ report.publication.title }}
+                      </h6>
                     <small class="text-muted">
                       Por: {{ report.publication.user.name }} {{ report.publication.user.surname }}
                       <i class="bi" [class]="report.publication.user.verified ? 'bi bi-patch-check-fill text-info' : ''"></i>
@@ -150,7 +156,7 @@
 
               <!-- Razón -->
               <div class="col-6 col-md-2 text-center">
-                <span class="text-dark text-truncate" style="font-size: 0.75rem;">
+                <span class="text-dark text-truncate d-block" style="font-size: 0.75rem; max-width: 100%;">
                   {{ report.reason }}
                 </span>
               </div>
@@ -195,7 +201,15 @@
                         class="dropdown-item"
                         (click)="viewReportDetails(report); closeDropdown(); $event.stopPropagation()"
                       >
-                        <i class="bi bi-eye me-2"></i> Ver detalles
+                        <i class="bi bi-eye me-2"></i> Ver más
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        (click)="goToPublication(report.publication.id); closeDropdown(); $event.stopPropagation()"
+                      >
+                        <i class="bi bi-link-45deg me-2"></i> Ir a publicación
                       </button>
                     </li>
                     <li *ngIf="report.status === 'PENDIENTE'">
@@ -206,24 +220,7 @@
                         <i class="bi bi-check-circle text-success me-2"></i> Resolver
                       </button>
                     </li>
-                    <li *ngIf="report.status !== 'PENDIENTE'">
-                      <button
-                        class="dropdown-item"
-                        (click)="markAsPending(report.id); closeDropdown(); $event.stopPropagation()"
-                      >
-                        <i class="bi bi-clock text-warning me-2"></i> Marcar como pendiente
-                      </button>
-                    </li>
                 </ul>
-              </div>
-            </div>
-
-            <!-- Respuesta (si existe) -->
-            <div *ngIf="report.response" class="row mt-2">
-              <div class="col-12">
-                <div class="alert alert-info mb-0" style="font-size: 0.85rem;">
-                  <strong>Respuesta:</strong> {{ report.response }}
-                </div>
               </div>
             </div>
           </div>
@@ -253,4 +250,12 @@
         </li>
       </ul>
     </nav>
+      <app-solve-report-modal
+      *ngIf="showResolveModal && selectedReport"
+      [reportId]="selectedReport.id"
+      [userId]="selectedReport.publication.user.id"
+      [publicationId]="selectedReport.publication.id"
+      (close)="onCloseResolveModal()"
+      (resolved)="onReportResolved()">
+    </app-solve-report-modal>
   </div>

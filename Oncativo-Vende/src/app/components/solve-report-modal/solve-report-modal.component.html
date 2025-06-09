@@ -1,0 +1,90 @@
+<div *ngIf="modalVisible" class="modal fade show d-block" tabindex="-1" aria-modal="true" role="dialog"
+  style="background-color: rgba(0, 0, 0, 0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Resolver Reporte</h5>
+        <button type="button" class="btn-close" (click)="onClose()" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          
+          <!-- Respuesta del administrador -->
+          <div class="mb-3">
+            <label for="response" class="form-label">Respuesta del administrador <span class="text-danger">*</span></label>
+            <textarea 
+              id="response" 
+              rows="4" 
+              formControlName="response" 
+              class="form-control"
+              [ngClass]="onValidate('response')"
+              placeholder="Proporciona una respuesta detallada sobre la resolución del reporte...">
+            </textarea>
+            <div class="invalid-feedback">{{ showError('response') }}</div>
+            <small class="form-text text-muted">Mínimo 10 caracteres, máximo 255 caracteres</small>
+          </div>
+
+          <!-- Acciones administrativas -->
+          <div class="mb-3">
+            <label class="form-label">Acciones administrativas</label>
+            
+            <div class="form-check mb-2">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="banUser" 
+                formControlName="banUser">
+              <label class="form-check-label" for="banUser">
+                <i class="fas fa-user-slash me-1"></i>
+                Banear usuario
+              </label>
+            </div>
+
+            <div class="form-check">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="deletePublication" 
+                formControlName="deletePublication">
+              <label class="form-check-label" for="deletePublication">
+                <i class="fas fa-trash me-1"></i>
+                Borrar publicación
+              </label>
+            </div>
+          </div>
+
+          <div class="alert alert-warning d-flex align-items-center" 
+               *ngIf="form.value.banUser || form.value.deletePublication">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <div>
+              <strong>Atención:</strong> 
+              <span *ngIf="form.value.banUser && form.value.deletePublication">
+                Se baneará al usuario y se eliminará la publicación.
+              </span>
+              <span *ngIf="form.value.banUser && !form.value.deletePublication">
+                Se baneará al usuario.
+              </span>
+              <span *ngIf="!form.value.banUser && form.value.deletePublication">
+                Se eliminará la publicación.
+              </span>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="onClose()">
+              <i class="fas fa-times me-1"></i>
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-success" [disabled]="form.invalid">
+              <i class="fas fa-check me-1"></i>
+              Resolver Reporte
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

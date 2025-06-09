@@ -162,11 +162,11 @@ getDaysByDate(dateStr: string): number {
   unactivatePublication(pubId: number) {
     Swal.fire({
       title: '¿Estás seguro?',
-      text: 'Esta acción va a dar de baja tu publicacíon.',
+      text: 'Esta acción va a dar de baja tu publicacíon no podrás volver a activarla',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      cancelButtonColor: '#6c757d',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {

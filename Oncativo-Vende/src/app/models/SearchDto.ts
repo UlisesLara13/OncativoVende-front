@@ -9,4 +9,5 @@ export class SearchDto {
   sortDir?: string;
   page?: number;
   size?: number;
+  active?: boolean;
 }

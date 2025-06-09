@@ -72,6 +72,8 @@ export class SearchComponent implements OnInit {
   loadPublications(): void {
   const searchDto: SearchDto = {};
 
+  searchDto.active = true; 
+
   if (this.searchText) {
     searchDto.searchTerm = this.searchText;
   }

@@ -6,11 +6,13 @@ import { ReportGet } from '../../models/ReportGet';
 import { ReportFilterDto } from '../../models/ReportFilterDto';
 import { UtilsService } from '../../services/utils.service';
 import Swal from 'sweetalert2';
+import { SolveReportModalComponent } from '../solve-report-modal/solve-report-modal.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reports-list',
   standalone: true,
-  imports: [FormsModule, CommonModule, ReactiveFormsModule, NgSelectModule],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule, NgSelectModule, SolveReportModalComponent],
   templateUrl: './reports-list.component.html',
   styleUrl: './reports-list.component.css'
 })
@@ -24,7 +26,11 @@ export class ReportsListComponent implements OnInit {
   size = 10;
   dropdownOpenId: number | null = null;
 
+  showResolveModal = false;
+  selectedReport: ReportGet | null = null;
+
   private readonly utilsService = inject(UtilsService);
+  private readonly router = inject(Router);
 
   statusOptions = [
     { label: 'Todos', value: '' },
@@ -207,100 +213,72 @@ export class ReportsListComponent implements OnInit {
       title: 'Detalles del Reporte',
       html: `
       <div class="text-start">
-        <div class="mb-3">
-        <h6 class="text-primary mb-2">Información del usuario que reporta</h6>
-        <p class="mb-1"><strong>Usuario:</strong> ${report.reporter.name} ${report.reporter.surname}</p>
-        <p class="mb-0"><strong>Username:</strong> @${report.reporter.username}</p>
+      <div class="mb-4 p-3 border border-danger rounded bg-light">
+        <h5 class="text-danger mb-3 fw-bold">📢 REPORTE</h5>
+        <div class="mb-2">
+        <strong class="text-danger">Razón del Reporte:</strong>
+        <p class="mb-1 fs-6 fw-semibold text-dark">${report.reason}</p>
         </div>
-        
-        <div class="mb-3">
+        <div class="mb-2">
+        <strong class="text-danger">Estado:</strong> 
+        <span class="badge ${this.getStatusBadgeClass(report.status)} fs-6">${this.getStatusDisplayName(report.status)}</span>
+        </div>
+        <div class="mb-2">
+        <strong class="text-danger">Fecha del Reporte:</strong> 
+        <span class="fw-semibold">${this.formatDate(report.created_at)}</span>
+        </div>
+        <div class="mb-0">
+        <strong class="text-danger">Reportado por:</strong> 
+        <span class="fw-semibold">${report.reporter.name} ${report.reporter.surname} (@${report.reporter.username})</span>
+        </div>
+      </div>
+      
+      <div class="mb-3">
         <h6 class="text-primary mb-2">Publicación Reportada</h6>
         <p class="mb-1"><strong>Título:</strong> "${report.publication.title}"</p>
-        <p class="mb-0"><strong>Propietario:</strong> ${report.publication.user.name} ${report.publication.user.surname}</p>
+        <p class="mb-0"><strong>Propietario:</strong> ${report.publication.user.name} ${report.publication.user.surname} (@${report.publication.user.username})</p>
         <p class="mb-1"><strong>Rating:</strong> 
-            <span class="badge bg-warning text-dark">
-              <i class="bi bi-star-fill"></i> ${report.publication.user.rating}/5
-            </span>
-          </p>
-        </div>
-        
-        <div class="mb-3">
-        <h6 class="text-primary mb-2">Detalles del Reporte</h6>
-        <p class="mb-1"><strong>Razón:</strong> ${report.reason}</p>
-        <p class="mb-1"><strong>Estado:</strong> <span class="badge ${this.getStatusBadgeClass(report.status)}">${this.getStatusDisplayName(report.status)}</span></p>
-        <p class="mb-0"><strong>Fecha:</strong> ${this.formatDate(report.created_at)}</p>
-        </div>
-        
-        ${report.response ? `
-        <div class="mb-3">
-          <h6 class="text-primary mb-2">Respuesta del Administrador</h6>
-          <p class="mb-0">${report.response}</p>
-        </div>
-        ` : ''}
+          <span class="badge bg-warning text-dark">
+          <i class="bi bi-star-fill"></i> ${report.publication.user.rating}/5
+          </span>
+        </p>
+      </div>
+      
+      ${report.response ? `
+      <div class="mb-3 p-3 border border-success rounded bg-light">
+        <h6 class="text-success mb-2 fw-bold">✅ Respuesta del Administrador</h6>
+        <p class="mb-0 fw-semibold">${report.response}</p>
+      </div>
+      ` : ''}
       </div>
       `,
-      icon: 'info',
       showCloseButton: true,
       showConfirmButton: false,
-      width: '600px'
+      width: '650px'
     });
   }
 
   resolveReport(reportId: number): void {
-    Swal.fire({
-      title: 'Resolver Reporte',
-      text: 'Proporciona una respuesta para resolver este reporte:',
-      input: 'textarea',
-      inputPlaceholder: 'Escribe la respuesta del administrador...',
-      showCancelButton: true,
-      confirmButtonColor: '#28a745',
-      confirmButtonText: 'Resolver',
-      cancelButtonText: 'Cancelar',
-      preConfirm: (response) => {
-        if (!response || response.trim().length === 0) {
-          Swal.showValidationMessage('Debes proporcionar una respuesta');
-          return false;
-        }
-        return response.trim();
-      }
-    }).then((result) => {
-      if (result.isConfirmed && result.value) {
-        //TODO Implementar la lógica para resolver el reporte
-        Swal.fire({
-          title: 'Éxito',
-          text: 'Reporte marcado como resuelto',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false
-        }).then(() => {
-          this.loadReports();
-        });
-      }
-    });
+    this.selectedReport = this.reports.find(r => r.id === reportId) || null;
+    if (this.selectedReport) {
+      this.showResolveModal = true;
+    }
   }
 
-  markAsPending(reportId: number): void {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esto marcará el reporte como pendiente nuevamente.',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#ffc107',
-      confirmButtonText: 'Sí, marcar como pendiente',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        //TODO MARCAR COMO PENDIENTE DESDE EL BACK
-        Swal.fire({
-          title: 'Éxito',
-          text: 'Reporte marcado como pendiente',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false
-        }).then(() => {
-          this.loadReports();
+  onCloseResolveModal(): void {
+    this.showResolveModal = false;
+    this.selectedReport = null;
+  }
+
+  onReportResolved(): void {
+    this.showResolveModal = false;
+    this.selectedReport = null;
+    this.loadReports(); // Recargar la lista
+  }
+
+ goToPublication(id: number): void {
+        this.router.navigate(['/publication', id]).then(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-      }
-    });
   }
 }

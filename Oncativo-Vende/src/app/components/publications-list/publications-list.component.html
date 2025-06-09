@@ -1,0 +1,399 @@
+<div class="fondo-gris py-4 min-vh-100">
+  <div class="container">
+    <!-- Título -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h2 class="fw-bold text-primary">Administrar Publicaciones</h2>
+        <p class="text-muted">Gestiona todas las publicaciones de la plataforma</p>
+      </div>
+    </div>
+
+    <!-- Filtros - Primera fila -->
+    <div
+      class="d-flex flex-wrap gap-3 bg-white p-3 shadow mb-3"
+      [formGroup]="form"
+      style="border-radius: 10px;"
+    >
+      <!-- Buscador -->
+      <div class="position-relative flex-grow-1" style="min-width: 300px; max-width: 500px;">
+        <input
+          class="form-control pe-5"
+          type="text"
+          placeholder="Buscar por título o descripción..."
+          formControlName="searchTerm"
+          style="border-radius: 20px;"
+        />
+        <span class="position-absolute top-50 end-0 translate-middle-y me-3 text-secondary">
+          <span style="margin-right: 8px;">|</span>
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+
+      <!-- Categorías -->           
+      <div class="d-flex align-items-center">             
+        <small class="me-2">Categorías</small>             
+        <ng-select               
+          [items]="categories"               
+          bindLabel="description"               
+          bindValue="description"               
+          formControlName="categories"               
+          placeholder="Todas"               
+          class="ng-select-sm categories-select"               
+          [multiple]="true"               
+          [clearable]="true"               
+          style="width: 250px; min-width: 250px; max-width: 250px; height: 38px;"             
+        >             
+        </ng-select>           
+      </div>          
+
+      <!-- Etiquetas -->              
+      <div class="d-flex align-items-center" style="gap: 0.5rem;">                  
+        <small>Etiquetas</small>                  
+        <ng-select                      
+          [items]="tags"                      
+          bindLabel="description"                      
+          bindValue="description"                      
+          formControlName="tags"                      
+          placeholder="Todas"                      
+          [multiple]="true"                      
+          [clearable]="true"                      
+          [closeOnSelect]="false"           
+          class="ng-select-sm tags-select"                      
+          style="width: 250px; min-width: 250px; max-width: 250px; height: 38px;"                  
+        >                  
+        </ng-select>              
+      </div>       
+    </div>
+
+    <!-- Filtros - Segunda fila -->
+    <div
+      class="d-flex flex-wrap gap-3 bg-white p-3 shadow justify-content-between align-items-center mb-3"
+      [formGroup]="form"
+      style="border-radius: 10px;"
+    >
+      <!-- Ubicación -->
+      <div class="d-flex align-items-center">
+        <small class="me-2">Ubicación</small>
+        <ng-select
+          [items]="locations"
+          bindLabel="description"
+          bindValue="description"
+          formControlName="location"
+          placeholder="Todas"
+          class="ng-select-sm"
+          [clearable]="true"
+          style="width: 200px; min-width: 200px;"
+        >
+        </ng-select>
+      </div>
+
+      <!-- Estado -->       
+      <div class="d-flex align-items-center">         
+        <small class="me-2">Estado</small>         
+        <ng-select           
+          [items]="[             
+            { label: 'Todas', value: null },             
+            { label: 'Activas', value: true },             
+            { label: 'Inactivas', value: false }           
+          ]"           
+          bindLabel="label"           
+          bindValue="value"           
+          formControlName="active"           
+          placeholder="Todas"           
+          class="ng-select-sm"           
+          [clearable]="false"           
+          style="width: 150px; min-width: 150px; height: 38px;"         
+        >         
+        </ng-select>       
+      </div>
+
+      <!-- Precio -->
+      <div class="d-flex align-items-center gap-2">
+        <small>Precio</small>
+        <input
+          type="number"
+          class="form-control form-control-sm"
+          placeholder="Min"
+          formControlName="minPrice"
+          style="width: 100px; height: 38px;"
+        />
+        <span>-</span>
+        <input
+          type="number"
+          class="form-control form-control-sm"
+          placeholder="Max"
+          formControlName="maxPrice"
+          style="width: 100px; height: 38px;"
+        />
+      </div>
+
+      <!-- Ordenar por -->
+      <div class="d-flex align-items-center">
+        <small class="me-2">Ordenar por</small>
+        <ng-select
+          [items]="[
+            { label: 'Fecha', value: 'createdAt' },
+            { label: 'Precio', value: 'price' },
+            { label: 'Título', value: 'title' },
+            { label: 'Vistas', value: 'views' }
+          ]"
+          bindLabel="label"
+          bindValue="value"
+          formControlName="sortBy"
+          class="ng-select-sm me-2"
+          [clearable]="false"
+          style="width: 150px; min-width: 150px; height: 38px;"
+        >
+        </ng-select>
+        <button 
+          type="button" 
+          class="btn btn-outline-primary btn-sm" 
+          aria-label="Cambiar dirección de ordenamiento"
+          title="Cambiar dirección de ordenamiento" 
+          (click)="toggleSortDirection()"
+          style="height: 38px; width: 38px; display: flex; align-items: center; justify-content: center;"
+        >
+          <i class="bi" [ngClass]="sortDir === 'asc' ? 'bi-arrow-up' : 'bi-arrow-down'"></i>
+        </button>
+      </div>
+
+      <!-- Limpiar filtros -->
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        (click)="clearFilters()"
+        style="height: 38px; width: 38px; display: flex; align-items: center; justify-content: center;"
+        aria-label="Limpiar filtros"
+        title="Limpiar filtros"
+      >
+        <i class="bi bi-trash"></i>
+      </button>
+    </div>
+
+    <!-- Estadísticas rápidas -->
+    <div class="row mb-4">
+      <div class="col-md-3 col-6">
+      <div class="card text-white" style="background: linear-gradient(45deg, #007bff, #0056b3);">
+        <div class="card-body text-center">
+        <h4>{{ totalItems }}</h4>
+        <small>Total Publicaciones</small>
+        </div>
+      </div>
+      </div>
+      <div class="col-md-3 col-6">
+      <div class="card text-white" style="background: linear-gradient(45deg, #28a745, #1e7e34);">
+        <div class="card-body text-center">
+        <h4>{{ getActiveCount() }}</h4>
+        <small>Activas</small>
+        </div>
+      </div>
+      </div>
+      <div class="col-md-3 col-6">
+      <div class="card text-white" style="background: linear-gradient(45deg, #dc3545, #bd2130);">
+        <div class="card-body text-center">
+        <h4>{{ getInactiveCount() }}</h4>
+        <small>Inactivas</small>
+        </div>
+      </div>
+      </div>
+      <div class="col-md-3 col-6">
+      <div class="card text-white" style="background: linear-gradient(45deg, #17a2b8, #138496);">
+        <div class="card-body text-center">
+        <h4>{{ getTotalViews() }}</h4>
+        <small>Total Vistas</small>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <!-- Resultados -->
+    @if (publications.length === 0 && !isLoading) {
+      <div class="alert alert-secondary text-center">
+        <i class="bi bi-inbox display-4 d-block mb-2"></i>
+        <h5>No hay publicaciones para mostrar</h5>
+        <p class="mb-0">Intenta ajustar los filtros de búsqueda</p>
+      </div>
+    } @else if (isLoading) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Cargando publicaciones...</p>
+      </div>
+    } @else {
+
+      <!-- Encabezado de tabla -->
+      <div class="row fw-bold text-secondary px-2 mb-2 d-none d-lg-flex">
+        <div class="col-1 text-center">Imagen</div>
+        <div class="col-3">Título / Usuario</div>
+        <div class="col-2 text-center">Precio / Vistas</div>
+        <div class="col-2 text-center">Ubicación</div>
+        <div class="col-1 text-center">Estado</div>
+        <div class="col-2 text-center">Fecha</div>
+        <div class="col-1 text-center">Acciones</div>
+      </div>
+
+      <div class="list-group">
+        @for (pub of publications; track pub.id) {
+          <div
+            class="list-group-item mb-2 border rounded shadow-sm position-relative"
+            [class.border-success]="pub.active"
+            [class.border-danger]="!pub.active"
+            (click)="viewPublication(pub.id)"
+            style="cursor: pointer;"
+          >
+            <div class="row align-items-center">
+              <!-- Imagen -->
+              <div class="col-12 col-sm-3 col-lg-1 d-flex align-items-center justify-content-center mb-2 mb-sm-0">
+                <img
+                  [src]="pub.images[0] || 'assets/Publications/0-notfound.jpg'"
+                  [alt]="pub.title"
+                  class="img-thumbnail"
+                  style="width: 70px; height: 70px; object-fit: contain;"
+                />
+              </div>
+              
+              <!-- Título y Usuario -->
+              <div class="col-12 col-sm-9 col-lg-3 mb-2 mb-lg-0">
+                <h6 class="mb-1 fw-bold">{{ pub.title | truncate:35 }}</h6>
+                <small class="text-muted d-block" style="font-size: 0.75rem;">
+                  {{ pub.description | truncate:40 }}
+                </small>
+                <small class="text-primary">
+                  <i class="bi bi-person"></i> {{ pub.user.name }} {{ pub.user.surname }}
+                </small>
+              </div>
+              
+              <!-- Precio y Vistas -->
+              <div class="col-6 col-lg-2 text-center">
+                <h6 class="text-success mb-1">${{ pub.price | decimalFormat }}</h6>
+                <small class="text-muted">
+                  <i class="bi bi-eye"></i> {{ pub.views }} vistas
+                </small>
+              </div>
+              
+              <!-- Ubicación -->
+              <div class="col-6 col-lg-2 text-center">
+                <small class="badge bg-light text-dark">
+                  <i class="bi bi-geo-alt"></i> {{ pub.location }}
+                </small>
+              </div>
+              
+              <!-- Estado -->
+              <div class="col-6 col-lg-1 text-center">
+                <span class="badge" [class]="pub.active ? 'bg-success' : 'bg-danger'">
+                  {{ pub.active ? 'Activa' : 'Inactiva' }}
+                </span>
+              </div>
+              
+              <!-- Fecha -->
+              <div class="col-6 col-lg-2 text-center">
+                <small class="text-muted d-block" style="font-size: 0.7rem;">
+                  <i class="bi bi-calendar"></i> {{ formatDate(pub.created_at) }}
+                </small>
+                <small class="text-muted" style="font-size: 0.7rem;">
+                  Hace {{ getDaysByDate(pub.created_at) }} días
+                </small>
+              </div>
+
+              <!-- Acciones -->
+              <div class="col-12 col-lg-1 text-center position-relative mt-2 mt-lg-0">
+                <button
+                  class="btn btn-outline-primary btn-sm"
+                  type="button"
+                  (click)="toggleDropdown(pub.id); $event.stopPropagation()"
+                  aria-haspopup="true"
+                  style="width: 35px; height: 35px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                  [attr.aria-expanded]="dropdownOpenId === pub.id"
+                >
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul
+                  class="dropdown-menu dropdown-menu-end"
+                  [class.show]="dropdownOpenId === pub.id"
+                  style="position: absolute; top: 100%; right: 0; margin-top: 0.125rem; z-index: 1050;"
+                >
+                  <li>
+                    <button
+                      class="dropdown-item"
+                      (click)="viewPublication(pub.id); closeDropdown(); $event.stopPropagation()"
+                    >
+                      <i class="bi bi-eye me-2"></i> Ver más
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      class="dropdown-item"
+                      (click)="goToEditPublication(pub.id); closeDropdown(); $event.stopPropagation()"
+                    >
+                      <i class="bi bi-pencil-square me-2"></i> Editar
+                    </button>
+                  </li>
+                  @if (pub.active) {
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        (click)="deactivatePublication(pub.id); closeDropdown(); $event.stopPropagation()"
+                      >
+                        <i class="bi bi-x-circle text-danger me-2"></i> Dar de baja
+                      </button>
+                    </li>
+                  } @else {
+                    <li>
+                      <button
+                        class="dropdown-item"
+                        (click)="activatePublication(pub.id); closeDropdown(); $event.stopPropagation()"
+                      >
+                        <i class="bi bi-check-circle text-success me-2"></i> Reactivar
+                      </button>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Paginación -->
+    <nav *ngIf="totalPages > 0" class="d-flex justify-content-center mt-4">
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="page === 1">
+          <button
+            class="page-link"
+            (click)="page > 1 && changePage(page - 1)"
+            [disabled]="page === 1"
+          >
+            <i class="bi bi-chevron-left"></i> Anterior
+          </button>
+        </li>
+
+        <li
+          class="page-item"
+          *ngFor="let p of getPages()"
+          [class.active]="p === page"
+        >
+          <button class="page-link" (click)="changePage(p)">{{ p }}</button>
+        </li>
+
+        <li class="page-item" [class.disabled]="page === totalPages">
+          <button
+            class="page-link"
+            (click)="page < totalPages && changePage(page + 1)"
+            [disabled]="page === totalPages"
+          >
+            Siguiente <i class="bi bi-chevron-right"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Información de paginación -->
+    <div class="text-center text-muted mt-2" *ngIf="totalItems > 0">
+      <small>
+        Mostrando {{ (page - 1) * size + 1 }} - {{ Math.min(page * size, totalItems) }} de {{ totalItems }} publicaciones
+      </small>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,103 @@
+<div class="modal fade show d-block" tabindex="-1"
+     style="background-color: rgba(0, 0, 0, 0.5);">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+    <div class="modal-header">
+        <h5 class="modal-title">Editar Usuario (Admin)</h5>
+        <button type="button" class="btn-close" (click)="close()" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="isCompany" formControlName="isCompany">
+            <label class="form-check-label" for="isCompany">¿Es empresa?</label>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">{{ isCompany ? 'Nombre de empresa:' : 'Nombre:' }}</label>
+              <input type="text" class="form-control"
+                formControlName="name"
+                [ngClass]="onValidate('name')">
+              <div class="invalid-feedback">{{ showError('name') }}</div>
+            </div>
+
+            <div class="col-md-6 mb-3" *ngIf="!isCompany">
+              <label class="form-label">Apellido:</label>
+              <input type="text" class="form-control"
+                formControlName="surname"
+                [ngClass]="onValidate('surname')">
+              <div class="invalid-feedback">{{ showError('surname') }}</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Nombre de usuario:</label>
+              <input type="text" class="form-control" 
+                formControlName="username"
+                readonly
+                style="background-color: #f8f9fa; cursor: not-allowed;">
+              <small class="text-muted">El nombre de usuario no se puede modificar</small>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email: </label>
+              <input type="email" class="form-control"
+                formControlName="email"
+                [ngClass]="onValidate('email')">
+              <div class="invalid-feedback">{{ showError('email') }}</div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Ubicación: </label>
+            <ng-select 
+              [items]="locations"
+              bindLabel="description"
+              bindValue="id"
+              [clearable]="true"
+              placeholder="Seleccione una ubicación"
+              formControlName="location_id"
+              [ngClass]="onValidate('location_id')">
+            </ng-select>
+            <div class="invalid-feedback d-block" *ngIf="form.get('location_id')?.invalid && (form.get('location_id')?.dirty || form.get('location_id')?.touched)">
+              {{ showError('location_id') }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Roles: </label>
+            <ng-select 
+              [items]="roles"
+              bindLabel="description"
+              bindValue="id"
+              [multiple]="true"
+              [clearable]="true"
+              placeholder="Seleccione uno o más roles"
+              formControlName="roles"
+              [ngClass]="onValidate('roles')">
+            </ng-select>
+            <div class="invalid-feedback d-block" *ngIf="form.get('roles')?.invalid && (form.get('roles')?.dirty || form.get('roles')?.touched)">
+              {{ showError('roles') }}
+            </div>
+            <small class="text-muted">Puede seleccionar múltiples roles</small>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="close()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+              <i class="fas fa-save me-1"></i>
+              Guardar Cambios
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

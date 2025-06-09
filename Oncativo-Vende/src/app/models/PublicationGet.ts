@@ -6,10 +6,10 @@ export interface PublicationGet {
     id: number;
     name: string;
     surname: string;
+    username: string;
     verified: boolean;
     avatar_url: string | null;
     rating: number;
-    views: number;
         };
     title: string;
     description: string;
@@ -22,5 +22,6 @@ export interface PublicationGet {
     contacts: ContactGet[];
     images: string[];
     latitude: string;
+    views: number;
     longitude: string;
     }

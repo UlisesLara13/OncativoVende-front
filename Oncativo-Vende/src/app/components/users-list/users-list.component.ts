@@ -10,11 +10,12 @@ import { Router } from '@angular/router';
 import { UsersService } from '../../services/users.service';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { AuthService } from '../../services/auth.service';
+import { UpdateUserComponent } from '../update-user/update-user.component';
 
 @Component({
   selector: 'app-users-list',
   standalone: true,
-  imports: [FormsModule, CommonModule, ReactiveFormsModule, PipesModule, NgSelectModule],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule, PipesModule, NgSelectModule, UpdateUserComponent],
   templateUrl: './users-list.component.html',
   styleUrl: './users-list.component.css'
 })
@@ -28,6 +29,10 @@ export class UsersListComponent implements OnInit {
   page = 1;
   size = 10;
   dropdownOpenId: number | null = null;
+
+  selectedUserId: number | null = null;
+  selectedUserData: UserGet | null = null;
+  showModal = false;
 
   private readonly userService = inject(UsersService);
   private readonly router = inject(Router);
@@ -137,6 +142,20 @@ export class UsersListComponent implements OnInit {
     }
   }
 
+  editUser(user: UserGet): void {
+    this.selectedUserId = user.id;
+    this.selectedUserData = user;
+    this.showModal = true; 
+    this.closeDropdown();
+  }
+
+  onModalClosed(): void {
+    this.showModal = false;
+    this.selectedUserId = null;
+    this.selectedUserData = null;
+    this.loadUsers(); 
+  }
+
   viewUserDetails(user: UserGet): void {
   Swal.fire({
     title: 'Detalles del Usuario',
@@ -223,7 +242,6 @@ export class UsersListComponent implements OnInit {
         </div>
       </div>
     `,
-    icon: 'info',
     showCloseButton: true,
     showConfirmButton: false,
     width: '650px',

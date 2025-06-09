@@ -117,7 +117,8 @@
           @if (user.id !== currentUserId) {
           <div
             class="list-group-item mb-2 border rounded shadow-sm"
-            style="cursor: default;"
+            style="cursor: pointer;"
+            (click)="viewUserDetails(user); closeDropdown(); $event.stopPropagation()"
           >
             <div class="row align-items-center">
               <!-- Avatar -->
@@ -202,7 +203,14 @@
                       class="dropdown-item"
                       (click)="viewUserDetails(user); closeDropdown(); $event.stopPropagation()"
                     >
-                      <i class="bi bi-eye me-2"></i> Ver detalles
+                      <i class="bi bi-eye me-2"></i> Ver más
+                    </button>
+                </li>
+                
+                  <li>
+                    <button class="dropdown-item"
+                            (click)="editUser(user); $event.stopPropagation()">
+                      <i class="bi bi-pencil-square me-2"></i> Editar
                     </button>
                 </li>
                   <li>
@@ -211,14 +219,14 @@
                         class="dropdown-item"
                         (click)="unverifyUser(user.id); closeDropdown(); $event.stopPropagation()"
                       >
-                        <i class="bi bi-patch-check-fill text-danger me-2"></i> Desverificar usuario
+                        <i class="bi bi-patch-check-fill text-danger me-2"></i> Desverificar
                       </button>
                     } @else {
                       <button
                         class="dropdown-item"
                         (click)="verifyUser(user.id); closeDropdown(); $event.stopPropagation()"
                       >
-                        <i class="bi bi-patch-check-fill text-info me-2"></i> Verificar usuario
+                        <i class="bi bi-patch-check-fill text-info me-2"></i> Verificar
                       </button>
                     }
                   </li>
@@ -271,4 +279,10 @@
       </ul>
     </nav>
   </div>
+<app-update-user
+  *ngIf="showModal && selectedUserId && selectedUserData"
+  [userId]="selectedUserId" 
+  [userData]="selectedUserData"
+  (closeModal)="onModalClosed()">
+</app-update-user>
 </div>

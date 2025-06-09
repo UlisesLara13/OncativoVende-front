@@ -341,6 +341,11 @@ loadPublication(id: string) {
   }
 }
 
+isAdminOrModerator(): boolean {
+  const user = this.userLoged;
+  return user && (user.roles.includes('ADMIN') || user.roles.includes('MODERADOR'));
+}
+
 getContactIcon(type: string): string {
   switch (type.toLowerCase()) {
     case 'whatsapp':

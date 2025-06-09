@@ -7,6 +7,8 @@ import { ContactTypeGet } from '../models/ContactTypeGet';
 import { ReportPost } from '../models/ReportPost';
 import { ReportFilterDto } from '../models/ReportFilterDto';
 import { PaginatedReports } from '../models/PaginatedReports';
+import { SolveReportPost } from '../models/SolveReportPost';
+import { RolGet } from '../models/RolGet';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +19,7 @@ export class UtilsService {
   private readonly locationsUrl = 'http://localhost:8080/locations';
   private readonly tagsUrl = 'http://localhost:8080/tags';
   private readonly contactsUrl = 'http://localhost:8080/contacts';
+  private readonly rolesUrl = 'http://localhost:8080/roles';
   private readonly reportsUrl = 'http://localhost:8080/reports';
 
   getLocations(): Observable<LocationGet[]> {    
@@ -25,6 +28,10 @@ export class UtilsService {
 
   getTags(): Observable<TagGet[]> {
     return this.http.get<TagGet[]>(this.tagsUrl);
+  }
+
+  getRoles(): Observable<RolGet[]> {
+    return this.http.get<RolGet[]>(this.rolesUrl);
   }
 
   getContactsTypes(): Observable<ContactTypeGet[]> {
@@ -42,6 +49,10 @@ export class UtilsService {
   getFilteredReports(filter: ReportFilterDto): Observable<PaginatedReports> {
   return this.http.post<PaginatedReports>(`${this.reportsUrl}/filter`, filter);
 }
+
+ solveReport(dto: SolveReportPost): Observable<boolean> {
+    return this.http.post<boolean>(`${this.reportsUrl}/solve`, dto);
+  }
 
 
 

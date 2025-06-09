@@ -6,6 +6,7 @@ export interface RatingGet {
         id: number;
         name: string;
         surname: string;
+        username: string;
         verified: boolean;
         rating: number;
         avatar_url: string | null;
