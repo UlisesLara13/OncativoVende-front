@@ -7,6 +7,7 @@ import { SearchDto } from '../models/SearchDto';
 import { PaginatedPublications } from '../models/PaginatedPublications';
 import { PublicationPost } from '../models/PublicationPost';
 import { SearchByUserDto } from '../models/SearchByUserDto';
+import { PublicationPut } from '../models/PublicationPut';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,7 @@ export class PublicationsService {
   return this.http.post<PublicationGet>(`${this.publicationsUrl}`, data);
   }
 
-  updatePublication(id: number, data: PublicationPost): Observable<PublicationGet> {
+  updatePublication(id: number, data: PublicationPut): Observable<PublicationGet> {
     return this.http.put<PublicationGet>(`${this.publicationsUrl}/${id}`, data);
   }
 

@@ -105,7 +105,7 @@
                     
                     <!-- Sin suscripción -->
                     <div *ngSwitchDefault class="subscription-badge sin-suscripcion">
-                      <i class="bi bi-x-circle me-2"></i>
+                      <i class="bi bi-x-circle me-1"></i>
                       <span class="fw-semibold">Sin suscripción</span>
                     </div>
                   </ng-container>
@@ -129,6 +129,13 @@
                 (click)="openChangePasswordModal()">
           <i class="bi bi-key me-2"></i>
           Modificar Contraseña
+        </button>
+        
+        <button type="button" 
+                class="btn btn-danger d-flex align-items-center justify-content-center" 
+                (click)="deleteAccount()">
+          <i class="bi bi-trash me-2"></i>
+          Eliminar Cuenta
         </button>
         
         <button type="button" 

@@ -1,6 +1,7 @@
 
-  body {
-    background-color: #f8f9fa; /* fondo suave que combine */
+  .fondo-gris{
+    background-color: #f8f9fa;
+    padding-bottom: 2rem;
   }
 
   .fondo-carrusel {
@@ -94,5 +95,52 @@
 
 .right-arrow {
   right: -50px; /* Ajusta para que quede fuera del contenedor a la derecha */
+}
+
+.category-card {
+  transition: all 0.2s ease;
+  border: 1px solid #e9ecef !important;
+}
+
+.category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  border-color: #007bff !important;
+}
+
+.category-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.category-image {
+  transition: transform 0.2s ease;
+}
+
+.category-card:hover .category-image {
+  transform: scale(1.05);
+}
+
+.category-name {
+  background-color: white;
+}
+
+.category-name h6 {
+  color: #212529;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .category-image {
+    height: 100px !important;
+  }
+  
+  .category-name {
+    padding: 0.75rem !important;
+  }
+  
+  .category-name h6 {
+    font-size: 0.85rem;
+  }
 }
   

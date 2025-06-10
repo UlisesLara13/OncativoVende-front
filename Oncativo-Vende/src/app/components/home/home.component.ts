@@ -6,18 +6,61 @@ import { DecimalFormatPipe } from '../../pipes/decimal-format.pipe';
 import { PipesModule } from '../../pipes/pipes.module';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
-
+import { Category } from '../../models/Category';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule,PipesModule,RouterModule],
+  imports: [CommonModule, PipesModule, RouterModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
 
   publications: PublicationGet[] = [];
+  categories: Category[] = [
+    {
+      name: 'Vehículos',
+      image: 'assets/Utils/cars-2.webp'
+    },
+    {
+      name: 'Deportes y fitness',
+      image: 'assets/Utils/sports.webp'
+    },
+    {
+      name: 'Hogar y muebles',
+      image: 'assets/Utils/home.webp'
+    },
+    {
+      name: 'Electrónica',
+      image: 'assets/Utils/electronic.webp'
+    },
+    {
+      name: 'Indumentaria',
+      image: 'assets/Utils/clothes.webp'
+    },
+    {
+      name: 'Juguetes y juegos',
+      image: 'assets/Utils/toys.webp'
+    },
+    {
+      name: 'Varios',
+      image: 'assets/Utils/various.jpg'
+    },
+    {
+      name: 'Entretenimiento',
+      image: 'assets/Utils/entre.jpg'
+    },
+    {
+      name: 'Arte',
+      image: 'assets/Utils/art.webp'
+    },
+    {
+      name: 'Herramientas',
+      image: 'assets/Utils/tools.webp'
+    }
+  ];
+
   private readonly publicationService = inject(PublicationsService);
   private readonly router = inject(Router);
   @ViewChild('carouselContainer', { static: false }) carouselContainer!: ElementRef;
@@ -25,6 +68,7 @@ export class HomeComponent {
   constructor() {
     this.loadLast10Publications();
   }
+
   loadLast10Publications(): void {
     this.publicationService.getLast10Publications().subscribe({
       next: (publications: PublicationGet[]) => {
@@ -59,7 +103,16 @@ export class HomeComponent {
       queryParams: {
         category: categorySelected
       }
-  });
+    });
+  }
+
+  onTagAndCategoryChange(tag: string, categorySelected: string) {
+    this.router.navigate(['/search'], {
+      queryParams: {
+        tag: tag,
+        category: categorySelected
+      }
+    });
   }
 
   onPriceChange(maxPrice: string) {
@@ -67,7 +120,7 @@ export class HomeComponent {
       queryParams: {
         maxPrice: maxPrice
       }
-  });
+    });
   }
 
   seeMore() {
@@ -76,13 +129,12 @@ export class HomeComponent {
     });
   }
 
-
   onTagChange(tag: string) {
     this.router.navigate(['/search'], {
       queryParams: {
         tag: tag
       }
-  });
+    });
   }
 
   getTagClass(tag: string): string {
@@ -95,7 +147,7 @@ export class HomeComponent {
       'Precio fijo': 'bg-dark',
       'Precio negociable': 'bg-warning',
     };
-  
+
     return `badge rounded-pill ${tagColorMap[tag] || 'bg-secondary'}`;
   }
 }

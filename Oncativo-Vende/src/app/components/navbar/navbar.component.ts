@@ -32,6 +32,7 @@ export class NavbarComponent implements OnInit {
   user: UserGet = new UserGet();
   categories: CategoryGet[] = [];
   searchText: string = '';
+selectedCategoryId: any;
 
   ngOnInit(): void {
   this.authService.user$.subscribe((user) => {

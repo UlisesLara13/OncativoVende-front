@@ -66,6 +66,10 @@ export class UsersService {
     return this.http.delete<void>(`${this.url}/${userId}`);
   }
 
+  deleteUserPermanently(userId: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/delete/${userId}`);
+  }
+
   activateUser(userId: number): Observable<void> {
     return this.http.put<void>(`${this.url}/activate/${userId}`, null);
   }

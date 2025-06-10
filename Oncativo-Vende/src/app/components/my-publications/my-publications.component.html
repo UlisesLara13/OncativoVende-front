@@ -132,16 +132,18 @@
               </div>
 
               <div class="col-12 col-md-1 text-end position-relative mt-2 mt-md-0">
-                <button
+                <div class="d-flex justify-content-end">
+                  <button
                   class="btn btn-outline-primary btn-sm"
                   type="button"
                   (click)="toggleDropdown(pub.id); $event.stopPropagation()"
                   aria-haspopup="true"
                   style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;"
                   [attr.aria-expanded]="dropdownOpenId === pub.id"
-                >
+                  >
                   <i class="bi bi-three-dots-vertical"></i>
-                </button>
+                  </button>
+                </div>
                 <ul
                   class="dropdown-menu dropdown-menu-end"
                   [class.show]="dropdownOpenId === pub.id"

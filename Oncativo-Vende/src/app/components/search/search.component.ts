@@ -109,10 +109,10 @@ export class SearchComponent implements OnInit {
 
   searchDto.page = this.currentPage - 1; 
 
-  console.log('Search DTO:', searchDto); // Línea de depuración
-  console.log('publications', this.publications); // Línea de depuración
-  console.log(this.category); // Línea de depuración
-  console.log(this.tag); // Línea de depuración
+  console.log('Search DTO:', searchDto); 
+  console.log('publications', this.publications); 
+  console.log(this.category); 
+  console.log(this.tag); 
 
   this.publicationsService.getFilteredPublications(searchDto).subscribe((response: PaginatedPublications) => {
     this.publications = response.content;

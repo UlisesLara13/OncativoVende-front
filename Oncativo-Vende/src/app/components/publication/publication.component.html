@@ -15,7 +15,7 @@
   </button>
 
   <!-- Botón Editar (solo si es el dueño de la publicación) -->
-  @if (publication.user.id == userLoged.id) {
+  @if (publication.user.id == userLoged.id || isAdmin()) {
     <button class="btn btn-outline-primary btn-sm" (click)="goToEditPublication(publication.id)">
       <i class="bi bi-pencil-fill me-1"></i> Editar
     </button>

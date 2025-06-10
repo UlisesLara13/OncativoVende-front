@@ -20,6 +20,7 @@ import { EditPublicationComponent } from './components/edit-publication/edit-pub
 import { UsersListComponent } from './components/users-list/users-list.component';
 import { ReportsListComponent } from './components/reports-list/reports-list.component';
 import { PublicationsListComponent } from './components/publications-list/publications-list.component';
+import { FrequentQuestionsComponent } from './components/frequent-questions/frequent-questions.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
@@ -40,6 +41,7 @@ export const routes: Routes = [
     { path: 'moderator/reports', component: ReportsListComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN','MODERADOR'] } },
     { path: 'not-found', component: NotFoundComponent },
     { path: 'search', component: SearchComponent },
+    {path: 'faq', component: FrequentQuestionsComponent},
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: '**', redirectTo: 'not-found' }
 ];

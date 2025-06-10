@@ -346,6 +346,11 @@ isAdminOrModerator(): boolean {
   return user && (user.roles.includes('ADMIN') || user.roles.includes('MODERADOR'));
 }
 
+isAdmin(): boolean {
+  const user = this.userLoged;
+  return user && user.roles.includes('ADMIN');
+}
+
 getContactIcon(type: string): string {
   switch (type.toLowerCase()) {
     case 'whatsapp':

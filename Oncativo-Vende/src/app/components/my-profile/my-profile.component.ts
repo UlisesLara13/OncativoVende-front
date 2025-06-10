@@ -103,6 +103,43 @@ export class MyProfileComponent implements OnInit {
     };
   }
 
+  deleteAccount(): void {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará tu cuenta permanentemente y todas tus publicaciones.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.usersService.deleteUserPermanently(this.userLoged.id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Cuenta eliminada',
+              text: 'Tu cuenta ha sido eliminada exitosamente.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+            this.authService.logOut();
+            this.router.navigate(['/']);
+          },
+          error: (error) => {
+            console.error('Error al eliminar la cuenta:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo eliminar la cuenta. Inténtalo de nuevo más tarde.'
+            });
+          }
+        });
+      }
+    });
+  }
+
   uploadProfilePic(file: File): void {
     if (this.userLoged && this.userLoged.id) {
       this.fileService.uploadProfilePic(this.userLoged.id, file).subscribe({

@@ -114,16 +114,74 @@ export class EditPublicationComponent implements OnInit, AfterViewInit {
 }
 
 
-  ngAfterViewInit(): void {
-    this.form.get('location_id')?.valueChanges.subscribe(() => {
+ngAfterViewInit(): void {
+  this.form.get('location_id')?.valueChanges.subscribe((locationId) => {
+    if (locationId && this.locationCoordinates[locationId]) {
+      const newCoords = this.locationCoordinates[locationId];
+      
+      this.form.patchValue({
+        latitude: newCoords[0],
+        longitude: newCoords[1]
+      });
+      
       if (this.map) {
         this.map.remove(); 
+        this.map = undefined as any;
       }
+      
       setTimeout(() => {
-        this.initMap();
+        if (this.mapContainer && this.mapContainer.nativeElement) {
+          this.initMapWithCoords(newCoords);
+        }
       }, 100);
-    });
+    }
+  });
+}
+
+initMapWithCoords(coords: [number, number]): void {
+  if (this.mapContainer && this.mapContainer.nativeElement) {
+    const container = this.mapContainer.nativeElement;
+    
+    try {
+      this.map = L.map(container).setView(coords, 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(this.map);
+
+      const customIcon = L.divIcon({
+        className: 'custom-marker',
+        html: '<div style="background-color: #007bff; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+
+      this.marker = L.marker(coords, {
+        icon: customIcon,
+        draggable: true
+      }).addTo(this.map);
+
+      setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize();
+        }
+      }, 100);
+
+      this.map.on('click', (e: L.LeafletMouseEvent) => {
+        const { lat, lng } = e.latlng;
+        this.updateMarkerPosition(lat, lng);
+      });
+
+      this.marker.on('dragend', (e: L.DragEndEvent) => {
+        const { lat, lng } = e.target.getLatLng();
+        this.updateMarkerPosition(lat, lng);
+      });
+
+    } catch (error) {
+      console.error('Error initializing map:', error);
+    }
   }
+}
 
   private getCategoryIdsByNames(categoryNames: string[]): number[] {
   return categoryNames.map(name => {
@@ -133,7 +191,6 @@ export class EditPublicationComponent implements OnInit, AfterViewInit {
 }
 
 private getTagIdByName(tagName: string): number | null {
-  // Mapeo de nombres de tags a IDs
   const tagMapping: { [key: string]: number } = {
     'Nuevo': 1,
     'Usado': 2,
@@ -180,10 +237,8 @@ private getLocationIdByName(locationName: string): number | null {
   }
 
   populateForm(publication: any): void {
-  // Convertir nombres de categorías a IDs
   const categoryIds = this.getCategoryIdsByNames(publication.categories || []);
   
-  // Obtener ID de ubicación por nombre
   const locationId = this.getLocationIdByName(publication.location);
 
   this.form.patchValue({
@@ -192,11 +247,10 @@ private getLocationIdByName(locationName: string): number | null {
     price: publication.price,
     location_id: locationId,
     categories: categoryIds,
-    latitude: parseFloat(publication.latitude), // Convertir string a number
-    longitude: parseFloat(publication.longitude) // Convertir string a number
+    latitude: parseFloat(publication.latitude), 
+    longitude: parseFloat(publication.longitude) 
   });
 
-  // Procesar tags por nombre
   if (publication.tags && publication.tags.length > 0) {
     publication.tags.forEach((tagName: string) => {
       const tagId = this.getTagIdByName(tagName);
@@ -260,45 +314,23 @@ private getLocationIdByName(locationName: string): number | null {
     });
   }
 
-  initMap(): void {
-    const locationId = this.form.get('location_id')?.value;
-    const lat = this.form.get('latitude')?.value;
-    const lng = this.form.get('longitude')?.value;
-    
-    // Usar coordenadas existentes si están disponibles, sino usar coordenadas de la localidad
-    const coords: [number, number] = (lat && lng) ? [lat, lng] : 
-                    (this.locationCoordinates[locationId] || [-31.9135, -63.6823]);
-
-    if (this.mapContainer && this.mapContainer.nativeElement) {
-      this.map = L.map(this.mapContainer.nativeElement).setView(coords, 13);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(this.map);
-
-      const customIcon = L.divIcon({
-        className: 'custom-marker',
-        html: '<div style="background-color: #007bff; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
-      });
-
-      this.marker = L.marker(coords, {
-        icon: customIcon,
-        draggable: true
-      }).addTo(this.map);
-
-      this.map.on('click', (e: L.LeafletMouseEvent) => {
-        const { lat, lng } = e.latlng;
-        this.updateMarkerPosition(lat, lng);
-      });
-
-      this.marker.on('dragend', (e: L.DragEndEvent) => {
-        const { lat, lng } = e.target.getLatLng();
-        this.updateMarkerPosition(lat, lng);
-      });
-    }
+ initMap(): void {
+  const locationId = this.form.get('location_id')?.value;
+  const lat = this.form.get('latitude')?.value;
+  const lng = this.form.get('longitude')?.value;
+  
+  let coords: [number, number];
+  
+  if (locationId && this.locationCoordinates[locationId]) {
+    coords = this.locationCoordinates[locationId];
+  } else if (lat && lng) {
+    coords = [lat, lng];
+  } else {
+    coords = [-31.9135, -63.6823]; 
   }
+
+  this.initMapWithCoords(coords);
+}
 
   updateMarkerPosition(lat: number, lng: number): void {
     this.marker.setLatLng([lat, lng]);
@@ -570,7 +602,6 @@ loadSelectData(): Promise<void> {
     this.imageSlots.filter(img => typeof img === 'string') as string[];
 
     const publication = {
-      user_id: this.authService.getUser().id,
       title: this.form.value.title,
       description: this.form.value.description,
       price: this.form.value.price,
