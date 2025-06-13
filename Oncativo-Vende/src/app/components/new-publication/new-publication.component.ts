@@ -187,11 +187,31 @@ initMap(): void {
     return this.form.get('contacts') as FormArray;
   }
 
-  addContact(): void {
-  const contactForm = this.fb.group({
-    contact_type_id: [5, Validators.required],
-    contact_value: [this.user.email, Validators.required]
-  });
+addContact(): void {
+  if (this.contacts.length >= 10) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Límite alcanzado',
+      text: 'No puedes agregar más de 10 contactos.',
+      showConfirmButton: false,
+      timer: 2000
+    });
+    return;
+  }
+
+  let contactForm;
+  
+  if (this.contacts.length === 0) {
+    contactForm = this.fb.group({
+      contact_type_id: [5, Validators.required],
+      contact_value: [this.user.email, Validators.required]
+    });
+  } else {
+    contactForm = this.fb.group({
+      contact_type_id: [null, Validators.required],
+      contact_value: ['', Validators.required]
+    });
+  }
 
   this.contacts.push(contactForm);
 }
@@ -365,14 +385,27 @@ hasAtLeastOneImage(): boolean {
       })
       .catch(err => {
         console.error('Error al subir imágenes', err);
-        alert('Error al subir imágenes, intenta nuevamente.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al subir imágenes',
+          text: 'Ocurrió un error al subir las imágenes. Por favor, inténtalo de nuevo.',
+          showConfirmButton: false,
+          timer: 2000
+        });
       });
   }
+      
 
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      alert('Completa todos los campos requeridos antes de publicar.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor, completa todos los campos requeridos antes de continuar.',
+        showConfirmButton: false,
+        timer: 2000
+      });
       return;
     }
 
@@ -437,9 +470,36 @@ hasAtLeastOneImage(): boolean {
     }
   }
 
-  onSlotImageSelected(event: any, index: number): void {
+onSlotImageSelected(event: any, index: number): void {
     const file: File = event.target.files[0];
     if (file) {
+      // Validar tipo de archivo
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Formato no válido',
+          text: 'Solo se permiten archivos JPG, JPEG y PNG.',
+          showConfirmButton: false,
+          timer: 2000
+        });
+        event.target.value = '';
+        return;
+      }
+
+      const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+      if (file.size > maxSize) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo muy grande',
+          text: 'El archivo no puede ser mayor a 5MB.',
+          showConfirmButton: false,
+          timer: 2000
+        });
+        event.target.value = '';
+        return;
+      }
+
       this.imageSlots[index] = file;
     }
   }

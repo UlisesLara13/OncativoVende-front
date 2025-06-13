@@ -1,4 +1,3 @@
-
 <div class="fondo-gris" style="min-height: 100vh;">
 @if (authService.hasRole("PREMIUM")) {
     <div class="container py-5">
@@ -40,6 +39,17 @@
             Luego del plazo de finalizacíon podes volver a adquirir una nueva suscripción.
         </p>
         </div>
+        
+        @if (isAdmin()) {
+          <div class="card-footer bg-light">
+            <div class="text-center">
+              <button class="btn btn-outline-secondary btn-sm" (click)="openDiscountModal()">
+                <i class="bi bi-gear me-1"></i>
+                Gestionar Descuento Global
+              </button>
+            </div>
+          </div>
+        }
     </div>
     </div>
 </div>
@@ -51,8 +61,25 @@
     <div class="col-md-8 text-center">
       <h1 class="display-4 fw-bold">Suscripciones</h1>
       <p class="lead">Elige el plan que mejor se adapte a tus necesidades para empezar a publicar tus productos</p>
+      
+      @if (currentDiscount > 0) {
+        <div class="alert alert-success d-inline-block">
+          <i class="bi bi-tag-fill me-2"></i>
+          <strong>¡Oferta especial!</strong> {{currentDiscount}}% de descuento en todos los planes
+        </div>
+      }
+      
+      @if (isAdmin()) {
+        <div class="mt-3">
+          <button class="btn btn-outline-secondary btn-sm" (click)="openDiscountModal()">
+            <i class="bi bi-gear me-1"></i>
+            Gestionar Descuento
+          </button>
+        </div>
+      }
     </div>
   </div>
+
 <!-- Suscripciones -->
 <div class="container py-5">
   <div class="row justify-content-center g-4">
@@ -60,15 +87,31 @@
     <!-- Bronce -->
     <div class="col-md-4">
       <div class="card border-0 shadow-sm h-100 text-center">
-        <div class="card-header bg-bronce text-white fs-5 fw-bold">Suscripción Bronce</div>
+        <div class="card-header bg-bronce text-white fs-5 fw-bold">
+          Suscripción Bronce
+          @if (currentDiscount > 0) {
+            <div class="small">
+              <span class="badge bg-warning text-dark">-{{currentDiscount}}%</span>
+            </div>
+          }
+        </div>
         <div class="card-body">
-          <h1 class="card-title">$1500</h1>
-          <h6>$1500 / mes</h6>
+          @if (currentDiscount > 0) {
+            <div class="mb-2">
+              <span class="text-muted text-decoration-line-through">${{basePrices.bronce}}</span>
+            </div>
+          }
+          <h1 class="card-title">${{getDiscountedPrice(basePrices.bronce)}}</h1>
+          <h6>${{getDiscountedPrice(basePrices.bronce)}} / mes</h6>
           <ul class="list-unstyled mt-3 mb-4">
             <li><i class="bi bi-check-lg text-success"></i> 1 mes de servicio</li>
-            <li><i class="bi bi-x text-danger"></i> Sin ahorro</li>
+            @if (currentDiscount > 0) {
+              <li><i class="bi bi-check-lg text-success"></i> {{currentDiscount}}% de descuento aplicado</li>
+            } @else {
+              <li><i class="bi bi-x text-danger"></i> Sin descuento</li>
+            }
           </ul>
-          <button class="btn btn-outline-bronce" (click)="pay('Suscripción Bronce', 1)">Elegir Bronce</button>
+          <button class="btn btn-outline-bronce" (click)="pay('Suscripción Bronce', basePrices.bronce)">Elegir Bronce</button>
         </div>
       </div>
     </div>
@@ -76,15 +119,30 @@
     <!-- Plata -->
     <div class="col-md-4">
       <div class="card border-0 shadow h-100 text-center">
-        <div class="card-header bg-plata text-white fs-5 fw-bold">Suscripción Plata</div>
+        <div class="card-header bg-plata text-white fs-5 fw-bold">
+          Suscripción Plata
+          @if (currentDiscount > 0) {
+            <div class="small">
+              <span class="badge bg-warning text-dark">-{{currentDiscount}}%</span>
+            </div>
+          }
+        </div>
         <div class="card-body">
-          <h1 class="card-title">$7500</h1>
-          <h6>$1250 / mes</h6>
+          @if (currentDiscount > 0) {
+            <div class="mb-2">
+              <span class="text-muted text-decoration-line-through">${{basePrices.plata}}</span>
+            </div>
+          }
+          <h1 class="card-title">${{getDiscountedPrice(basePrices.plata)}}</h1>
+          <h6>${{getMonthlyPrice(basePrices.plata, 6)}} / mes</h6>
           <ul class="list-unstyled mt-3 mb-4">
             <li><i class="bi bi-check-lg text-success"></i> 6 meses de servicio</li>
-            <li><i class="bi bi-check-lg text-success"></i> Ahorro de $250 / mes</li>
+            <li><i class="bi bi-check-lg text-success"></i> Ahorro de ${{getMonthlySavings(basePrices.plata, 6)}} / mes</li>
+            @if (currentDiscount > 0) {
+              <li><i class="bi bi-check-lg text-success"></i> {{currentDiscount}}% de descuento adicional</li>
+            }
           </ul>
-          <button class="btn btn-outline-plata" (click)="pay('Suscripción Plata', 1)">Elegir Plata</button>
+          <button class="btn btn-outline-plata" (click)="pay('Suscripción Plata', basePrices.plata)">Elegir Plata</button>
         </div>
       </div>
     </div>
@@ -92,22 +150,37 @@
     <!-- Oro -->
     <div class="col-md-4">
       <div class="card border-0 shadow-lg h-100 text-center">
-        <div class="card-header bg-oro text-white fs-5 fw-bold">Suscripción Oro</div>
+        <div class="card-header bg-oro text-white fs-5 fw-bold">
+          Suscripción Oro
+          @if (currentDiscount > 0) {
+            <div class="small">
+              <span class="badge bg-warning text-dark">-{{currentDiscount}}%</span>
+            </div>
+          }
+        </div>
         <div class="card-body">
-          <h1 class="card-title">$12000</h1>
-          <h6>$1000 / mes</h6>
+          @if (currentDiscount > 0) {
+            <div class="mb-2">
+              <span class="text-muted text-decoration-line-through">${{basePrices.oro}}</span>
+            </div>
+          }
+          <h1 class="card-title">${{getDiscountedPrice(basePrices.oro)}}</h1>
+          <h6>${{getMonthlyPrice(basePrices.oro, 12)}} / mes</h6>
           <ul class="list-unstyled mt-3 mb-4">
             <li><i class="bi bi-check-lg text-success"></i> 12 meses de servicio</li>
-            <li><i class="bi bi-check-lg text-success"></i> Ahorro de $500 / mes</li>
+            <li><i class="bi bi-check-lg text-success"></i> Ahorro de ${{getMonthlySavings(basePrices.oro, 12)}} / mes</li>
+            @if (currentDiscount > 0) {
+              <li><i class="bi bi-check-lg text-success"></i> {{currentDiscount}}% de descuento adicional</li>
+            }
           </ul>
-          <button class="btn btn-outline-oro" (click)="pay('Oro', 1)">Elegir Oro</button>
+          <button class="btn btn-outline-oro" (click)="pay('Oro', basePrices.oro)">Elegir Oro</button>
         </div>
       </div>
     </div>
 
   </div>
 
-  <!-- Contenedor de Wallet (único) -->
+  <!-- Contenedor de Wallet -->
   <div class="row mt-5">
     <div class="col-12 d-flex justify-content-center">
       <div id="wallet_container"></div>
@@ -115,5 +188,81 @@
   </div>
 </div>
 </div>   
- }
+}
+
+
+@if (showDiscountModal) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-percent me-2"></i>
+            Gestionar Descuento
+          </h5>
+          <button type="button" class="btn-close" (click)="closeDiscountModal()"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="discountForm" (ngSubmit)="updateDiscount()">
+            <div class="mb-3">
+              <label for="discountInput" class="form-label">
+                <strong>Descuento Actual:</strong> {{currentDiscount}}%
+              </label>
+              <div class="input-group">
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  id="discountInput"
+                  formControlName="discount"
+                  placeholder="Ingrese el nuevo descuento"
+                  [class.is-invalid]="isDiscountInvalid"
+                  [disabled]="isUpdatingDiscount">
+                <span class="input-group-text">%</span>
+              </div>
+              
+              @if (isDiscountInvalid) {
+                <div class="invalid-feedback d-block">
+                  {{discountErrorMessage}}
+                </div>
+              }
+              
+              <div class="form-text">
+                Ingrese un valor entre 0 y 99. Use 0 para quitar el descuento.
+              </div>
+            </div>
+            
+            @if (discountValue !== currentDiscount && discountForm.valid) {
+              <div class="alert alert-info">
+                <h6 class="mb-2">Vista previa de precios con descuento:</h6>
+                <ul class="list-unstyled mb-0">
+                  <li><strong>Bronce:</strong> ${{getPreviewDiscountedPrice(basePrices.bronce, discountValue)}} <span class="text-muted">(era ${{basePrices.bronce}})</span></li>
+                  <li><strong>Plata:</strong> ${{getPreviewDiscountedPrice(basePrices.plata, discountValue)}} <span class="text-muted">(era ${{basePrices.plata}})</span></li>
+                  <li><strong>Oro:</strong> ${{getPreviewDiscountedPrice(basePrices.oro, discountValue)}} <span class="text-muted">(era ${{basePrices.oro}})</span></li>
+                </ul>
+              </div>
+            }
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDiscountModal()" [disabled]="isUpdatingDiscount">
+            Cancelar
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            (click)="updateDiscount()"
+            [disabled]="isUpdatingDiscount || discountForm.invalid">
+            @if (isUpdatingDiscount) {
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              Actualizando...
+            } @else {
+              <i class="bi bi-check-lg me-1"></i>
+              Actualizar Descuento
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
 </div>

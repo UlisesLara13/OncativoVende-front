@@ -22,6 +22,17 @@ export class ValidatorService {
     };
   }
 
+validateNotBanned(): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    const value = control.value;
+    return this.http.get<boolean>(`${this.urlUser}/not-banned?email=${value}&username=${value}`).pipe(
+      map(response => response ? null : { userBanned: true }),
+      catchError(() => of({ serverError: true }))
+    );
+  };
+}
+
+
   validateUniqueEmail(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
       return this.http.get<{ isUnique: boolean }>(`${this.urlUser}/email?email=${control.value}`).pipe(

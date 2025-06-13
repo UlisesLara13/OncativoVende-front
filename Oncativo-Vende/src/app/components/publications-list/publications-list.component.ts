@@ -102,9 +102,11 @@ export class PublicationsListComponent implements OnInit,OnDestroy {
         distinctUntilChanged(),
         takeUntil(this.destroy$)
       )
-      .subscribe(() => {
-        this.page = 1;
-        this.loadPublications();
+      .subscribe((searchTerm) => {
+        if (!searchTerm || searchTerm.trim().length >= 3) {
+          this.page = 1;
+          this.loadPublications();
+        }
       });
 
     this.form.valueChanges
@@ -113,8 +115,7 @@ export class PublicationsListComponent implements OnInit,OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe((values) => {
-        const currentSearchTerm = this.form.get('searchTerm')?.value || '';
-        if (currentSearchTerm.length >= 3 || currentSearchTerm.length === 0) {
+        if (!values.searchTerm || values.searchTerm.trim().length >= 3 || values.searchTerm.trim().length === 0) {
           this.page = 1;
           this.loadPublications();
         }
@@ -170,6 +171,7 @@ export class PublicationsListComponent implements OnInit,OnDestroy {
       active: null
     });
     this.sortDir = 'desc';
+    this.size = 10;
     this.page = 1;
     this.loadPublications();
   }
@@ -207,21 +209,16 @@ export class PublicationsListComponent implements OnInit,OnDestroy {
     return pages;
   }
 
-  getActiveCount(): number {
-    return this.publications.filter(pub => pub.active).length;
-  }
-
-  getInactiveCount(): number {
-    return this.publications.filter(pub => !pub.active).length;
-  }
-
-  getTotalViews(): number {
-    return this.publications.reduce((total, pub) => total + (pub.views || 0), 0);
-  }
-
 
   formatDate(dateStr: string): string {
     return dateStr ? dateStr.replace(/-/g, '/') : '';
+  }
+
+  
+  changePageSize(newSize: number) {
+    this.size = newSize;
+    this.page = 1;
+    this.loadPublications();
   }
 
   
@@ -254,7 +251,6 @@ getDaysByDate(dateStr: string): number {
     });
   }
 
-  // Métodos de dropdown
   toggleDropdown(pubId: number): void {
     if (this.dropdownOpenId === pubId) {
       this.dropdownOpenId = null;
@@ -266,8 +262,6 @@ getDaysByDate(dateStr: string): number {
   closeDropdown(): void {
     this.dropdownOpenId = null;
   }
-
-  // Métodos de acciones administrativas
   activatePublication(pubId: number): void {
     Swal.fire({
       title: '¿Activar publicación?',

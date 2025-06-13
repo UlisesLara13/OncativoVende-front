@@ -131,6 +131,7 @@ export class UsersListComponent implements OnInit {
       sortBy: 'created_at'
     });
     this.sortDir = 'desc';
+    this.size = 10;
     this.page = 1;
     this.loadUsers();
   }
@@ -166,8 +167,8 @@ export class UsersListComponent implements OnInit {
           ${user.avatar_url && user.avatar_url.trim() !== '' ? 
             `<img src="${this.getAvatarUrl(user)}" alt="${user.name} ${user.surname}" 
                   class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">` :
-            `<div class="rounded-circle bg-light text-dark d-flex align-items-center justify-content-center me-3" 
-                  style="width: 60px; height: 60px; font-size: 24px; border: 1px solid #ddd;">
+            `<div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-3" 
+                  style="width: 60px; height: 60px; font-size: 24px; border: 1px solid black;">
               ${this.getInitials(user)}
              </div>`
           }
@@ -267,6 +268,13 @@ export class UsersListComponent implements OnInit {
     }
 
     return pages;
+  }
+
+  
+  changePageSize(newSize: number) {
+    this.size = newSize;
+    this.page = 1;
+    this.loadUsers();
   }
 
   toggleSortDirection(): void {

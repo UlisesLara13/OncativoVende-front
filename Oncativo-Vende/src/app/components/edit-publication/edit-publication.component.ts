@@ -94,125 +94,124 @@ export class EditPublicationComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-  const userId = this.authService.getUser().id;
-  this.publicationId = Number(this.route.snapshot.paramMap.get('id'));
+    const userId = this.authService.getUser().id;
+    this.publicationId = Number(this.route.snapshot.paramMap.get('id'));
 
-  this.publicationService.isSameUserPublication(this.publicationId, userId)
-    .subscribe(isSame => {
-      this.isOwner = isSame;
-      if (!this.isOwner) {
-        this.checkAdmin();
+    this.publicationService.isSameUserPublication(this.publicationId, userId)
+      .subscribe(isSame => {
+        this.isOwner = isSame;
         if (!this.isOwner) {
-          this.router.navigate(['unauthorized']);
+          this.checkAdmin();
+          if (!this.isOwner) {
+            this.router.navigate(['unauthorized']);
+          }
         }
-      }
-      this.loadUserData(userId);
-      this.loadSelectData().then(() => {
-        this.loadPublicationData();
+        this.loadUserData(userId);
+        this.loadSelectData().then(() => {
+          this.loadPublicationData();
+        });
       });
-    });
-}
+  }
 
-
-ngAfterViewInit(): void {
-  this.form.get('location_id')?.valueChanges.subscribe((locationId) => {
-    if (locationId && this.locationCoordinates[locationId]) {
-      const newCoords = this.locationCoordinates[locationId];
-      
-      this.form.patchValue({
-        latitude: newCoords[0],
-        longitude: newCoords[1]
-      });
-      
-      if (this.map) {
-        this.map.remove(); 
-        this.map = undefined as any;
-      }
-      
-      setTimeout(() => {
-        if (this.mapContainer && this.mapContainer.nativeElement) {
-          this.initMapWithCoords(newCoords);
-        }
-      }, 100);
-    }
-  });
-}
-
-initMapWithCoords(coords: [number, number]): void {
-  if (this.mapContainer && this.mapContainer.nativeElement) {
-    const container = this.mapContainer.nativeElement;
-    
-    try {
-      this.map = L.map(container).setView(coords, 13);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(this.map);
-
-      const customIcon = L.divIcon({
-        className: 'custom-marker',
-        html: '<div style="background-color: #007bff; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
-      });
-
-      this.marker = L.marker(coords, {
-        icon: customIcon,
-        draggable: true
-      }).addTo(this.map);
-
-      setTimeout(() => {
+  ngAfterViewInit(): void {
+    this.form.get('location_id')?.valueChanges.subscribe((locationId) => {
+      if (locationId && this.locationCoordinates[locationId]) {
+        const newCoords = this.locationCoordinates[locationId];
+        
+        this.form.patchValue({
+          latitude: newCoords[0],
+          longitude: newCoords[1]
+        });
+        
         if (this.map) {
-          this.map.invalidateSize();
+          this.map.remove(); 
+          this.map = undefined as any;
         }
-      }, 100);
+        
+        setTimeout(() => {
+          if (this.mapContainer && this.mapContainer.nativeElement) {
+            this.initMapWithCoords(newCoords);
+          }
+        }, 100);
+      }
+    });
+  }
 
-      this.map.on('click', (e: L.LeafletMouseEvent) => {
-        const { lat, lng } = e.latlng;
-        this.updateMarkerPosition(lat, lng);
-      });
+  initMapWithCoords(coords: [number, number]): void {
+    if (this.mapContainer && this.mapContainer.nativeElement) {
+      const container = this.mapContainer.nativeElement;
+      
+      try {
+        this.map = L.map(container).setView(coords, 13);
 
-      this.marker.on('dragend', (e: L.DragEndEvent) => {
-        const { lat, lng } = e.target.getLatLng();
-        this.updateMarkerPosition(lat, lng);
-      });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(this.map);
 
-    } catch (error) {
-      console.error('Error initializing map:', error);
+        const customIcon = L.divIcon({
+          className: 'custom-marker',
+          html: '<div style="background-color: #007bff; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        });
+
+        this.marker = L.marker(coords, {
+          icon: customIcon,
+          draggable: true
+        }).addTo(this.map);
+
+        setTimeout(() => {
+          if (this.map) {
+            this.map.invalidateSize();
+          }
+        }, 100);
+
+        this.map.on('click', (e: L.LeafletMouseEvent) => {
+          const { lat, lng } = e.latlng;
+          this.updateMarkerPosition(lat, lng);
+        });
+
+        this.marker.on('dragend', (e: L.DragEndEvent) => {
+          const { lat, lng } = e.target.getLatLng();
+          this.updateMarkerPosition(lat, lng);
+        });
+
+      } catch (error) {
+        console.error('Error initializing map:', error);
+      }
     }
   }
-}
 
   private getCategoryIdsByNames(categoryNames: string[]): number[] {
-  return categoryNames.map(name => {
-    const category = this.categories.find(cat => cat.description === name);
-    return category ? category.id : null;
-  }).filter((id): id is number => id !== null);
-}
+    return categoryNames.map(name => {
+      const category = this.categories.find(cat => cat.description === name);
+      return category ? category.id : null;
+    }).filter((id): id is number => id !== null);
+  }
 
-private getTagIdByName(tagName: string): number | null {
-  const tagMapping: { [key: string]: number } = {
-    'Nuevo': 1,
-    'Usado': 2,
-    'Envío incluido': 3,
-    'Precio negociable': 4,
-    'Precio fijo': 5,
-    'Retiro en mano': 6,
-    'Punto de encuentro': 7
-  };
-  
-  return tagMapping[tagName] || null;
-}
+  private getTagIdByName(tagName: string): number | null {
+    const tagMapping: { [key: string]: number } = {
+      'Nuevo': 1,
+      'Usado': 2,
+      'Envío incluido': 3,
+      'Precio negociable': 4,
+      'Precio fijo': 5,
+      'Retiro en mano': 6,
+      'Punto de encuentro': 7
+    };
+    
+    return tagMapping[tagName] || null;
+  }
 
-private getContactTypeIdByName(contactTypeName: string): number | null {
-  const contactType = this.contactTypes.find(ct => ct.description === contactTypeName);
-  return contactType ? contactType.id : null;
-}
+  private getContactTypeIdByName(contactTypeName: string): number | null {
+    const contactType = this.contactTypes.find(ct => ct.description === contactTypeName);
+    return contactType ? contactType.id : null;
+  }
 
-private getLocationIdByName(locationName: string): number | null {
-  const location = this.locations.find(loc => loc.description === locationName);
-  return location ? location.id : null;
-}
+  private getLocationIdByName(locationName: string): number | null {
+    const location = this.locations.find(loc => loc.description === locationName);
+    return location ? location.id : null;
+  }
 
   loadPublicationData(): void {
     this.publicationService.getPublicationById(this.publicationId).subscribe({
@@ -237,74 +236,73 @@ private getLocationIdByName(locationName: string): number | null {
   }
 
   populateForm(publication: any): void {
-  const categoryIds = this.getCategoryIdsByNames(publication.categories || []);
-  
-  const locationId = this.getLocationIdByName(publication.location);
+    const categoryIds = this.getCategoryIdsByNames(publication.categories || []);
+    const locationId = this.getLocationIdByName(publication.location);
 
-  this.form.patchValue({
-    title: publication.title,
-    description: publication.description,
-    price: publication.price,
-    location_id: locationId,
-    categories: categoryIds,
-    latitude: parseFloat(publication.latitude), 
-    longitude: parseFloat(publication.longitude) 
-  });
-
-  if (publication.tags && publication.tags.length > 0) {
-    publication.tags.forEach((tagName: string) => {
-      const tagId = this.getTagIdByName(tagName);
-      
-      if (tagId) {
-        if ([1, 2].includes(tagId)) { // Condición
-          this.form.patchValue({ conditionTag: tagId });
-        } else if ([4, 5].includes(tagId)) { // Precio
-          this.form.patchValue({ priceTag: tagId });
-        } else if ([3, 6, 7].includes(tagId)) { // Envío
-          this.form.patchValue({ shippingTag: tagId });
-        }
-      }
+    this.form.patchValue({
+      title: publication.title,
+      description: publication.description,
+      price: publication.price,
+      location_id: locationId,
+      categories: categoryIds,
+      latitude: parseFloat(publication.latitude), 
+      longitude: parseFloat(publication.longitude) 
     });
-  }
 
-  // Cargar contactos con mapeo de tipos
-  this.contacts.clear();
-  if (publication.contacts && publication.contacts.length > 0) {
-    publication.contacts.forEach((contact: any) => {
-      const contactTypeId = this.getContactTypeIdByName(contact.contact_type);
-      
-      if (contactTypeId) {
-        const contactForm = this.fb.group({
-          contact_type_id: [contactTypeId, Validators.required],
-          contact_value: [contact.contact_value, Validators.required]
-        });
-        this.contacts.push(contactForm);
+    if (publication.tags && publication.tags.length > 0) {
+      publication.tags.forEach((tagName: string) => {
+        const tagId = this.getTagIdByName(tagName);
         
-        // Aplicar validaciones específicas por tipo
-        setTimeout(() => {
-          this.onContactTypeChange(this.contacts.length - 1);
-        });
-      }
-    });
-  } else {
-    this.addContact();
-  }
+        if (tagId) {
+          if ([1, 2].includes(tagId)) { // Condición
+            this.form.patchValue({ conditionTag: tagId });
+          } else if ([4, 5].includes(tagId)) { // Precio
+            this.form.patchValue({ priceTag: tagId });
+          } else if ([3, 6, 7].includes(tagId)) { // Envío
+            this.form.patchValue({ shippingTag: tagId });
+          }
+        }
+      });
+    }
 
-  // Cargar imágenes existentes
-  if (publication.images && publication.images.length > 0) {
-    this.existingImages = publication.images;
-    publication.images.forEach((imagePath: string, index: number) => {
-      if (index < 3) {
-        this.imageSlots[index] = imagePath;
-      }
-    });
-  }
+    // Cargar contactos con mapeo de tipos
+    this.contacts.clear();
+    if (publication.contacts && publication.contacts.length > 0) {
+      publication.contacts.forEach((contact: any) => {
+        const contactTypeId = this.getContactTypeIdByName(contact.contact_type);
+        
+        if (contactTypeId) {
+          const contactForm = this.fb.group({
+            contact_type_id: [contactTypeId, Validators.required],
+            contact_value: [contact.contact_value, Validators.required]
+          });
+          this.contacts.push(contactForm);
+          
+          // Aplicar validaciones específicas por tipo
+          setTimeout(() => {
+            this.onContactTypeChange(this.contacts.length - 1);
+          });
+        }
+      });
+    } else {
+      this.addContact();
+    }
 
-  // Inicializar mapa con coordenadas existentes
-  setTimeout(() => {
-    this.initMap();
-  }, 500);
-}
+    // Cargar imágenes existentes
+    if (publication.images && publication.images.length > 0) {
+      this.existingImages = publication.images;
+      publication.images.forEach((imagePath: string, index: number) => {
+        if (index < 3) {
+          this.imageSlots[index] = imagePath;
+        }
+      });
+    }
+
+    // Inicializar mapa con coordenadas existentes
+    setTimeout(() => {
+      this.initMap();
+    }, 500);
+  }
 
   loadUserData(userId: number): void {
     this.userService.getUserById(userId).subscribe({
@@ -314,23 +312,23 @@ private getLocationIdByName(locationName: string): number | null {
     });
   }
 
- initMap(): void {
-  const locationId = this.form.get('location_id')?.value;
-  const lat = this.form.get('latitude')?.value;
-  const lng = this.form.get('longitude')?.value;
-  
-  let coords: [number, number];
-  
-  if (locationId && this.locationCoordinates[locationId]) {
-    coords = this.locationCoordinates[locationId];
-  } else if (lat && lng) {
-    coords = [lat, lng];
-  } else {
-    coords = [-31.9135, -63.6823]; 
-  }
+  initMap(): void {
+    const locationId = this.form.get('location_id')?.value;
+    const lat = this.form.get('latitude')?.value;
+    const lng = this.form.get('longitude')?.value;
+    
+    let coords: [number, number];
+    
+    if (locationId && this.locationCoordinates[locationId]) {
+      coords = this.locationCoordinates[locationId];
+    } else if (lat && lng) {
+      coords = [lat, lng];
+    } else {
+      coords = [-31.9135, -63.6823]; 
+    }
 
-  this.initMapWithCoords(coords);
-}
+    this.initMapWithCoords(coords);
+  }
 
   updateMarkerPosition(lat: number, lng: number): void {
     this.marker.setLatLng([lat, lng]);
@@ -344,40 +342,60 @@ private getLocationIdByName(locationName: string): number | null {
     return index;
   }
 
-checkAdmin(): void {
-      if (this.authService.hasRole('ADMIN')) {
-        this.isOwner = true;
-      } else {
-        this.isOwner = false;
-      }
+  checkAdmin(): void {
+    if (this.authService.hasRole('ADMIN')) {
+      this.isOwner = true;
+    } else {
+      this.isOwner = false;
+    }
   }
 
-loadSelectData(): Promise<void> {
-  return new Promise((resolve) => {
-    const promises = [
-      this.utilsService.getLocations().toPromise(),
-      this.publicationService.getCategories().toPromise(),
-      this.utilsService.getContactsTypes().toPromise()
-    ];
+  loadSelectData(): Promise<void> {
+    return new Promise((resolve) => {
+      const promises = [
+        this.utilsService.getLocations().toPromise(),
+        this.publicationService.getCategories().toPromise(),
+        this.utilsService.getContactsTypes().toPromise()
+      ];
 
-    Promise.all(promises).then(([locations, categories, contactTypes]) => {
-      this.locations = locations || [];
-      this.categories = categories || [];
-      this.contactTypes = contactTypes || [];
-      resolve();
+      Promise.all(promises).then(([locations, categories, contactTypes]) => {
+        this.locations = locations || [];
+        this.categories = categories || [];
+        this.contactTypes = contactTypes || [];
+        resolve();
+      });
     });
-  });
-}
+  }
 
   get contacts(): FormArray {
     return this.form.get('contacts') as FormArray;
   }
 
   addContact(): void {
-    const contactForm = this.fb.group({
-      contact_type_id: [null, Validators.required],
-      contact_value: ["", Validators.required]
-    });
+    if (this.contacts.length >= 10) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Límite alcanzado',
+        text: 'No puedes agregar más de 10 contactos.',
+        showConfirmButton: false,
+        timer: 2000
+      });
+      return;
+    }
+
+    let contactForm;
+    
+    if (this.contacts.length === 0) {
+      contactForm = this.fb.group({
+        contact_type_id: [5, Validators.required],
+        contact_value: [this.user.email, Validators.required]
+      });
+    } else {
+      contactForm = this.fb.group({
+        contact_type_id: [null, Validators.required],
+        contact_value: ['', Validators.required]
+      });
+    }
 
     this.contacts.push(contactForm);
   }
@@ -657,12 +675,38 @@ loadSelectData(): Promise<void> {
     }
   }
 
-  onSlotImageSelected(event: any, index: number): void {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.imageSlots[index] = file;
+onSlotImageSelected(event: any, index: number): void {
+  const file: File = event.target.files[0];
+  if (file) {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Formato no válido',
+        text: 'Solo se permiten archivos JPG, JPEG y PNG.',
+        showConfirmButton: false,
+        timer: 2000
+      });
+      event.target.value = '';
+      return;
     }
+
+    const maxSize = 5 * 1024 * 1024; 
+    if (file.size > maxSize) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Archivo muy grande',
+        text: 'El archivo no puede ser mayor a 5MB.',
+        showConfirmButton: false,
+        timer: 2000
+      });
+      event.target.value = '';
+      return;
+    }
+
+    this.imageSlots[index] = file;
   }
+}
 
   removeImageSlot(index: number): void {
     this.imageSlots[index] = null;

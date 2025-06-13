@@ -16,6 +16,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
   styleUrl: './my-publications.component.css'
 })
 export class MyPublicationsComponent implements OnInit {
+
   form: FormGroup;
   publications: any[] = [];
   totalItems = 0;
@@ -52,6 +53,12 @@ export class MyPublicationsComponent implements OnInit {
   });
   }
 
+  changePageSize(newSize: number) {
+    this.size = newSize;
+    this.page = 1;
+    this.loadPublications();
+  }
+
   loadPublications(): void {
     const dto = {
       ...this.form.value,
@@ -74,7 +81,8 @@ export class MyPublicationsComponent implements OnInit {
     active: '',
     sortBy: 'createdAt'  
   });
-  this.sortDir = 'desc'; 
+  this.sortDir = 'desc';
+  this.size = 5; 
   this.page = 1; 
   this.loadPublications();  
 }

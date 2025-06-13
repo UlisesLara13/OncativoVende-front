@@ -142,44 +142,53 @@
 
         <!-- PASO 3: Imágenes -->
         <div *ngIf="step === 3" class="row mb-3">
-          <div class="col-4" *ngFor="let img of imageSlots; let i = index; trackBy: trackByIndex">
-            <div class="position-relative border rounded p-1 text-center" style="height: 210px;">
-              <div *ngIf="img; else emptySlot">
-                <img [src]="getImagePreview(img)" class="img-fluid rounded" style="max-height: 180px;" />
-                <button type="button" class="btn-close position-absolute top-0 end-0 m-1" aria-label="Close"
-                        (click)="removeImageSlot(i)"></button>
-              </div>
-              <ng-template #emptySlot>
-                <label class="d-flex align-items-center justify-content-center h-100 w-100 text-muted"
-                      style="cursor: pointer;">
-                  <input type="file" (change)="onSlotImageSelected($event, i)" hidden />
-                  <span class="text-center">+ Agregar imagen</span>
-                </label>
-              </ng-template>
-            </div>
-          </div>
-          <div class="text-end mt-3 w-100">
-            @if (!hasAtLeastOneImage()) {
-              <div class="text-danger mb-2">
-              Debe cargar al menos una imagen para continuar.
-              </div>
-            }
-            <button type="button" class="btn btn-secondary me-2" (click)="prevStep()">Anterior</button>
-            <button type="button" class="btn btn-primary" (click)="nextStep()" [disabled]="!hasAtLeastOneImage()">
-              Siguiente
-            </button>
-          </div>
-        </div>
+  <div class="col-4" *ngFor="let img of imageSlots; let i = index; trackBy: trackByIndex">
+    <div class="position-relative border rounded p-1 text-center" style="height: 210px;">
+      <div *ngIf="img; else emptySlot">
+        <img [src]="getImagePreview(img)" class="img-fluid rounded" style="max-height: 180px;" />
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-1" aria-label="Close"
+                (click)="removeImageSlot(i)"></button>
+      </div>
+      <ng-template #emptySlot>
+        <label class="d-flex align-items-center justify-content-center h-100 w-100 text-muted"
+              style="cursor: pointer;">
+          <input 
+            type="file" 
+            (change)="onSlotImageSelected($event, i)" 
+            accept=".jpg,.jpeg,.png"
+            hidden 
+          />
+          <span class="text-center">+ Agregar imagen<br><small>(JPG, PNG)</small></span>
+        </label>
+      </ng-template>
+    </div>
+  </div>
+  <div class="text-end mt-3 w-100">
+    @if (!hasAtLeastOneImage()) {
+      <div class="text-danger mb-2">
+        Debe cargar al menos una imagen para continuar.
+      </div>
+    }
+    <button type="button" class="btn btn-secondary me-2" (click)="prevStep()">Anterior</button>
+    <button type="button" class="btn btn-primary" (click)="nextStep()" [disabled]="!hasAtLeastOneImage()">
+      Siguiente
+    </button>
+  </div>
+</div>
 
         <!-- PASO 4: Contactos -->
-        <div *ngIf="step === 4" formArrayName="contacts">
+      <div *ngIf="step === 4" formArrayName="contacts">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5>Información de contacto</h5>
+          <small class="text-muted">{{contacts.length}}/10 contactos</small>
+        </div>
+        
         <div
           class="mb-3"
           *ngFor="let contact of contacts.controls; let i = index"
           [formGroupName]="i"
         >
           <div class="row">
-            <!-- Tipo de contacto -->
             <div class="col-md-5 mb-2">
               <ng-select
                 [items]="contactTypes"
@@ -193,7 +202,6 @@
               </ng-select>
             </div>
 
-            <!-- Valor del contacto -->
             <div class="col-md-5 mb-2">
               <input
                 class="form-control"
@@ -214,14 +222,25 @@
           </div>
         </div>
 
-        <button type="button" class="btn btn-outline-primary mb-3" (click)="addContact()">+ Agregar contacto</button>
-          <br />
-            <div class="text-end mt-3 w-100">
-            <button type="button" class="btn btn-secondary me-2" (click)="prevStep()">Anterior</button>
-            <button type="button" class="btn btn-success" (click)="submit()">Publicar</button>
-            </div>
+        <button 
+          type="button" 
+          class="btn btn-outline-primary mb-3" 
+          (click)="addContact()"
+          [disabled]="contacts.length >= 10"
+        >
+          + Agregar contacto
+        </button>
+        
+        <div *ngIf="contacts.length >= 10" class="alert alert-warning">
+          <small>Has alcanzado el límite máximo de 10 contactos.</small>
         </div>
 
+        <br />
+        <div class="text-end mt-3 w-100">
+          <button type="button" class="btn btn-secondary me-2" (click)="prevStep()">Anterior</button>
+          <button type="button" class="btn btn-success" (click)="submit()">Publicar</button>
+        </div>
+      </div>
       </form>
     </div>
   </div>

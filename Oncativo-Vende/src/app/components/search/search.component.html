@@ -27,15 +27,24 @@
         <!-- Panel de Filtros Mejorado -->
         <div class="col-lg-3 col-md-4">
           <div class="position-sticky" style="top: 20px;">
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card border-0 shadow-lg rounded-4 overflow-visible">
               <!-- Header del panel de filtros -->
-              <div class="bg-gradient bg-primary text-white p-4">
-                <h5 class="mb-0 fw-bold">
-                  <i class="bi bi-funnel-fill me-2"></i>
-                  Filtros de Búsqueda
-                </h5>
-              </div>
-              
+              <div class="bg-gradient bg-primary text-white p-4 d-flex justify-content-between align-items-start">
+              <h5 class="mb-0 fw-bold">
+                <i class="bi bi-funnel-fill me-2"></i>
+                Filtros de Búsqueda
+              </h5>
+              <button 
+                type="button" 
+                class="btn btn-sm btn-light p-1 d-flex align-items-center justify-content-center"
+                style="width: 30px; height: 30px;"
+                (click)="clearFilters()"
+                title="Limpiar filtros"
+              >
+                <i class="bi bi-trash text-primary"></i>
+              </button>
+            </div>
+                          
               <div class="card-body p-4">
                 <form (ngSubmit)="applyFilters()">
                   <!-- Búsqueda de texto -->
@@ -51,7 +60,7 @@
                         [(ngModel)]="searchText"
                         name="searchText"
                         class="form-control"
-                        placeholder="Ej: iPhone, auto, casa..."
+                        placeholder="Ej: iPhone, auto, silla..."
                       />
                     </div>
                   </div>
@@ -72,6 +81,7 @@
                       [closeOnSelect]="false"
                       placeholder="Selecciona categorías"
                       class="custom-ng-select"
+                      appendTo="body"
                     >
                     </ng-select>
                   </div>
@@ -91,6 +101,7 @@
                       [clearable]="true"
                       placeholder="Seleccionar localidad"
                       class="custom-ng-select"
+                      appendTo="body"
                     >
                     </ng-select>
                   </div>
@@ -152,6 +163,7 @@
                       [closeOnSelect]="false"
                       placeholder="Seleccionar etiquetas"
                       class="custom-ng-select"
+                      appendTo="body"
                     >
                     </ng-select>
                   </div>
@@ -172,6 +184,7 @@
                         [clearable]="false"
                         placeholder="Ordenar por"
                         class="flex-grow-1 custom-ng-select"
+                        appendTo="body"
                       >
                       </ng-select>
                       <div class="btn-group" role="group">
@@ -197,11 +210,13 @@
                     </div>
                   </div>
 
-                  <!-- Botón de aplicar filtros -->
-                  <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold rounded-3">
-                    <i class="bi bi-funnel me-2"></i>
-                    Aplicar Filtros
-                  </button>
+                  <!-- Botones de acción -->
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary py-2 fw-semibold rounded-3">
+                      <i class="bi bi-funnel me-2"></i>
+                      Aplicar Filtros
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>

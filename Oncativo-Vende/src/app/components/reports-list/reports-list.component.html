@@ -1,5 +1,12 @@
 <div class="fondo-gris py-4 min-vh-100">
   <div class="container">
+    <!-- Título -->
+    <div class="row mb-2">
+      <div class="col-12">
+        <h2 class="fw-bold text-primary">Administrar Reportes</h2>
+        <p class="text-muted">Gestiona todos los reportes de la plataforma</p>
+      </div>
+    </div>
     <!-- Filtros -->
     <div
       class="d-flex flex-wrap gap-2 bg-white p-3 shadow justify-content-between align-items-center mb-3"
@@ -31,6 +38,7 @@
           formControlName="status"
           class="ng-select-sm"
           [clearable]="false"
+          [searchable]="false"
           style="min-width: 120px; font-size: 0.8rem;"
         ></ng-select>
       </div>
@@ -46,6 +54,7 @@
           formControlName="sortBy"
           class="ng-select-sm"
           [clearable]="false"
+          [searchable]="false"
           style="min-width: 110px; font-size: 0.8rem;"
         ></ng-select>
         <button
@@ -104,8 +113,8 @@
                   </ng-container>
                   <ng-template #showReporterInitials>
                     <div
-                      class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
-                      style="width: 40px; height: 40px; font-size: 16px;"
+                      class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-2"
+                      style="width: 40px; height: 40px; font-size: 16px; border: 1px solid black;"
                     >
                       {{ getInitials(report.reporter) }}
                     </div>
@@ -133,8 +142,8 @@
                   </ng-container>
                   <ng-template #showPublicationUserInitials>
                     <div
-                      class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
-                      style="width: 40px; height: 40px; font-size: 16px;"
+                      class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-2"
+                      style="width: 40px; height: 40px; font-size: 16px; border: 1px solid black;"
                     >
                       {{ getPublicationUserInitials(report.publication.user) }}
                     </div>
@@ -226,10 +235,34 @@
           </div>
         </div>
       </div>
-    </div>
-
+      <div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <span class="text-muted">Mostrando {{ reports.length }} de {{ totalItems || 0 }} resultados</span>
+  </div>
+  <div class="d-flex align-items-center">
+    <small class="me-2">Mostrar</small>
+    <ng-select
+      [items]="[
+        { label: '5', value: 5 },
+        { label: '10', value: 10 },
+        { label: '25', value: 25 },
+        { label: '50', value: 50 }
+      ]"
+      bindLabel="label"
+      bindValue="value"
+      [ngModel]="size"
+      (ngModelChange)="changePageSize($event)"
+      class="ng-select-sm"
+      [clearable]="false"
+      [searchable]="false"
+      style="width: auto; min-width: 60px;"
+    >
+    </ng-select>
+    <small class="ms-2">por página</small>
+  </div>
+</div>
     <!-- Paginación -->
-    <nav *ngIf="totalPages > 0" class="d-flex justify-content-center mt-4">
+ <nav *ngIf="totalPages > 0" class="d-flex justify-content-center">
       <ul class="pagination">
         <li class="page-item" [class.disabled]="page === 1">
           <small class="page-link" style="font-size: 0.8rem" (click)="page > 1 && changePage(page - 1)">
@@ -250,6 +283,7 @@
         </li>
       </ul>
     </nav>
+    </div>
       <app-solve-report-modal
       *ngIf="showResolveModal && selectedReport"
       [reportId]="selectedReport.id"

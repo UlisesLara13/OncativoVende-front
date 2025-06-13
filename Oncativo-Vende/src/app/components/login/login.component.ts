@@ -36,7 +36,8 @@ export class LoginComponent {
     email: new FormControl('', [
       Validators.required,
       Validators.minLength(5),
-      Validators.maxLength(50)]),
+      Validators.maxLength(50)],
+    [this.validatorService.validateNotBanned()]),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(8),
@@ -44,7 +45,7 @@ export class LoginComponent {
   });
 
   recoveryForm = new FormGroup({
-    recEmail: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(50), Validators.email],[this.validatorService.validateNotUniqueEmail()]),
+    recEmail: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(50), Validators.email],[this.validatorService.validateNotBanned(), this.validatorService.validateNotUniqueEmail()]),
   });
 
   codeForm = new FormGroup({
@@ -74,6 +75,8 @@ export class LoginComponent {
           return `Valor ingresado demasiado largo. Máximo ${control.errors['maxlength'].requiredLength} caracteres.`;
         case 'emailNotTaken':
           return 'El correo electrónico no está asociado a ningún usuario registrado.';
+        case 'userBanned':
+          return 'Tu cuenta ha sido suspendida. Contacta al administrador para más información.';
         case 'matchFields':
           return 'Las contraseñas no coinciden.';
         case 'pattern':

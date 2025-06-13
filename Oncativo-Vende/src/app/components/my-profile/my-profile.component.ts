@@ -49,11 +49,8 @@ export class MyProfileComponent implements OnInit {
 
   handleEditProfileModalClose(): void {
   this.showEditProfileModal = false; 
-  this.refreshPage();
+  this.loadUserData(this.userLoged.id);
 }
-  refreshPage(): void {
-    window.location.reload();
-  }
 
   getInitials(name: string, surname: string): string {
     const firstLetterName = name ? name.charAt(0).toUpperCase() : '';
@@ -78,6 +75,7 @@ export class MyProfileComponent implements OnInit {
   
   closeEditProfileModal(): void {
     this.showEditProfileModal = false;
+    this.loadUserData(this.userLoged.id);
   }
 
   openChangePasswordModal(): void {
@@ -106,7 +104,7 @@ export class MyProfileComponent implements OnInit {
   deleteAccount(): void {
     Swal.fire({
       title: '¿Estás seguro?',
-      text: 'Esta acción eliminará tu cuenta permanentemente y todas tus publicaciones.',
+      text: 'Esta acción eliminará tu cuenta permanentemente junto a tu información personal y todas tus publicaciones.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',

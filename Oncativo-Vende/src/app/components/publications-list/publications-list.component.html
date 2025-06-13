@@ -1,7 +1,7 @@
 <div class="fondo-gris py-4 min-vh-100">
   <div class="container">
     <!-- Título -->
-    <div class="row mb-4">
+    <div class="row mb-2">
       <div class="col-12">
         <h2 class="fw-bold text-primary">Administrar Publicaciones</h2>
         <p class="text-muted">Gestiona todas las publicaciones de la plataforma</p>
@@ -10,7 +10,7 @@
 
     <!-- Filtros - Primera fila -->
     <div
-      class="d-flex flex-wrap gap-3 bg-white p-3 shadow mb-3"
+      class="d-flex flex-wrap gap-3 bg-white p-3 shadow mb-2"
       [formGroup]="form"
       style="border-radius: 10px;"
     >
@@ -40,7 +40,8 @@
           placeholder="Todas"               
           class="ng-select-sm categories-select"               
           [multiple]="true"               
-          [clearable]="true"               
+          [clearable]="true"     
+          [searchable]="false"          
           style="width: 250px; min-width: 250px; max-width: 250px; height: 38px;"             
         >             
         </ng-select>           
@@ -57,7 +58,8 @@
           placeholder="Todas"                      
           [multiple]="true"                      
           [clearable]="true"                      
-          [closeOnSelect]="false"           
+          [closeOnSelect]="false"  
+          [searchable]="false"         
           class="ng-select-sm tags-select"                      
           style="width: 250px; min-width: 250px; max-width: 250px; height: 38px;"                  
         >                  
@@ -82,6 +84,7 @@
           placeholder="Todas"
           class="ng-select-sm"
           [clearable]="true"
+          [searchable]="false"
           style="width: 200px; min-width: 200px;"
         >
         </ng-select>
@@ -101,7 +104,8 @@
           formControlName="active"           
           placeholder="Todas"           
           class="ng-select-sm"           
-          [clearable]="false"           
+          [clearable]="false" 
+          [searchable]="false"          
           style="width: 150px; min-width: 150px; height: 38px;"         
         >         
         </ng-select>       
@@ -142,6 +146,7 @@
           formControlName="sortBy"
           class="ng-select-sm me-2"
           [clearable]="false"
+          [searchable]="false"
           style="width: 150px; min-width: 150px; height: 38px;"
         >
         </ng-select>
@@ -168,42 +173,6 @@
       >
         <i class="bi bi-trash"></i>
       </button>
-    </div>
-
-    <!-- Estadísticas rápidas -->
-    <div class="row mb-4">
-      <div class="col-md-3 col-6">
-      <div class="card text-white" style="background: linear-gradient(45deg, #007bff, #0056b3);">
-        <div class="card-body text-center">
-        <h4>{{ totalItems }}</h4>
-        <small>Total Publicaciones</small>
-        </div>
-      </div>
-      </div>
-      <div class="col-md-3 col-6">
-      <div class="card text-white" style="background: linear-gradient(45deg, #28a745, #1e7e34);">
-        <div class="card-body text-center">
-        <h4>{{ getActiveCount() }}</h4>
-        <small>Activas</small>
-        </div>
-      </div>
-      </div>
-      <div class="col-md-3 col-6">
-      <div class="card text-white" style="background: linear-gradient(45deg, #dc3545, #bd2130);">
-        <div class="card-body text-center">
-        <h4>{{ getInactiveCount() }}</h4>
-        <small>Inactivas</small>
-        </div>
-      </div>
-      </div>
-      <div class="col-md-3 col-6">
-      <div class="card text-white" style="background: linear-gradient(45deg, #17a2b8, #138496);">
-        <div class="card-body text-center">
-        <h4>{{ getTotalViews() }}</h4>
-        <small>Total Vistas</small>
-        </div>
-      </div>
-      </div>
     </div>
 
     <!-- Resultados -->
@@ -356,8 +325,35 @@
       </div>
     }
 
+        <div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <span class="text-muted">Mostrando {{ publications.length }} de {{ totalItems || 0 }} resultados</span>
+  </div>
+  <div class="d-flex align-items-center">
+    <small class="me-2">Mostrar</small>
+    <ng-select
+      [items]="[
+        { label: '5', value: 5 },
+        { label: '10', value: 10 },
+        { label: '25', value: 25 },
+        { label: '50', value: 50 }
+      ]"
+      bindLabel="label"
+      bindValue="value"
+      [ngModel]="size"
+      (ngModelChange)="changePageSize($event)"
+      class="ng-select-sm"
+      [clearable]="false"
+      [searchable]="false"
+      style="width: auto; min-width: 60px;"
+    >
+    </ng-select>
+    <small class="ms-2">por página</small>
+  </div>
+</div>
+
     <!-- Paginación -->
-    <nav *ngIf="totalPages > 0" class="d-flex justify-content-center mt-4">
+    <nav *ngIf="totalPages > 0" class="d-flex justify-content-center">
       <ul class="pagination">
         <li class="page-item" [class.disabled]="page === 1">
           <button
@@ -388,12 +384,4 @@
         </li>
       </ul>
     </nav>
-
-    <!-- Información de paginación -->
-    <div class="text-center text-muted mt-2" *ngIf="totalItems > 0">
-      <small>
-        Mostrando {{ (page - 1) * size + 1 }} - {{ Math.min(page * size, totalItems) }} de {{ totalItems }} publicaciones
-      </small>
-    </div>
-  </div>
 </div>

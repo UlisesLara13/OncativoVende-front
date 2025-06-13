@@ -106,6 +106,7 @@ export class ReportsListComponent implements OnInit {
       sortBy: 'created_at'
     });
     this.sortDir = 'desc';
+    this.size = 10; 
     this.page = 1;
     this.loadReports();
   }
@@ -273,7 +274,13 @@ export class ReportsListComponent implements OnInit {
   onReportResolved(): void {
     this.showResolveModal = false;
     this.selectedReport = null;
-    this.loadReports(); // Recargar la lista
+    this.loadReports(); 
+  }
+
+  changePageSize(newSize: number) {
+    this.size = newSize;
+    this.page = 1;
+    this.loadReports();
   }
 
  goToPublication(id: number): void {

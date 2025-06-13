@@ -15,7 +15,7 @@
            (click)="onChangeAvatar()" 
            style="cursor: pointer;">
         <img *ngIf="user.avatar_url; else initials" 
-             [src]="user.avatar_url" 
+            [src]="'http://localhost:8080/Profiles/' + user.id + '-profile-picture.jpg'"
              alt="Avatar" 
              class="img-avatar">
         <ng-template #initials>
@@ -28,8 +28,15 @@
         </div>
       </div>
       
-      <!-- Nombre completo -->
-      <h3 class="mb-1 fw-bold">{{ user.name }} {{ user.surname }}</h3>
+      <!-- Nombre completo con verificación -->
+      <div class="d-flex align-items-center justify-content-center mb-1">
+        <h3 class="mb-0 fw-bold me-2">{{ user.name }} {{ user.surname }}</h3>
+        @if (user.verified) {
+        <i class="bi bi-patch-check-fill text-info" 
+           style="font-size: 1.2rem;" 
+           title="Usuario verificado"></i>
+        }
+      </div>
       <p class="mb-0 opacity-75">
         <i class="bi bi-geo-alt me-1"></i>{{ user.location }}
       </p>

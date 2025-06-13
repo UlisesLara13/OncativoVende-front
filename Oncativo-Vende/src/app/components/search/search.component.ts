@@ -16,7 +16,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, CommonModule, PipesModule,NgSelectModule],
+  imports: [FormsModule, CommonModule, PipesModule, NgSelectModule],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
 })
@@ -40,10 +40,10 @@ export class SearchComponent implements OnInit {
   itemsPerPage: number = 12; 
   isLastPage: boolean = false;
   orderByOptions = [
-  { label: 'Fecha de publicación', value: 'createdAt' },
-  { label: 'Precio', value: 'price' },
-  { label: 'Título', value: 'title' }
-];
+    { label: 'Fecha de publicación', value: 'createdAt' },
+    { label: 'Precio', value: 'price' },
+    { label: 'Título', value: 'title' }
+  ];
 
   constructor(
     private publicationsService: PublicationsService,
@@ -70,58 +70,57 @@ export class SearchComponent implements OnInit {
   }
 
   loadPublications(): void {
-  const searchDto: SearchDto = {};
+    const searchDto: SearchDto = {};
 
-  searchDto.active = true; 
+    searchDto.active = true; 
 
-  if (this.searchText) {
-    searchDto.searchTerm = this.searchText;
+    if (this.searchText) {
+      searchDto.searchTerm = this.searchText;
+    }
+
+    if (this.category && this.category.length > 0) {
+      searchDto.categories = this.category;  
+    }
+
+    if (this.tag && this.tag.length > 0) {
+      searchDto.tags = this.tag;  
+    }
+
+    if (this.location) {
+      searchDto.location = this.location;
+    }
+
+    if (this.minPrice !== null) {
+      searchDto.minPrice = this.minPrice;
+    }
+
+    if (this.maxPrice !== null) {
+      searchDto.maxPrice = this.maxPrice;
+    }
+
+    if (this.sortBy) {
+      searchDto.sortBy = this.sortBy;
+    }
+
+    if (this.sortDir) {
+      searchDto.sortDir = this.sortDir;
+    }
+
+    searchDto.page = this.currentPage - 1; 
+
+    console.log('Search DTO:', searchDto); 
+    console.log('publications', this.publications); 
+    console.log(this.category); 
+    console.log(this.tag); 
+
+    this.publicationsService.getFilteredPublications(searchDto).subscribe((response: PaginatedPublications) => {
+      this.publications = response.content;
+      this.totalPages = response.totalPages || 0;
+      this.totalItems = response.totalElements || 0;
+      this.isLastPage = this.currentPage >= this.totalPages;
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    });
   }
-
-  if (this.category && this.category.length > 0) {
-    searchDto.categories = this.category;  
-  }
-
-  if (this.tag && this.tag.length > 0) {
-    searchDto.tags = this.tag;  
-  }
-
-  if (this.location) {
-    searchDto.location = this.location;
-  }
-
-  if (this.minPrice !== null) {
-    searchDto.minPrice = this.minPrice;
-  }
-
-  if (this.maxPrice !== null) {
-    searchDto.maxPrice = this.maxPrice;
-  }
-
-
-  if (this.sortBy) {
-    searchDto.sortBy = this.sortBy;
-  }
-
-  if (this.sortDir) {
-    searchDto.sortDir = this.sortDir;
-  }
-
-  searchDto.page = this.currentPage - 1; 
-
-  console.log('Search DTO:', searchDto); 
-  console.log('publications', this.publications); 
-  console.log(this.category); 
-  console.log(this.tag); 
-
-  this.publicationsService.getFilteredPublications(searchDto).subscribe((response: PaginatedPublications) => {
-    this.publications = response.content;
-    this.totalPages = response.totalPages || 0;
-    this.totalItems = response.totalElements || 0;
-    this.isLastPage = this.currentPage >= this.totalPages;
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  });
-}
 
   changePage(newPage: number): void {
     if (newPage >= 1 && newPage <= this.totalPages) {
@@ -153,6 +152,28 @@ export class SearchComponent implements OnInit {
     this.loadPublications();
   }
 
+  clearFilters(): void {
+    // Limpiar todos los filtros
+    this.searchText = null;
+    this.category = [];
+    this.location = null;
+    this.minPrice = null;
+    this.maxPrice = null;
+    this.tag = [];
+    this.sortBy = 'createdAt';
+    this.sortDir = 'desc';
+    this.currentPage = 1;
+    
+    // Actualizar URL sin parámetros de búsqueda
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {}
+    });
+    
+    // Cargar publicaciones sin filtros
+    this.loadPublications();
+  }
+
   toggleSortDir(direction: string): void {
     if (this.sortDir === direction) {
       this.sortDir = direction === 'asc' ? 'desc' : 'asc';
@@ -177,26 +198,26 @@ export class SearchComponent implements OnInit {
   }
 
   loadCategories(): void {
-      this.publicationsService.getCategories().subscribe({
-        next: (categories: CategoryGet[]) => {
-          this.categories = categories;
-        },
-        error: (error) => {
-          console.error('Error al cargar categorías:', error);
-        }
-      });
-    }
+    this.publicationsService.getCategories().subscribe({
+      next: (categories: CategoryGet[]) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        console.error('Error al cargar categorías:', error);
+      }
+    });
+  }
 
   loadLocations(): void {
-      this.utilsService.getLocations().subscribe({
-        next: (locations: LocationGet[]) => {
-          this.locations = locations;
-        },
-        error: (error) => {
-          console.error('Error al cargar localidades:', error);
-        }
-      });
-    }
+    this.utilsService.getLocations().subscribe({
+      next: (locations: LocationGet[]) => {
+        this.locations = locations;
+      },
+      error: (error) => {
+        console.error('Error al cargar localidades:', error);
+      }
+    });
+  }
 
   goToPublication(id: number): void {
     this.publicationsService.addView(id).subscribe({
@@ -218,6 +239,4 @@ export class SearchComponent implements OnInit {
       }
     });
   }
-  
-
 }

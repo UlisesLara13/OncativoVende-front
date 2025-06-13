@@ -19,4 +19,12 @@ export class SubscriptionsService {
       return this.http.get<SubscriptionGet>(`${this.url}/user/${userId}`);
     }
 
+    getSubscriptionDiscount(): Observable<number> {
+      return this.http.get<number>(`${this.url}/discount`);
+    }
+
+  putSuscriptionDiscount(discount: number): Observable<void> {
+    return this.http.put<void>(`${this.url}/discount?discount=${discount}`, null);
+  }
+
 }
