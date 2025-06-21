@@ -40,6 +40,9 @@
   </ul>
 </div>
     </div>
+    <div class="mb-2 mt-2 me-2 ms-5" style="font-size: 0.9rem; cursor: pointer;" [routerLink]="'/events'">
+    <i class="bi bi-newspaper text-white"></i> <span class="text-white"> Eventos</span>
+  </div>
 
     <!-- Botón toggle para móviles -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
@@ -79,6 +82,7 @@
                   <li class="dropdown-header text-primary fw-bold" style="font-size: 0.9rem;">Opciones de administración</li>
                   <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/users'"> Gestionar usuarios<i class="bi bi-person-lines-fill text-primary"></i></a></li>
                   <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/publications'"> Gestionar publicaciones<i class="bi bi-card-list text-primary"></i></a></li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/new-event'"> Crear evento<i class="bi bi-calendar2-plus text-primary"></i></a></li>
                 }
                 @if (authService.hasRole("MODERADOR") || authService.hasRole("ADMIN")) {
                   <li><hr class="my-1"></li>

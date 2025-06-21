@@ -135,6 +135,106 @@
         </div>
       </div>
 
+      <!-- Sección de Último Evento -->
+      <div class="container mt-5 mb-5">
+        <div class="bg-white p-4 rounded shadow">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0"><i class="bi bi-newspaper"></i> Última Noticia</h4>
+            <a (click)="goToEvents()" class="text-secondary small text-decoration-none" style="cursor: pointer;">
+              Ver todos los eventos <i class="bi bi-chevron-right small"></i>
+            </a>
+          </div>
+          
+          <!-- Loading -->
+          <div *ngIf="loadingEvent" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando evento...</span>
+            </div>
+            <p class="mt-2 text-muted">Cargando último evento...</p>
+          </div>
+
+          <!-- Evento -->
+          <div *ngIf="!loadingEvent && lastEvent" class="event-card border rounded p-3 shadow-sm">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <div class="event-image-container">
+                  <img
+                    [src]="lastEvent.image_url || getDefaultEventImage()"
+                    [alt]="lastEvent.title"
+                    class="event-image rounded w-100"
+                    style="height: 200px; object-fit: cover;"
+                  />
+                </div>
+              </div>
+
+              <div class="col-md-8">
+                <div class="event-content p-3">
+                  <h5 class="event-title mb-2">{{ lastEvent.title }}</h5>
+
+                  <p class="event-description text-muted mb-3" *ngIf="lastEvent.description">
+                    {{ lastEvent.description }}
+                  </p>
+
+                  <div class="user-info d-flex align-items-center mb-2">
+                    <div *ngIf="getUserAvatar(lastEvent.user); else userInitials" class="me-2">
+                      <img
+                        [src]="getUserAvatar(lastEvent.user)"
+                        [alt]="getUserDisplayName(lastEvent.user)"
+                        class="user-avatar rounded-circle"
+                        style="width: 40px; height: 40px; object-fit: cover;"
+                      />
+                    </div>
+                    <ng-template #userInitials>
+                      <div class="user-initials rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-2"
+                          style="width: 40px; height: 40px; font-size: 14px;">
+                        {{ getInitials(lastEvent.user) }}
+                      </div>
+                    </ng-template>
+                    <div class="user-details">
+                      <span class="user-name fw-medium">
+                        {{ getUserDisplayName(lastEvent.user) }}
+                        <span *ngIf="lastEvent.user.verified" class="bi bi-patch-check-fill text-info ms-1" title="Usuario verificado"></span>
+                      </span>
+                      <div class="user-username text-muted small">
+                        &#64;{{ lastEvent.user.username }}
+                      </div>
+                    </div>
+
+                    <div class="user-rating ms-auto" *ngIf="lastEvent.user.rating > 0">
+                      <span class="rating-stars text-primary">
+                        <span *ngFor="let star of [1,2,3,4,5]" [class]="star <= lastEvent.user.rating ? 'bi bi-star-fill' : 'bi bi-star'"></span>
+                      </span>
+                      <small class="text-muted ms-1">({{ lastEvent.user.rating }})</small>
+                    </div>
+                  </div>
+
+                  <div class="event-dates" *ngIf="lastEvent.start_date || lastEvent.end_date">
+                    <small class="text-muted">
+                      <i class="bi bi-calendar-event me-1"></i>
+                      <span *ngIf="lastEvent.start_date && lastEvent.end_date && lastEvent.start_date !== lastEvent.end_date">
+                        Del {{ formatDate(lastEvent.start_date) }} al {{ formatDate(lastEvent.end_date) }}
+                      </span>
+                      <span *ngIf="lastEvent.start_date && (!lastEvent.end_date || lastEvent.start_date === lastEvent.end_date)">
+                        {{ formatDate(lastEvent.start_date) }}
+                      </span>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sin eventos -->
+          <div *ngIf="!loadingEvent && !lastEvent" class="text-center py-4">
+            <div class="text-muted">
+              <i class="bi bi-calendar-x fa-2x mb-3"></i>
+              <h6>No hay eventos disponibles</h6>
+              <p class="small">Aún no se han creado eventos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Sección de Categorías -->
       <div class="container mt-5 mb-5">
         <div class="bg-white p-4 rounded shadow">
@@ -161,6 +261,5 @@
           </div>
         </div>
       </div>
-
     </div>
 </div>

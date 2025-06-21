@@ -1,0 +1,143 @@
+<div class="fondo-gris py-5">
+  <div class="container">
+    <div class="bg-white rounded shadow p-4">
+
+      <form [formGroup]="form" novalidate>
+        <!-- Título -->
+        <div class="mb-3">
+          <label class="form-label">Título</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            formControlName="title" 
+            [ngClass]="onValidate('title')"
+            placeholder="Ingresa el título del evento"
+          >
+          <div class="invalid-feedback">{{showError('title')}}</div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="mb-3">
+          <label class="form-label">Descripción</label>
+          <textarea 
+            class="form-control" 
+            formControlName="description" 
+            rows="4" 
+            [ngClass]="onValidate('description')"
+            placeholder="Describe el evento (opcional)"
+          ></textarea>
+          <div class="invalid-feedback">{{showError('description')}}</div>
+        </div>
+
+        <!-- Fila: Usuario creador -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Creado por</label>
+            <ng-select
+              [items]="users"
+              bindLabel="username"
+              bindValue="id"
+              placeholder="Selecciona el usuario (nombre de usuario)"
+              formControlName="created_by_user_id"
+              [ngClass]="onValidate('created_by_user_id')"
+              class="w-100"
+            >
+              <ng-option *ngFor="let user of users" [value]="user.id">
+                &#64;{{user.username}}
+              </ng-option>
+            </ng-select>
+            <div class="invalid-feedback">{{showError('created_by_user_id')}}</div>
+          </div>
+        </div>
+
+        <!-- Fila: Fechas -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Fecha de inicio</label>
+            <input 
+              type="date" 
+              class="form-control" 
+              formControlName="start_date" 
+              [ngClass]="onValidate('start_date')"
+              [min]="minDate"
+            >
+            <div class="invalid-feedback">{{showError('start_date')}}</div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Fecha de fin</label>
+            <input 
+              type="date" 
+              class="form-control" 
+              formControlName="end_date" 
+              [ngClass]="onValidate('end_date')"
+              [min]="minEndDate"
+            >
+            <div class="invalid-feedback">{{showError('end_date')}}</div>
+          </div>
+        </div>
+
+        <!-- Imagen -->
+        <div class="mb-3">
+          <label class="form-label">Imagen del evento</label>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="position-relative border rounded p-3 text-center" style="height: 200px;">
+                <div *ngIf="selectedImage; else emptyImageSlot">
+                  <img 
+                    [src]="getImagePreview(selectedImage)" 
+                    class="img-fluid rounded" 
+                    style="max-height: 160px;" 
+                  />
+                  <button 
+                    type="button" 
+                    class="btn-close position-absolute top-0 end-0 m-1" 
+                    aria-label="Close"
+                    (click)="removeImage()"
+                  ></button>
+                </div>
+                <ng-template #emptyImageSlot>
+                  <label class="d-flex align-items-center justify-content-center h-100 w-100 text-muted"
+                        style="cursor: pointer;">
+                    <input 
+                      type="file" 
+                      (change)="onImageSelected($event)" 
+                      accept=".jpg,.jpeg,.png"
+                      hidden 
+                    />
+                    <span class="text-center">
+                      + Agregar imagen<br>
+                      <small>(JPG, PNG - Opcional)</small>
+                    </span>
+                  </label>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+          <small class="form-text text-muted">
+            La imagen es opcional. Si no subes una, se usará una imagen por defecto.
+          </small>
+        </div>
+
+        <!-- Botones -->
+        <div class="text-end mt-4">
+          <button 
+            type="button" 
+            class="btn btn-secondary me-2" 
+            (click)="cancel()"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-success" 
+            (click)="submit()"
+            [disabled]="form.invalid"
+          >
+            Crear Evento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

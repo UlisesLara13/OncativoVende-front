@@ -1,6 +1,8 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild, OnInit } from '@angular/core';
 import { PublicationGet } from '../../models/PublicationGet';
 import { PublicationsService } from '../../services/publications.service';
+import { EventsService } from '../../services/events.service';
+import { EventGet } from '../../models/EventGet';
 import { CommonModule } from '@angular/common';
 import { DecimalFormatPipe } from '../../pipes/decimal-format.pipe';
 import { PipesModule } from '../../pipes/pipes.module';
@@ -15,9 +17,12 @@ import { Category } from '../../models/Category';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
 
   publications: PublicationGet[] = [];
+  lastEvent: EventGet | null = null;
+  loadingEvent = false;
+  
   categories: Category[] = [
     {
       name: 'Vehículos',
@@ -62,11 +67,15 @@ export class HomeComponent {
   ];
 
   private readonly publicationService = inject(PublicationsService);
+  private readonly eventsService = inject(EventsService);
   private readonly router = inject(Router);
   @ViewChild('carouselContainer', { static: false }) carouselContainer!: ElementRef;
 
-  constructor() {
+  constructor() {}
+
+  ngOnInit(): void {
     this.loadLast10Publications();
+    this.loadLastEvent();
   }
 
   loadLast10Publications(): void {
@@ -76,6 +85,20 @@ export class HomeComponent {
       },
       error: (error) => {
         console.error('Error al cargar las últimas 10 publicaciones:', error);
+      }
+    });
+  }
+
+  loadLastEvent(): void {
+    this.loadingEvent = true;
+    this.eventsService.getLastEvent().subscribe({
+      next: (event: EventGet) => {
+        this.lastEvent = event;
+        this.loadingEvent = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar el último evento:', error);
+        this.loadingEvent = false;
       }
     });
   }
@@ -95,6 +118,12 @@ export class HomeComponent {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       },
+    });
+  }
+
+  goToEvents(): void {
+    this.router.navigate(['/events']).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 
@@ -149,5 +178,44 @@ export class HomeComponent {
     };
 
     return `badge rounded-pill ${tagColorMap[tag] || 'bg-secondary'}`;
+  }
+
+  getDefaultEventImage(): string {
+    return 'assets/secondary.png'; 
+  }
+
+  formatDate(dateString?: string): string {
+    if (!dateString) return '';
+         
+    const dateParts = dateString.split('-');
+    if (dateParts.length === 3) {
+      const [day, month, year] = dateParts;
+      const formattedDate = `${year}-${month}-${day}`;
+      const date = new Date(formattedDate);
+             
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
+    }
+         
+    return dateString;
+  }
+
+  getUserDisplayName(user: any): string {
+    return `${user.name} ${user.surname}`;
+  }
+
+  getUserAvatar(user: any): string {
+    return user.avatar_url || '';
+  }
+
+  getInitials(user: any): string {
+    const firstLetterName = user.name ? user.name.charAt(0).toUpperCase() : '';
+    const firstLetterSurname = user.surname ? user.surname.charAt(0).toUpperCase() : '';
+    return firstLetterName + firstLetterSurname;
   }
 }

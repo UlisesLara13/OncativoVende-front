@@ -21,6 +21,8 @@ import { UsersListComponent } from './components/users-list/users-list.component
 import { ReportsListComponent } from './components/reports-list/reports-list.component';
 import { PublicationsListComponent } from './components/publications-list/publications-list.component';
 import { FrequentQuestionsComponent } from './components/frequent-questions/frequent-questions.component';
+import { NewEventComponent } from './components/new-event/new-event.component';
+import { EventsListComponent } from './components/events-list/events-list.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
@@ -33,9 +35,11 @@ export const routes: Routes = [
     { path: 'payment-success', component: PaymentSuccessComponent },
     { path: 'payment-failure', component: PaymentFailureComponent },
     { path: 'publication/:id', component: PublicationComponent},
+    { path: 'events', component: EventsListComponent},
     { path: 'publication/:id/edit', component: EditPublicationComponent, canActivate: [authGuard, roleGuard], data: { roles: ['PREMIUM','ADMIN'] } },
     { path: 'unauthorized', component: UnauthorizedComponent },
     { path: 'new-publication', component: NewPublicationComponent, canActivate: [authGuard, roleGuard], data: { roles: ['PREMIUM','ADMIN'] } },
+    { path: 'admin/new-event', component: NewEventComponent , canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] } },
     { path: 'admin/users', component: UsersListComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] } },
     { path: 'admin/publications', component: PublicationsListComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] } },
     { path: 'moderator/reports', component: ReportsListComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN','MODERADOR'] } },
