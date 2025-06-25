@@ -1,0 +1,29 @@
+<div *ngIf="modalVisible" class="modal fade show d-block" tabindex="-1" aria-modal="true" role="dialog"
+  style="background-color: rgba(0, 0, 0, 0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Reportar publicación</h5>
+        <button type="button" class="btn-close" (click)="onClose()" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label for="reason" class="form-label">Motivo</label>
+            <textarea id="reason" rows="4" formControlName="reason" class="form-control"
+              [ngClass]="onValidate()"></textarea>
+            <div class="invalid-feedback">{{ showError() }}</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
+            <button type="submit" class="btn btn-success" [disabled]="form.invalid">Enviar reporte</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+

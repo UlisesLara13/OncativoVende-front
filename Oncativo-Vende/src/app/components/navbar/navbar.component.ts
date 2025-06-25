@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -25,18 +25,30 @@ export class NavbarComponent implements OnInit {
   authService = inject(AuthService);
   publicationsService = inject(PublicationsService);
   usersService = inject(UsersService);
+  private cdr = inject(ChangeDetectorRef);
 
   userLoged: UserLoged = new UserLoged();
   selectedCategory: string = '';
   user: UserGet = new UserGet();
   categories: CategoryGet[] = [];
   searchText: string = '';
+selectedCategoryId: any;
 
   ngOnInit(): void {
-    this.userLoged = this.authService.getUser();
-    this.loadUserProfileImage(this.userLoged.id);
-    this.loadCategories();
-  }
+  this.authService.user$.subscribe((user) => {
+    if (user) {
+      this.userLoged = user;
+      console.log('Navbar recibe:', user);
+      this.loadUserProfileImage(user.id);
+
+    } else {
+      this.user = new UserGet(); 
+    }
+    
+  });
+
+  this.loadCategories();
+}
 
   logout(): void {
     Swal.fire({
@@ -51,9 +63,19 @@ export class NavbarComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.authService.logOut();
-        this.router.navigate(['/home']);
+        this.refreshPage("/home");
       }
     });
+  }
+
+  refreshPage(link: string) {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([link]);
+    });
+  }
+
+  goToLogin() {
+    this.refreshPage("/login");
   }
 
   selectCategory(category: any) {
@@ -91,7 +113,7 @@ export class NavbarComponent implements OnInit {
   }
 
   setName(): string {
-    return `${this.user.surname}, ${this.user.name}`;
+    return `${this.user.name} ${this.user.surname}`;
   }
 
   getProfileImage(): string {

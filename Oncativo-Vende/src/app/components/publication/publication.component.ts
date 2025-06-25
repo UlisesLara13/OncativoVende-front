@@ -8,24 +8,44 @@ import { CommonModule } from '@angular/common';
 import { FavoriteService } from '../../services/favorite.service';
 import { UserLoged } from '../../models/UserLoged';
 import { Toast } from 'bootstrap';
-
+import { RatingGet } from '../../models/RatingGet';
+import { RatingPost } from '../../models/RatingPost';
+import { RatingService } from '../../services/rating.service';
+import { FormsModule } from '@angular/forms';
+import { DecimalFormatPipe } from '../../pipes/decimal-format.pipe';
+import { ViewMapComponent } from "../view-map/view-map.component";
+import { ReportModalComponent } from "../report-modal/report-modal.component";
+import { UtilsService } from '../../services/utils.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-publication',
   standalone: true,
-  imports: [PipesModule,CommonModule],
+  imports: [PipesModule, CommonModule, FormsModule, DecimalFormatPipe, ViewMapComponent, ReportModalComponent],
   templateUrl: './publication.component.html',
   styleUrl: './publication.component.css'
 })
 export class PublicationComponent implements OnInit {
 
   publication!: PublicationGet;
+
   @ViewChildren('zoomedImg') zoomedImgs!: QueryList<ElementRef<HTMLImageElement>>;
   @ViewChild('liveToast', { static: false }) toastElement!: ElementRef<HTMLDivElement>;
+  @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
+
   isFavorite = false;
   userLoged: UserLoged = new UserLoged();
   toastMessage = '';
   toastInstance: any;
+  ratings: RatingGet[] = [];
+  newRating: RatingPost = new RatingPost();
+  existingRating: RatingGet | null = null;
+  reviewsToShow = 5;
+  hoveredRating = 0;
+  selectedImage: string | null = null;
+  showReportModal = false;
+  publicationToReport: number = 0;
+  currentUserId = 0;
   
 
   constructor(
@@ -33,6 +53,8 @@ export class PublicationComponent implements OnInit {
     private publicationService: PublicationsService,
     private authService: AuthService,
     private favoriteService: FavoriteService,
+    private ratingService: RatingService,
+    private utilsService: UtilsService,
     private router: Router,
   ) {}
 
@@ -46,7 +68,9 @@ ngOnInit(): void {
     }
   });
   this.userLoged = this.authService.getUser();
+  this.currentUserId = this.userLoged.id;
 }
+
 
 toggleFavorite() {
   const userId = this.userLoged.id;
@@ -68,22 +92,106 @@ toggleFavorite() {
   }
 }
 
+isLoggedIn(): boolean {
+  return this.authService.isLoggedIn();
+}
+
+openReportModal(publicationId: number) {
+  this.publicationToReport = publicationId;
+  this.utilsService.userAlreadyReported(this.userLoged.id, publicationId).subscribe({
+      next: (alreadyReported) => {
+        if (alreadyReported) {
+          Swal.fire({
+            title: 'Ya reportaste esta publicación',
+            icon: 'info',
+            text: 'No podés volver a reportarla, nos encargaremos de revisarla.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        } else {
+          this.showReportModal = true; 
+        }
+      },
+      error: () => {
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo verificar el estado del reporte.',
+          icon: 'error',
+          showConfirmButton: false,
+          timer: 2000
+        });
+      }
+    });
+  }
+
+
+submitRating() {
+  this.newRating = {
+    rater_user_id: this.userLoged.id,
+    rated_user_id: this.publication.user.id,
+    rating: this.newRating.rating,
+    comment: this.newRating.comment
+  };
+
+  this.ratingService.addRating(this.newRating).subscribe(() => {
+    this.loadRatings();
+    this.toastMessage = '¡Reseña enviada con éxito!';
+    this.showToast(this.toastMessage, true);
+    this.loadPublication(this.publication.id.toString());
+  });
+}
+
+openImage(img: string) {
+  this.selectedImage = img;
+}
+
+sharePublication() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Mirá esta publicación',
+      text: 'Te comparto este contenido:',
+      url: window.location.href
+    })
+    .then(() => console.log('Compartido exitosamente'))
+    .catch((error) => console.error('Error al compartir:', error));
+  } else {
+    this.copyToClipboard(window.location.href);
+  }
+}
+
+copyToClipboard(text: string) {
+  navigator.clipboard.writeText(text).then(() => {
+    this.showToast('Enlace copiado al portapapeles',true);
+  });
+}
+
+  goToEditPublication(id: number): void {
+    this.publicationService.addView(id).subscribe({
+      next: () => {
+        this.router.navigate(['/publication', id, 'edit']).then(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      },
+    });
+  }
+
+closeImage() {
+  this.selectedImage = null;
+}
+
 showToast(message: string, success: boolean) {
   this.toastMessage = message;
 
   const toastEl = this.toastElement.nativeElement;
 
-  // Quitar clases previas
   toastEl.classList.remove('bg-success', 'bg-dark', 'text-white');
 
-  // Agregar clase según éxito o no
   if (success) {
     toastEl.classList.add('bg-success', 'text-white'); // fondo verde
   } else {
     toastEl.classList.add('bg-dark', 'text-white');    // fondo negro
   }
 
-  // Crear instancia solo una vez
   if (!this.toastInstance) {
     this.toastInstance = new Toast(toastEl);
   }
@@ -95,6 +203,50 @@ hideToast() {
   if (this.toastInstance) {
     this.toastInstance.hide();
   }
+}
+
+loadMore() {
+  this.reviewsToShow += 5;
+  }
+
+setRating(index: number, event: MouseEvent) {
+  const element = event.target as HTMLElement;
+  const { left, width } = element.getBoundingClientRect();
+  const x = event.clientX - left;
+  const isHalf = x < width / 2;
+  this.newRating.rating = isHalf ? index + 0.5 : index + 1;
+}
+
+onHover(index: number, event: MouseEvent) {
+  const element = event.target as HTMLElement;
+  const { left, width } = element.getBoundingClientRect();
+  const x = event.clientX - left;
+  const isHalf = x < width / 2;
+  this.hoveredRating = isHalf ? index + 0.5 : index + 1;
+}
+
+refreshPage() {
+  this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+    this.router.navigate(['/publication', this.publication.id]);
+  });
+}
+
+onLeave() {
+  this.hoveredRating = 0;
+}
+
+loadExistingRating() {
+  this.ratingService.hasRating(this.publication.user.id, this.userLoged.id).subscribe((data) => {
+    if (data) {
+      this.existingRating = data;
+    }
+  });
+}
+
+loadRatings() {
+  this.ratingService.getRatingsByUser(this.publication.user.id).subscribe((data) => {
+    this.ratings = data;
+  });
 }
 
 zoomImage(event: MouseEvent) {
@@ -124,13 +276,41 @@ zoomImage(event: MouseEvent) {
     });
   }
 
+  deleteRating() {
+Swal.fire({
+  title: '¿Estás seguro?',
+  text: 'Esta acción eliminará tu reseña permanentemente.',
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Sí, eliminar',
+  confirmButtonColor: '#d33',
+  cancelButtonColor: '#3085d6',
+  cancelButtonText: 'Cancelar'
+}).then((result) => {
+  if (result.isConfirmed) {
+    this.ratingService.deleteRating(this.existingRating!.id).subscribe(() => {
+      this.existingRating = null;
+      this.loadRatings();
+      this.toastMessage = 'Reseña eliminada con éxito';
+      this.showToast(this.toastMessage, false);
+      this.loadPublication(this.publication.id.toString());
+      this.clearRating();
+    });
+  }});
+}
+
+clearRating() {
+  this.newRating.rating = 0;
+  this.newRating.comment = '';
+  this.hoveredRating = 0;
+}
+
 loadPublication(id: string) {
   this.publicationService.getPublicationById(+id).subscribe({
     next: (data: PublicationGet) => {
       this.publication = data;
       console.log('Publicación cargada:', this.publication);
 
-      // Consultar si es favorita
       const userId = this.userLoged.id;
       const dto = {
         publication_id: this.publication.id,
@@ -139,6 +319,8 @@ loadPublication(id: string) {
       this.favoriteService.isFavorite(dto).subscribe((result) => {
         this.isFavorite = result;
       });
+      this.loadRatings();
+      this.loadExistingRating();
     },
     error: (err) => {
       console.error('Error al cargar la publicación:', err);
@@ -149,9 +331,9 @@ loadPublication(id: string) {
 
   getStarClass(rating: number, index: number): string {
     if (index < Math.floor(rating)) {
-      return 'bi bi-star-fill text-warning'; 
+      return 'bi bi-star-fill text-primary'; 
     } else if (index < Math.ceil(rating)) {
-      return 'bi bi-star-half text-warning'; 
+      return 'bi bi-star-half text-primary'; 
     } else {
       return 'bi bi-star text-muted';
     }
@@ -177,12 +359,22 @@ loadPublication(id: string) {
     case 'teléfono':
       return `tel:${value}`;
     case 'facebook':
-      return `https://facebook.com/${value}`;
+      return `${value}`;
     case 'instagram':
       return `https://instagram.com/${value}`;
     default:
       return '#';
   }
+}
+
+isAdminOrModerator(): boolean {
+  const user = this.userLoged;
+  return user && (user.roles.includes('ADMIN') || user.roles.includes('MODERADOR'));
+}
+
+isAdmin(): boolean {
+  const user = this.userLoged;
+  return user && user.roles.includes('ADMIN');
 }
 
 getContactIcon(type: string): string {

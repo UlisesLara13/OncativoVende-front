@@ -2,6 +2,10 @@
     --color-secundario: #F2780C;
   }
 
-  body {
-    font-family: 'Sans Sheriff', sans-serif;
+* {
+    font-family: 'Poppins', sans-serif;
   }
+
+.fondo-gris {
+  background: #f8f9fa;
+}

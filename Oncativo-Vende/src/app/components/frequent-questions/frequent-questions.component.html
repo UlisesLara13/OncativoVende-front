@@ -1,0 +1,74 @@
+<!-- faq.component.html -->
+<section class="faq-section py-5">
+  <div class="container">
+    <!-- Header -->
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold text-primary mb-3">¿Tenés dudas? ¡Te ayudamos!</h2>
+      <p class="lead text-muted">Encontrá respuestas a las preguntas más frecuentes</p>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="faq-accordion">
+          <div 
+            class="faq-item mb-3" 
+            *ngFor="let faq of faqs; trackBy: trackByFn"
+          >
+            <div class="card border-0 shadow-sm">
+              <div 
+                class="card-header bg-white border-0 py-3 cursor-pointer"
+                (click)="toggleFAQ(faq.id)"
+                [attr.aria-expanded]="faq.isExpanded"
+                role="button"
+                tabindex="0"
+                (keydown.enter)="toggleFAQ(faq.id)"
+                (keydown.space)="toggleFAQ(faq.id)"
+              >
+                <div class="d-flex align-items-center justify-content-between">
+                  <h5 class="mb-0 fw-semibold text-dark">{{ faq.question }}</h5>
+                  <div class="toggle-icon">
+                    <i 
+                      class="fas fa-chevron-down transition-transform"
+                      [class.rotated]="faq.isExpanded"
+                    ></i>
+                  </div>
+                </div>
+              </div>
+              
+              <div 
+                class="collapse-content"
+                [class.expanded]="faq.isExpanded"
+              >
+                <div class="card-body pt-0 pb-3">
+                  <div class="answer-content" [innerHTML]="faq.answer"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="row justify-content-center mt-5">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm bg-primary text-white">
+          <div class="card-body text-center py-4">
+            <h4 class="fw-bold mb-3">¿Todavía tenés dudas?</h4>
+            <p class="mb-3">Estamos aquí para ayudarte. Contactanos y te responderemos a la brevedad.</p>
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+              <a 
+                href="mailto:oncativovende@gmail.com" 
+                class="btn btn-light btn-lg fw-semibold"
+              >
+                <i class="fas fa-envelope me-2"></i>
+                oncativovende&#64;gmail.com
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

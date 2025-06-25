@@ -1,0 +1,46 @@
+
+.pagination .page-link {
+  background-color: transparent;
+  border: none;
+  color: #6c757d; 
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  border-radius: 0.50rem;
+}
+
+.pagination .page-link:hover {
+  text-decoration: underline;
+  color: var(--bs-primary); 
+  background-color: transparent;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #fff;
+  border: 1px solid var(--bs-primary);
+  color: var(--bs-primary);
+  font-weight: 600;
+}
+
+.pagination .page-link:focus {
+  box-shadow: none;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #ccc;
+  cursor: not-allowed;
+}
+.list-group-item{
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

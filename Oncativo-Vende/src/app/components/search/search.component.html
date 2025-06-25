@@ -1,189 +1,354 @@
-<div class="fondo-gris">
-  <div class="container mt-4">
-    <div class="bg-white rounded shadow p-4">
-    <div class="row">
-      <!-- Filtros -->
-      <div class="col-md-4">
-          <div class="card border-1 shadow-sm p-3">
-            <h5 class="mb-3 border-bottom pb-2">Filtros</h5>
-            <form (ngSubmit)="applyFilters()">
-              <div class="mb-3">
-                <label for="searchText" class="form-label"> <i class="bi bi-search"></i> Buscar</label>
-                <input
-                  type="text"
-                  id="searchText"
-                  [(ngModel)]="searchText"
-                  name="searchText"
-                  class="form-control"
-                  placeholder="Buscar publicaciones..."
-                />
-              </div>
-
-              <div class="mb-3">
-                <label for="category" class="form-label"><i class="bi bi-folder"></i> Categoría</label>
-                <select
-                  id="category"
-                  [(ngModel)]="category"
-                  name="category"
-                  class="form-select"
-                >
-                  <option value="">Seleccionar categoría</option>
-                  <option *ngFor="let cat of categories" [value]="cat.description">
-                    {{ cat.description }}
-                  </option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="location" class="form-label"><i class="bi bi-geo-alt"></i> Localidad</label>
-                <select
-                  id="location"
-                  [(ngModel)]="location"
-                  name="location"
-                  class="form-select"
-                >
-                  <option value="">Seleccionar localidad</option>
-                  <option *ngFor="let loc of locations" [value]="loc.description">
-                    {{ loc.description }}
-                  </option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="minPrice" class="form-label"><i class="bi bi-currency-dollar"></i> Precio Mínimo</label>
-                <input
-                  type="number"
-                  id="minPrice"
-                  [(ngModel)]="minPrice"
-                  name="minPrice"
-                  class="form-control"
-                  placeholder="$0"
-                  min="0"
-                />
-              </div>
-
-              <div class="mb-3">
-                <label for="maxPrice" class="form-label"><i class="bi bi-currency-dollar"></i> Precio Máximo</label>
-                <input
-                  type="number"
-                  id="maxPrice"
-                  [(ngModel)]="maxPrice"
-                  name="maxPrice"
-                  class="form-control"
-                  placeholder="$99999"
-                  min="0"
-                />
-              </div>
-
-              <div class="mb-3">
-                <label for="tag" class="form-label"><i class="bi bi-tag"></i> Etiquetas</label>
-                <select
-                  id="tag"
-                  [(ngModel)]="tag"
-                  name="tag"
-                  class="form-select"
-                >
-                  <option value="">Seleccionar Etiqueta</option>
-                  <option *ngFor="let tag of tags" [value]="tag.description">
-                    {{ tag.description }}
-                  </option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="orderBy" class="form-label"><i class="bi bi-arrow-down-up"></i> Ordenar por</label>
-                <div class="input-group">
-                  <select
-                    id="orderBy"
-                    [(ngModel)]="sortBy"
-                    name="sortBy"
-                    class="form-select"
-                  >
-                    <option value="createdAt">Fecha de publicación</option>
-                    <option value="price">Precio</option>
-                    <option value="title">Título</option>
-                  </select>
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    (click)="sortDir = 'asc'"
-                    [class.active]="sortDir === 'asc'"
-                    title="Ascendente"
-                  >
-                    <i class="bi bi-arrow-up-short"></i>
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    (click)="sortDir = 'desc'"
-                    [class.active]="sortDir === 'desc'"
-                    title="Descendente"
-                  >
-                    <i class="bi bi-arrow-down-short"></i>
-                  </button>
-                </div>
-              </div>
-
-              <button type="submit" class="btn btn-primary w-100 mt-2">
-                Aplicar Filtros
-              </button>
-            </form>
+<div class="fondo-gris min-vh-100">
+  <div class="container-fluid py-4">
+    <div class="p-2">
+      <!-- Header con título y estadísticas -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h2 class="fw-bold text-dark mb-0">
+                <i class="bi bi-search text-primary me-2"></i>
+                Explorar Publicaciones
+              </h2>
+              <p class="text-muted mb-0" *ngIf="totalItems > 0">
+                {{ totalItems }} resultado{{ totalItems === 1 ? '' : 's' }} encontrado{{ totalItems === 1 ? '' : 's' }}
+              </p>
+            </div>
+            <div class="d-none d-md-block">
+              <span class="badge bg-primary fs-6 px-3 py-2">
+                Página {{ currentPage }} de {{ totalPages }}
+              </span>
+            </div>
           </div>
         </div>
+      </div>
 
-      <!-- Publicaciones -->
-      <div class="col-md-8">
-        <div class="row row-cols-1 row-cols-md-3 gx-1 gy-3">
-          <div class="col" *ngFor="let pub of publications">
-            <div class="card card-custom-size" (click)="goToPublication(pub.id)">
-              <img
-                [src]="pub.images && pub.images.length > 0 ? pub.images[0] : 'assets/not-found.jpg'"
-                class="card-img-top"
-                alt="Imagen de publicación"
-              />
-              <div class="card-body">
-                <p class="card-title text-truncate">{{ pub.title }}</p>
-                <p class="text-secondary small">
-                  Por {{ pub.user.name }} {{ pub.user.surname }}
-                  @if (pub.user.verified) {
-                    <i class="bi bi-patch-check-fill text-info"></i>
-                  }
-                </p>
-                <p
-                  *ngFor="let tag of pub.tags"
-                  [ngClass]="getTagClass(tag)"
-                  class="d-inline-block me-1"
-                >
-                  {{ tag }}
-                </p>
-                <p class="text-secondary small">
-                  <i class="bi bi-geo-alt"></i> {{ pub.location }}
-                </p>
-                <h3>$ {{ pub.price | decimalFormat }}</h3>
+      <div class="row g-4">
+        <!-- Panel de Filtros Mejorado -->
+        <div class="col-lg-3 col-md-4">
+          <div class="position-sticky" style="top: 20px;">
+            <div class="card border-0 shadow-lg rounded-4 overflow-visible">
+              <!-- Header del panel de filtros -->
+              <div class="bg-gradient bg-primary text-white p-4 d-flex justify-content-between align-items-start">
+              <h5 class="mb-0 fw-bold">
+                <i class="bi bi-funnel-fill me-2"></i>
+                Filtros de Búsqueda
+              </h5>
+              <button 
+                type="button" 
+                class="btn btn-sm btn-light p-1 d-flex align-items-center justify-content-center"
+                style="width: 30px; height: 30px;"
+                (click)="clearFilters()"
+                title="Limpiar filtros"
+              >
+                <i class="bi bi-trash text-primary"></i>
+              </button>
+            </div>
+                          
+              <div class="card-body p-4">
+                <form (ngSubmit)="applyFilters()">
+                  <!-- Búsqueda de texto -->
+                  <div class="mb-4">
+                    <label for="searchText" class="form-label fw-semibold text-dark">
+                      <i class="bi bi-search text-primary"></i>
+                      Buscar por palabra clave
+                    </label>
+                    <div class="input-group">
+                      <input
+                        type="text"
+                        id="searchText"
+                        [(ngModel)]="searchText"
+                        name="searchText"
+                        class="form-control"
+                        placeholder="Ej: iPhone, auto, silla..."
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Categorías -->
+                  <div class="mb-4">
+                    <label for="categories" class="form-label fw-semibold text-dark">
+                      <i class="bi bi-grid-3x3-gap text-primary me-1"></i>
+                      Categorías
+                    </label>
+                    <ng-select
+                      [items]="categories"
+                      bindLabel="description"
+                      bindValue="description"
+                      [(ngModel)]="category"
+                      name="categories"
+                      [multiple]="true"
+                      [closeOnSelect]="false"
+                      placeholder="Selecciona categorías"
+                      class="custom-ng-select"
+                      appendTo="body"
+                    >
+                    </ng-select>
+                  </div>
+
+                  <!-- Localidad -->
+                  <div class="mb-4">
+                    <label for="location" class="form-label fw-semibold text-dark">
+                      <i class="bi bi-geo-alt-fill text-primary me-1"></i>
+                      Ubicación
+                    </label>
+                    <ng-select
+                      [items]="locations"
+                      bindLabel="description"
+                      bindValue="description"
+                      [(ngModel)]="location"
+                      name="location"
+                      [clearable]="true"
+                      placeholder="Seleccionar localidad"
+                      class="custom-ng-select"
+                      appendTo="body"
+                    >
+                    </ng-select>
+                  </div>
+
+                  <!-- Rango de precio -->
+                  <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark">
+                      <i class="bi bi-currency-dollar text-primary me-1"></i>
+                      Rango de Precio
+                    </label>
+                    <div class="row g-2">
+                      <div class="col-5">
+                        <div class="input-group input-group-sm">
+                          <span class="input-group-text">$</span>
+                          <input
+                            type="number"
+                            id="minPrice"
+                            [(ngModel)]="minPrice"
+                            name="minPrice"
+                            class="form-control"
+                            placeholder="Mín"
+                            min="0"
+                          />
+                        </div>
+                      </div>
+                      <div class="col-2 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-dash-lg text-muted"></i>
+                      </div>
+                      <div class="col-5">
+                        <div class="input-group input-group-sm">
+                          <span class="input-group-text">$</span>
+                          <input
+                            type="number"
+                            id="maxPrice"
+                            [(ngModel)]="maxPrice"
+                            name="maxPrice"
+                            class="form-control"
+                            placeholder="Máx"
+                            min="0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Etiquetas -->
+                  <div class="mb-4">
+                    <label for="tags" class="form-label fw-semibold text-dark">
+                      <i class="bi bi-tags-fill text-primary me-1"></i>
+                      Etiquetas
+                    </label>
+                    <ng-select
+                      [items]="tags"
+                      bindLabel="description"
+                      bindValue="description"
+                      [(ngModel)]="tag"
+                      [multiple]="true"
+                      name="tags"
+                      [closeOnSelect]="false"
+                      placeholder="Seleccionar etiquetas"
+                      class="custom-ng-select"
+                      appendTo="body"
+                    >
+                    </ng-select>
+                  </div>
+
+                  <!-- Ordenamiento -->
+                  <div class="mb-4">
+                    <label for="orderBy" class="form-label fw-semibold text-dark">
+                      <i class="bi bi-sort-down text-primary me-1"></i>
+                      Ordenar por
+                    </label>
+                    <div class="d-flex gap-2">
+                      <ng-select
+                        [items]="orderByOptions"
+                        bindLabel="label"
+                        bindValue="value"
+                        [(ngModel)]="sortBy"
+                        name="sortBy"
+                        [clearable]="false"
+                        placeholder="Ordenar por"
+                        class="flex-grow-1 custom-ng-select"
+                        appendTo="body"
+                      >
+                      </ng-select>
+                      <div class="btn-group" role="group">
+                        <button
+                          type="button"
+                          class="btn btn-outline-primary btn-sm"
+                          (click)="sortDir = 'asc'"
+                          [class.active]="sortDir === 'asc'"
+                          title="Ascendente"
+                        >
+                          <i class="bi bi-sort-up"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-primary btn-sm"
+                          (click)="sortDir = 'desc'"
+                          [class.active]="sortDir === 'desc'"
+                          title="Descendente"
+                        >
+                          <i class="bi bi-sort-down"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Botones de acción -->
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary py-2 fw-semibold rounded-3">
+                      <i class="bi bi-funnel me-2"></i>
+                      Aplicar Filtros
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Paginación -->
-        <div class="d-flex justify-content-center mt-4">
-          <button
-            class="btn btn-outline-primary"
-            (click)="loadPage(currentPage - 1)"
-            [disabled]="currentPage === 1"
-          >
-            Anterior
-          </button>
-          <button
-            class="btn btn-outline-primary mx-2"
-            (click)="loadPage(currentPage + 1)"
-            [disabled]="isLastPage"
-          >
-            Siguiente
-          </button>
+        <!-- Área de Resultados -->
+        <div class="col-lg-9 col-md-8">
+          @if (publications.length === 0) {
+            <div class="card border-0 shadow-sm rounded-4 bg-white">
+              <div class="card-body text-center py-5">
+                <div class="mb-4">
+                  <img src="assets/Utils/not-found.png" alt="" class="img-fluid mb-3" style="max-width: 200px; height: auto;">
+                </div>
+                <h4 class="fw-bold text-dark mb-3">No se encontraron publicaciones</h4>
+                <p class="text-muted mb-4">
+                  Intenta ajustar tus filtros o buscar con otras palabras clave.
+                </p>
+                <button class="btn btn-outline-primary" (click)="applyFilters()">
+                  <i class="bi bi-arrow-clockwise me-2"></i>
+                  Intentar nuevamente
+                </button>
+              </div>
+            </div>
+          } @else {
+            <!-- Grid de publicaciones -->
+            <div class="row g-4 mb-4">
+              <div class="col-xl-4 col-md-6" *ngFor="let pub of publications">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-lift publication-card" 
+                     (click)="goToPublication(pub.id)">
+                  <!-- Imagen del producto -->
+                  <div class="position-relative overflow-hidden">
+                    <img
+                      [src]="pub.images && pub.images.length > 0 ? pub.images[0] : 'assets/not-found.jpg'"
+                      class="card-img-top publication-image"
+                      alt="Imagen de publicación"
+                      style="height: 200px; object-fit: contain;"
+                    />
+                    <!-- Badge de precio -->
+                    <div class="position-absolute top-0 end-0 m-3">
+                      <span class="badge bg-dark bg-opacity-75 text-white fs-6 px-3 py-2 rounded-pill">
+                        ${{ pub.price | decimalFormat }}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div class="card-body p-3 d-flex flex-column">
+                    <!-- Título -->
+                    <h6 class="card-title fw-bold text-dark mb-2 text-truncate">
+                      {{ pub.title }}
+                    </h6>
+                    
+                    <!-- Información del vendedor -->
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="flex-grow-1">
+                        <p class="mb-0 small fw-semibold text-secondary">
+                          Por {{ pub.user.name }} {{ pub.user.surname }}
+                          @if (pub.user.verified) {
+                            <i class="bi bi-patch-check-fill text-info ms-1"></i>
+                          }
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <!-- Etiquetas -->
+                    <div class="mb-3">
+                      <span
+                        *ngFor="let tag of pub.tags; let i = index"
+                        [ngClass]="getTagClass(tag)"
+                        class="d-inline-block me-1 mb-1 small"
+                        [style.display]="i < 3 ? 'inline-block' : 'none'"
+                      >
+                        {{ tag }}
+                      </span>
+                      <span *ngIf="pub.tags.length > 3" class="badge bg-light text-dark small">
+                        +{{ pub.tags.length - 3 }}
+                      </span>
+                    </div>
+                    
+                    <!-- Ubicación -->
+                    <div class="mt-auto">
+                      <p class="text-muted small mb-0">
+                        <i class="bi bi-geo-alt-fill text-primary me-1"></i>
+                        {{ pub.location }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paginación mejorada -->
+            <nav *ngIf="totalPages > 0" class="d-flex justify-content-center">
+              <div class="card border-0 shadow-sm rounded-4 p-3">
+                <ul class="pagination pagination-lg mb-0 justify-content-center">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <button
+                      class="page-link border-0 rounded-3 me-1"
+                      (click)="currentPage > 1 && changePage(currentPage - 1)"
+                      [disabled]="currentPage === 1"
+                    >
+                      <i class="bi bi-chevron-left"></i>
+                      <span class="d-none d-sm-inline ms-1">Anterior</span>
+                    </button>
+                  </li>
+                  
+                  <li
+                    class="page-item mx-1"
+                    *ngFor="let p of getPages()" 
+                    [class.active]="p === currentPage"
+                  >
+                    <button class="page-link border-0 rounded-3" (click)="changePage(p)">
+                      {{ p }}
+                    </button>
+                  </li>
+                  
+                  <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <button
+                      class="page-link border-0 rounded-3 ms-1"
+                      (click)="currentPage < totalPages && changePage(currentPage + 1)"
+                      [disabled]="currentPage === totalPages"
+                    >
+                      <span class="d-none d-sm-inline me-1">Siguiente</span>
+                      <i class="bi bi-chevron-right"></i>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+          }
         </div>
       </div>
     </div>
-  </div>
   </div>
 </div>

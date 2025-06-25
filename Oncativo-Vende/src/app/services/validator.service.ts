@@ -22,6 +22,17 @@ export class ValidatorService {
     };
   }
 
+validateNotBanned(): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    const value = control.value;
+    return this.http.get<boolean>(`${this.urlUser}/not-banned?email=${value}&username=${value}`).pipe(
+      map(response => response ? null : { userBanned: true }),
+      catchError(() => of({ serverError: true }))
+    );
+  };
+}
+
+
   validateUniqueEmail(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
       return this.http.get<{ isUnique: boolean }>(`${this.urlUser}/email?email=${control.value}`).pipe(
@@ -32,6 +43,31 @@ export class ValidatorService {
       );
     };
   }
+
+validateNotUniqueEmail(): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    return this.http.get<{ isUnique: boolean }>(`${this.urlUser}/email?email=${control.value}`).pipe(
+      map(response => (!response.isUnique ? null : { emailNotTaken: true })), 
+      catchError(() => of({ serverError: true }))
+    );
+  };
+}
+
+  
+
+validateUniqueEmailExceptCurrent(userId: number): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    const email = control.value;
+
+    return this.http.get<{ isUnique: boolean }>(
+      `${this.urlUser}/email/current?email=${encodeURIComponent(email)}&userId=${userId}`
+    ).pipe(
+      map(response => response.isUnique ? null : { emailTaken: true }),
+      catchError(() => of({ serverError: true }))
+    );
+  };
+}
+
 
   matchFields(field1: string, field2: string): ValidatorFn {
     return (formGroup: AbstractControl): ValidationErrors | null => {

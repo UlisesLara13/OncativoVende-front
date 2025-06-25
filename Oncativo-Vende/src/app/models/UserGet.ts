@@ -12,6 +12,7 @@ export class UserGet {
     roles: string[];
     rating: number;
     subscription: string;
+    created_at: string;
     constructor() {
         this.id = 0;
         this.name = '';
@@ -26,5 +27,6 @@ export class UserGet {
         this.verified = false;
         this.rating = 0;
         this.subscription = '';
+        this.created_at = '';
     }
 }

@@ -1,0 +1,275 @@
+@if (isOwner) {
+  <div class="fondo-gris py-5">
+  <div class="container">
+    <div class="bg-white rounded shadow p-4">
+
+      <div class="step-progress">
+        @for (s of [1, 2, 3, 4]; track s; let i = $index) {
+          <div class="step">
+            <div class="step-circle" [class.active]="step === s">{{ s }}</div>
+            @if (i < 3) {
+              <div class="step-line"></div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Loading indicator -->
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2 text-muted">Cargando datos de la publicación...</p>
+      </div>
+
+      <form [formGroup]="form" novalidate *ngIf="!isLoading">
+        <!-- PASO 1: Datos principales -->
+        <div *ngIf="step === 1">
+          <!-- Título -->
+          <div class="mb-3">
+            <label class="form-label">Título</label>
+            <input type="text" class="form-control" formControlName="title" [ngClass]="onValidate('title')">
+            <div class="invalid-feedback">{{showError('title')}}</div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="mb-3">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control" formControlName="description" rows="4" [ngClass]="onValidate('description')"></textarea>
+            <div class="invalid-feedback">{{showError('description')}}</div>
+          </div>
+
+          <!-- Fila: Precio + Categorías -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Precio</label>
+              <input type="number" class="form-control" formControlName="price" [ngClass]="onValidate('price')" />
+              <div class="invalid-feedback">{{showError('price')}}</div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Categorías</label>
+              <ng-select
+                [items]="categories"
+                bindLabel="description"
+                bindValue="id"
+                [multiple]="true"
+                [closeOnSelect]="false"
+                placeholder="Selecciona categorías"
+                formControlName="categories"
+                [ngClass]="onValidate('categories')"
+                (change)="onCategoriesChange($event)"
+                class="w-100"
+              ></ng-select>
+              <div class="invalid-feedback">{{showError('categories')}}</div>
+            </div>
+          </div>
+
+          <!-- Fila completa: Etiquetas -->
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Condición</label>
+              <ng-select
+                [items]="conditionOptions"
+                bindLabel="description"
+                bindValue="id"
+                placeholder="Seleccione condición"
+                [ngClass]="onValidate('conditionTag')"
+                formControlName="conditionTag"
+                class="w-100"
+              ></ng-select>
+              <div class="invalid-feedback">{{showError('conditionTag')}}</div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Tipo de precio</label>
+              <ng-select
+                [items]="priceOptions"
+                bindLabel="description"
+                bindValue="id"
+                placeholder="Seleccione tipo de precio"
+                [ngClass]="onValidate('priceTag')"
+                formControlName="priceTag"
+                class="w-100"
+              ></ng-select>
+              <div class="invalid-feedback">{{showError('priceTag')}}</div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Envío</label>
+              <ng-select
+                [items]="shippingOptions"
+                bindLabel="description"
+                bindValue="id"
+                placeholder="Seleccione opción de envío"
+                formControlName="shippingTag"
+                [ngClass]="onValidate('shippingTag')"
+                class="w-100"
+              ></ng-select>
+              <div class="invalid-feedback">{{showError('shippingTag')}}</div>
+            </div>
+          </div>
+
+          <div class="text-end mt-3 w-100">
+            <button type="button" class="btn btn-primary" (click)="nextStep()">Siguiente</button>
+          </div>
+        </div>
+
+        <!-- PASO 2: Ubicación -->
+        <div *ngIf="step === 2">
+          <h5 class="mb-3">Seleccionar Ubicación</h5>
+          <p class="text-muted mb-3">
+            Selecciona una localidad en las opciones de debajo para iniciar el mapa y luego
+            haz clic en el mapa para seleccionar la ubicación de tu publicación.
+            Esta ubicación se mostrará de forma aproximada para proteger tu privacidad.
+          </p>
+
+          <!-- Selector de localidad -->
+          <div class="mb-3 col-3">
+            <label class="mb-2">Localidad</label>
+            <ng-select
+              [items]="locations"
+              bindLabel="description"
+              bindValue="id"
+              formControlName="location_id"
+              placeholder="Seleccione localidad"
+              [ngClass]="onValidate('location_id')"
+            >
+            </ng-select>
+            <div class="invalid-feedback">{{showError('location_id')}}</div>
+          </div>
+          
+          <!-- Contenedor del mapa -->
+          <div #mapContainer style="height: 400px; width: 100%; border-radius: 8px; border: 1px solid #ddd;"></div>
+
+          <div class="text-end mt-3">
+            <button type="button" class="btn btn-secondary me-2" (click)="prevStep()">Anterior</button>
+            <button type="button" class="btn btn-primary" (click)="nextStep()">Siguiente</button>
+          </div>
+        </div>
+
+        <!-- PASO 3: Imágenes -->
+        <div *ngIf="step === 3" class="row mb-3">
+          <div class="col-12 mb-3">
+            <h5>Imágenes de la publicación</h5>
+            <p class="text-muted">Puedes mantener las imágenes existentes o cambiarlas por nuevas. (JPG, PNG máximo 5MB)</p>
+          </div>
+          
+          <div class="col-4" *ngFor="let img of imageSlots; let i = index; trackBy: trackByIndex">
+            <div class="position-relative border rounded p-1 text-center" style="height: 210px;">
+              <div *ngIf="img; else emptySlot">
+                <img [src]="getImagePreview(img)" class="img-fluid rounded" style="max-height: 180px;" />
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-1" aria-label="Close"
+                        (click)="removeImageSlot(i)"></button>
+                <!-- Indicador si es imagen existente -->
+                <div *ngIf="isExistingImage(img)" class="position-absolute bottom-0 start-0 m-1">
+                  <small class="badge bg-info">Existente</small>
+                </div>
+                <!-- Indicador si es imagen nueva -->
+                <div *ngIf="isNewImage(img)" class="position-absolute bottom-0 start-0 m-1">
+                  <small class="badge bg-success">Nueva</small>
+                </div>
+              </div>
+              <ng-template #emptySlot>
+                <label class="d-flex align-items-center justify-content-center h-100 w-100 text-muted"
+                      style="cursor: pointer;">
+                  <input type="file" (change)="onSlotImageSelected($event, i)" hidden accept="image/jpeg,image/jpg,image/png" />
+                  <span class="text-center">
+                    + Agregar imagen<br>
+                    <small>(JPG, PNG)</small>
+                  </span>
+                </label>
+              </ng-template>
+            </div>
+          </div>
+          
+          <div class="text-end mt-3 w-100">
+            @if (!hasAtLeastOneImage()) {
+              <div class="text-danger mb-2">
+                Debe mantener o cargar al menos una imagen para continuar.
+              </div>
+            }
+            <button type="button" class="btn btn-secondary me-2" (click)="prevStep()">Anterior</button>
+            <button type="button" class="btn btn-primary" (click)="nextStep()" [disabled]="!hasAtLeastOneImage()">
+              Siguiente
+            </button>
+          </div>
+        </div>
+
+        <!-- PASO 4: Contactos -->
+        <div *ngIf="step === 4" formArrayName="contacts">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Información de contacto</h5>
+            <small class="text-muted">{{contacts.length}}/10 contactos</small>
+          </div>
+          <p class="text-muted mb-3">Actualiza tu información de contacto para esta publicación.</p>
+          
+          <div
+            class="mb-3"
+            *ngFor="let contact of contacts.controls; let i = index"
+            [formGroupName]="i"
+          >
+            <div class="row">
+              <!-- Tipo de contacto -->
+              <div class="col-md-5 mb-2">
+                <ng-select
+                  [items]="contactTypes"
+                  bindLabel="description"
+                  bindValue="id"
+                  placeholder="Seleccione tipo de contacto"
+                  formControlName="contact_type_id"
+                  class="w-100"
+                  (change)="onContactTypeChange(i)"
+                >
+                </ng-select>
+              </div>
+
+              <!-- Valor del contacto -->
+              <div class="col-md-5 mb-2">
+                <input
+                  class="form-control"
+                  [attr.placeholder]="getPlaceholder(i)"
+                  formControlName="contact_value"
+                />
+                <small *ngIf="getHelpText(i)" class="form-text text-muted">
+                  {{ getHelpText(i) }}
+                </small>
+                <div *ngIf="contact.get('contact_value')?.invalid && contact.get('contact_value')?.touched" class="text-danger">
+                  {{ showErrorAt('contacts', i, 'contact_value') }}
+                </div>
+              </div>
+
+              <div class="col-md-2 mb-2 d-flex align-items-start">
+                <button type="button" class="btn btn-danger" (click)="removeContact(i)">X</button>
+              </div>
+            </div>
+          </div>
+
+          <button 
+            type="button" 
+            class="btn btn-outline-primary mb-3" 
+            (click)="addContact()"
+            [disabled]="contacts.length >= 10"
+          >
+            <i class="fas fa-plus me-1"></i>
+            Agregar contacto
+          </button>
+          
+          <div *ngIf="contacts.length >= 10" class="alert alert-warning">
+            <small>Has alcanzado el límite máximo de 10 contactos.</small>
+          </div>
+          
+          <div class="text-end mt-3 w-100">
+            <button type="button" class="btn btn-secondary me-2" (click)="prevStep()">Anterior</button>
+            <button type="button" class="btn btn-success" (click)="submit()">
+              <i class="fas fa-save me-1"></i>
+              Actualizar Publicación
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+}

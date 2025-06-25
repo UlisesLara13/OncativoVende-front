@@ -6,6 +6,7 @@ export interface PublicationGet {
     id: number;
     name: string;
     surname: string;
+    username: string;
     verified: boolean;
     avatar_url: string | null;
     rating: number;
@@ -20,4 +21,7 @@ export interface PublicationGet {
     tags: string[];
     contacts: ContactGet[];
     images: string[];
+    latitude: string;
+    views: number;
+    longitude: string;
     }

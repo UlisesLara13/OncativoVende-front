@@ -1,0 +1,8 @@
+
+textarea.is-invalid {
+  border-color: #dc3545;
+}
+
+textarea.is-valid {
+  border-color: #198754;
+}

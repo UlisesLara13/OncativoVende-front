@@ -5,20 +5,26 @@
       <img src="assets/logo2.png" alt="OncativoVende" style="height: 35px; width: auto;" class="me-2">
     </a>
 
-    <!-- Centro: Input de búsqueda y botón de categorías -->
-    <div class="d-flex justify-content-center align-items-center w-50 mx-auto">
-      <!-- Input de búsqueda -->
-      <form class="d-flex w-100 me-2" (ngSubmit)="onSearch()">
-  <input
-    class="form-control form-control-sm rounded ps-3 placeholder-dark mb-2 mt-2"
-    type="search"
-    placeholder="Buscar productos o servicios"
-    aria-label="Buscar"
-    [(ngModel)]="searchText"
-    name="searchText"
-    required
-  >
-</form>
+<!-- Centro: Input de búsqueda y botón de categorías -->
+<div class="d-flex justify-content-center align-items-center w-50 mx-auto">
+  <form class="d-flex w-100 me-2 position-relative" (ngSubmit)="onSearch()">
+    <input
+      class="form-control form-control-sm rounded ps-3 pe-5 py-1 placeholder-secondary"
+      type="search"
+      placeholder="Buscar productos marcas y más..."
+      aria-label="Buscar"
+      [(ngModel)]="searchText"
+      name="searchText"
+      required
+    />
+    <!-- Separador y lupa -->
+    <span
+      class="position-absolute end-0 top-0 h-100 d-flex align-items-center me-3"
+    >
+      <span class="text-secondary me-2">|</span>
+      <i class="bi bi-search text-secondary" style="font-size: 1rem; cursor: pointer;" (click)="onSearch()"></i>
+    </span>
+  </form>
 
 <!-- Select de categorías -->
 <div class="dropdown mb-2 mt-2 me-2">
@@ -27,13 +33,16 @@
   </button>
   <ul class="dropdown-menu">
     <li *ngFor="let category of categories">
-      <a class="dropdown-item" (click)="selectCategory(category)">
+      <a class="dropdown-item" style="cursor: pointer;" (click)="selectCategory(category)">
         {{ category.description }}
       </a>
     </li>
   </ul>
 </div>
     </div>
+    <div class="mb-2 mt-2 me-2 ms-5" style="font-size: 0.9rem; cursor: pointer;" [routerLink]="'/events'">
+    <i class="bi bi-newspaper text-white"></i> <span class="text-white"> Eventos</span>
+  </div>
 
     <!-- Botón toggle para móviles -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
@@ -60,23 +69,42 @@
               {{ setName() }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" [routerLink]="'/profile'">Mi perfil</a></li>
-              <li><a class="dropdown-item" [routerLink]="'/my-favorites'">Mis favoritos</a></li>
-              <li><a class="dropdown-item" [routerLink]="'/my-publications'">Mis publicaciones</a></li>
-              <li><a class="dropdown-item" [routerLink]="'/favorites'">Gestionar suscripciones</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/profile'" style="font-size: 0.9rem;">Mi perfil</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/my-favorites'" style="font-size: 0.9rem;">Mis favoritos</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/my-publications'" style="font-size: 0.9rem;">Mis publicaciones</a></li>
+              <li><a class="dropdown-item" [routerLink]="'/subscriptions'" style="font-size: 0.9rem;">Gestionar suscripciones</a></li>
                 @if (authService.hasRole("PREMIUM")) {
                 <li><hr class="my-1"></li>
-                <li><a class="dropdown-item d-flex justify-content-between align-items-center" [routerLink]="'/new-publication'"> Crear publicación<i class="bi bi-clipboard-plus ms-1"></i></a></li>
+                <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/new-publication'"> Crear publicación<i class="bi bi-clipboard-plus ms-1"></i></a></li>
+                }
+                @if (authService.hasRole("ADMIN")){
+                  <li><hr class="my-1"></li>
+                  <li class="dropdown-header text-primary fw-bold" style="font-size: 0.9rem;">Opciones de administración</li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/users'"> Gestionar usuarios<i class="bi bi-person-lines-fill text-primary"></i></a></li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/publications'"> Gestionar publicaciones<i class="bi bi-card-list text-primary"></i></a></li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/new-event'"> Crear evento<i class="bi bi-calendar2-plus text-primary"></i></a></li>
+                }
+                @if (authService.hasRole("MODERADOR") || authService.hasRole("ADMIN")) {
+                  <li><hr class="my-1"></li>
+                  <li class="dropdown-header text-warning fw-bold" style="font-size: 0.9rem;">Opciones de moderación</li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/moderator/reports'"> Ver reportes<i class="bi bi-flag text-warning"></i></a></li>
+                }
+                @if (authService.hasRole("ADMIN")){
+                  <li><hr class="my-1"></li>
+                  <li class="dropdown-header  fw-bold" style="font-size: 0.9rem; color: fuchsia;">Dashboards / Gráficos</li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/charts/publications'"> Publicaciones<i class="bi bi-graph-up-arrow" style="color: fuchsia;"></i></a></li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/charts/users'"> Usuarios<i class="bi bi-pie-chart" style="color: fuchsia;"></i></a></li>
+                  <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/admin/charts/subscriptions'"> Subscripciones<i class="bi bi-credit-card" style="color: fuchsia;"></i></a></li>
                 }
                 <li><hr class="my-1"></li>
-                <li><a class="dropdown-item d-flex justify-content-between align-items-center" (click)="logout()" style="cursor: pointer;">Cerrar sesión<i class="bi bi-box-arrow-left ms-2"></i></a></li>
+                <li><a class="dropdown-item d-flex justify-content-between align-items-center" (click)="logout()" style="cursor: pointer; font-size: 0.9rem;">Cerrar sesión<i class="bi bi-box-arrow-left ms-2 text-danger"></i></a></li>
             </ul>
           </li>
         </ng-container>
 
         <ng-container *ngIf="!authService.isLoggedIn()">
           <li class="nav-item">
-            <a class="nav-link text-white" [routerLink]="'/login'">
+            <a class="nav-link text-white" (click)="goToLogin()" style="cursor: pointer;">
               <i class="bi bi-box-arrow-in-right me-1"></i> Ingresar
             </a>
           </li>

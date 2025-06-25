@@ -1,12 +1,13 @@
 export class SearchDto {
   searchTerm?: string;
-  category?: string;
   location?: string;
   minPrice?: number;
+  categories?: string[];
+  tags?: string[];
   maxPrice?: number;
-  tag?: string;
   sortBy?: string;
   sortDir?: string;
   page?: number;
   size?: number;
+  active?: boolean;
 }

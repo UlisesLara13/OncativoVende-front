@@ -1,168 +1,333 @@
-<div class="bg-light min-vh-100 py-5">
-  <div class="container">
-    <div class="bg-white shadow rounded p-4 d-flex flex-column flex-md-row align-items-start position-relative" style="padding-top: 4rem;">
 
-      <!-- Botón Favorito arriba a la izquierda -->
-      <div class="position-absolute top-0 end-0 m-2 p-2" style="z-index: 10;">
-        <button (click)="toggleFavorite()" 
-                [class.favorited]="isFavorite"
-                class="btn btn-link p-0"
-                aria-label="Agregar a favoritos"
-                style="font-size: 1.8rem; line-height: 1;">
-          <i class="bi" [ngClass]="isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
-        </button>
-      </div>
-
-      <!-- Carrusel de Imágenes -->
-      <div class="w-50 w-md-50 me-md-4 mb-4 mb-md-0 position-relative">
-        <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner rounded">
-            <div
-              class="carousel-item"
-              [class.active]="i === 0"
-              *ngFor="let img of publication.images; let i = index"
-            >
-              <div class="zoom-wrapper" 
-                  (mousemove)="zoomImage($event)" 
-                  (mouseleave)="resetZoom()"
-                  style="position: relative; overflow: hidden;">
-                <img
-                  [src]="img"
-                  class="d-block w-100 zoom-img"
-                  alt="Imagen de publicación"
-                  style="aspect-ratio: 1/1; object-fit: cover; transition: transform 0.3s ease;"
-                  #zoomedImg
-                />
-              </div>
-            </div>
-          </div>
-          <button
-            class="carousel-control-prev"
-            type="button"
-            data-bs-target="#carouselImages"
-            data-bs-slide="prev"
-          >
-            <span class="carousel-control-prev-icon"></span>
-          </button>
-          <button
-            class="carousel-control-next"
-            type="button"
-            data-bs-target="#carouselImages"
-            data-bs-slide="next"
-          >
-            <span class="carousel-control-next-icon"></span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Información de la publicación -->
-      <div class="w-100 w-md-50 position-relative">
-
-        <!-- Usuario arriba a la derecha -->
-        <div class="position-absolute top-0 end-0 d-flex align-items-start bg-white p-2 mt-5 rounded shadow-sm" style="z-index: 10;">
-          <!-- Avatar -->
-          <div class="avatar-perfil position-relative me-2">
-            <img *ngIf="publication.user.avatar_url; else initials" [src]="publication.user.avatar_url" alt="Avatar" class="img-avatar">
-            <ng-template #initials>
-              <div class="avatar-initials">
-                {{ getInitials(publication.user.name, publication.user.surname) }}
-              </div>
-            </ng-template>
-          </div>
-
-          <!-- Nombre + Verificado + Rating en columna -->
-          <div class="d-flex flex-column">
-            <div class="d-flex align-items-center">
-              <span class="me-1">
-                {{ publication.user.name }} {{ publication.user.surname }}
-              </span>
-              <ng-container *ngIf="publication.user.verified">
-                <i class="bi bi-patch-check-fill text-info"></i>
-              </ng-container>
-            </div>
-            <div>
-              <ng-container *ngFor="let star of [].constructor(5); let i = index">
-                <i [ngClass]="getStarClass(publication.user.rating, i)"></i>
-              </ng-container>
-            </div>
-          </div>
-        </div>
-
-        <!-- Título -->
-        <div class="d-flex align-items-center mb-2">
-          <h4 class="pe-3 mb-0">{{ publication.title }}</h4>
-          <p class="text-secondary mb-0" style="font-size: 0.7rem;">{{ formatDate(publication.created_at) }}</p>
-        </div>
-
-        <!-- Tags -->
-        <div class="mb-2 mt-3">
-          <span
-            *ngFor="let tag of publication.tags"
-            [ngClass]="getTagClass(tag)"
-            class="badge me-1"
-          >
-            {{ tag }}
-          </span>
-        </div>
-
-        <!-- Precio -->
-        <h2 class="text mb-3">$ {{ publication.price | decimalFormat }}</h2>
-
-        <!-- Ubicación -->
-        <p class="text-secondary mb-1">
-          <i class="bi bi-geo-alt me-1"></i> {{ publication.location }}
-        </p>
-
-        <hr />
-
-        <!-- Descripción y contactos -->
-        <div class="d-flex gap-3">
-          <div class="flex-grow-1">
-            <h6>Lo que tenés que saber de este producto: </h6>
-            <p class="text-dark" style="font-size: 0.8rem;">- {{ publication.description }}</p>
-          </div>
-
-          <div style="min-width: 180px;">
-            <h6 class="mb-3">Contactar al vendedor</h6>
-            <div class="d-flex flex-column gap-2">
-              <ng-container *ngFor="let contact of publication.contacts">
-                <a
-                  [href]="getContactLink(contact)"
-                  target="_blank"
-                  rel="noopener"
-                  class="contact-link d-flex align-items-center text-decoration-none"
-                >
-                  <i [ngClass]="getContactIcon(contact.contact_type)" class="me-2"></i>
-                  <span>{{ contact.contact_value }}</span>
-                </a>
-              </ng-container>
-            </div>
-          </div>
-        </div>
-
+<div class="bg-light min-vh-100 py-3">
+  @if (publication.active == false && publication.user.id != userLoged.id && !isAdminOrModerator()) { 
+    <div class="container">
+      <div class="alert alert-secondary text-center" role="alert">
+        Esta publicación ya no está activa.
       </div>
     </div>
-  </div>
+  }
+  @else {
+    <div class="container">
+      <div class="bg-white shadow-sm rounded-4 p-4 mb-3">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="flex-grow-1">
+            <h1 class="mb-2 text-primary">{{ publication.title }}</h1>
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <h2 class="text mb-0">$ {{ publication.price | decimalFormat }}</h2>
+              <small class="text-muted">
+                <i class="bi bi-calendar3 me-1"></i>
+                {{ formatDate(publication.created_at) }}
+              </small>
+            </div>
+            <div class="mb-0">
+              <span *ngFor="let tag of publication.tags" 
+                    [ngClass]="getTagClass(tag)" 
+                    class="badge me-2 mb-2 fs-6">
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+          
+          <!-- Acciones principales -->
+          <div class="d-flex flex-column gap-2 ms-4">
+            <!-- Botón Favorito original -->
+            <div class="align-self-end">
+              <button (click)="toggleFavorite()" 
+                      class="btn btn-link p-0"
+                      [class.favorited]="isFavorite"
+                      aria-label="Agregar a favoritos"
+                      style="font-size: 1.8rem;">
+                <i class="bi" [ngClass]="isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+              </button>
+            </div>
+            
+            <div class="d-flex gap-2">
+              <!-- Botón Compartir -->
+              <button class="btn btn-outline-info btn-sm" (click)="sharePublication()">
+                <i class="bi bi-share-fill"></i>
+              </button>
+
+              <!-- Botón Editar -->
+              @if (publication.user.id == userLoged.id || isAdmin()) {
+                <button class="btn btn-outline-primary btn-sm" (click)="goToEditPublication(publication.id)">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+              }
+
+              <!-- Botón Reportar -->
+              @if (publication.user.id != userLoged.id && isLoggedIn()) {
+                <button class="btn btn-outline-danger btn-sm" (click)="openReportModal(publication.id)">
+                  <i class="bi bi-flag-fill"></i>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN PRINCIPAL: Imágenes y Descripción -->
+      <div class="row g-3 mb-3">
+        <!-- Carrusel de imágenes -->
+        <div class="col-lg-8">
+          <div class="bg-white shadow-sm rounded-4 p-3">
+            <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner rounded-3">
+                <div class="carousel-item" [class.active]="i === 0" *ngFor="let img of publication.images; let i = index">
+                  <div class="background-blur" [ngStyle]="{ 'background-image': 'url(' + img + ')' }"></div>
+                  <div class="zoom-wrapper"
+                      (mousemove)="zoomImage($event)"
+                      (mouseleave)="resetZoom()"
+                      style="position: relative; overflow: hidden;">
+                    <img [src]="img"
+                         class="zoom-img"
+                         #zoomedImg
+                         alt="Imagen de publicación"
+                         style="cursor: zoom-in;"
+                         (click)="openImage(img)" />
+                  </div>
+                </div>
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselImages" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="col-lg-4">
+          <div class="bg-white shadow-sm rounded-4 p-4 h-100">
+            <h4 class="text-primary mb-3">
+              <i class="bi bi-card-text me-2"></i>
+              Lo que tenes que saber
+            </h4>
+            <p class="text-dark lh-base">{{ publication.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN SECUNDARIA: Ubicación y Vendedor -->
+      <div class="row g-3 mb-3">
+        <!-- Ubicación -->
+        <div class="col-lg-6">
+          <div class="bg-white shadow-sm rounded-4 p-4">
+            <h5 class="text-primary mb-3">
+              <i class="bi bi-geo-alt me-2"></i>
+              Ubicación
+            </h5>
+            <p class="mb-3 text-muted">
+              <i class="bi bi-pin-map text-danger me-2"></i>
+              {{ publication.location }}
+            </p>
+            <app-view-map 
+              class="rounded-3 overflow-hidden w-100" 
+              [latitude]="+(publication.latitude)" 
+              [longitude]="+(publication.longitude)">
+            </app-view-map>
+          </div>
+        </div>
+
+        <!-- Información del vendedor -->
+        <div class="col-lg-6">
+          <div class="bg-white shadow-sm rounded-4 p-4">
+            <h5 class="text-primary mb-3">
+              <i class="bi bi-person-circle me-2"></i>
+              Vendedor
+            </h5>
+            
+            <!-- Perfil del vendedor -->
+            <div class="d-flex align-items-center mb-4">
+              <div class="avatar-perfil me-3">
+                <img *ngIf="publication.user.avatar_url; else initials" 
+                     [src]="publication.user.avatar_url" 
+                     alt="Avatar" 
+                     class="img-avatar">
+                <ng-template #initials>
+                  <div class="avatar-initials">
+                    {{ getInitials(publication.user.name, publication.user.surname) }}
+                  </div>
+                </ng-template>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center mb-1">
+                  <strong class="me-2">{{ publication.user.name }} {{ publication.user.surname }}</strong>
+                  <i *ngIf="publication.user.verified" class="bi bi-patch-check-fill text-info"></i>
+                </div>
+                <div class="d-flex align-items-center">
+                  <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                    <i [ngClass]="getStarClass(publication.user.rating, i)" style="color: #ffc107;"></i>
+                  </ng-container>
+                  <small class="ms-2 text-muted">({{ publication.user.rating }})</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contactos -->
+            <div class="border-top pt-3">
+              <h6 class="text-muted mb-3">
+                <i class="bi bi-chat-dots me-2"></i>
+                Contactar
+              </h6>
+              <div class="d-flex flex-column gap-2">
+                <ng-container *ngFor="let contact of publication.contacts">
+                  <a [href]="getContactLink(contact)"
+                     target="_blank"
+                     rel="noopener"
+                     class="d-flex align-items-center text-decoration-none contact-link p-2 rounded bg-light">
+                    <i [ngClass]="getContactIcon(contact.contact_type)" class="me-3 text-primary"></i>
+                    <span>{{ contact.contact_value }}</span>
+                  </a>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN DE RESEÑAS -->
+      <div class="bg-white shadow-sm rounded-4 p-4 mb-3">
+        <h4 class="text-primary mb-4">
+          <i class="bi bi-star me-2"></i>
+          Reseñas y Valoraciones
+        </h4>
+        
+        <div *ngIf="(ratings?.length || 0) > 0; else noReviews">
+          <div class="row g-3">
+            <div *ngFor="let rating of ratings | slice:0:reviewsToShow" class="col-md-6">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <strong class="text-primary">{{ rating.rater_user.name }} {{ rating.rater_user.surname }}</strong>
+                    <small class="text-muted">{{ formatDate(rating.created_at) }}</small>
+                  </div>
+                  <div class="mb-2">
+                    <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                      <i [ngClass]="getStarClass(rating.rating, i)" style="color: #ffc107;"></i>
+                    </ng-container>
+                  </div>
+                  <p class="card-text">{{ rating.comment }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="ratings.length > reviewsToShow" class="text-center mt-3">
+            <button class="btn btn-outline-primary" (click)="loadMore()">
+              Ver más reseñas
+            </button>
+          </div>
+        </div>
+        
+        <ng-template #noReviews>
+          <div class="text-center py-4">
+            <i class="bi bi-star text-muted" style="font-size: 3rem;"></i>
+            <p class="text-muted mt-2">Este vendedor aún no tiene reseñas.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- SECCIÓN PARA ENVIAR RESEÑA -->
+      @if (userLoged.id != publication.user.id && isLoggedIn()) {
+        <div class="bg-white shadow-sm rounded-4 p-4">
+          @if (existingRating != null) {
+                <h5 class="text-primary mb-3">
+                  <i class="bi bi-check-circle me-2"></i>
+                  Tu reseña
+                </h5>
+                <div class="card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div>
+                    <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                    <i [ngClass]="getStarClass(existingRating.rating, i)" style="color: #ffc107;"></i>
+                    </ng-container>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <small class="text-muted">{{ formatDate(existingRating.created_at) }}</small>
+                    <button class="btn btn-outline-danger btn-sm" 
+                        (click)="deleteRating()" 
+                        title="Eliminar reseña">
+                    <i class="bi bi-trash"></i>
+                    Eliminar reseña
+                    </button>
+                  </div>
+                  </div>
+                  <p class="mb-0">{{ existingRating.comment }}</p>
+                </div>
+                </div>
+                }
+          @else {
+            <h5 class="text-primary mb-3">
+              <i class="bi bi-pencil-square me-2"></i>
+              Dejá tu reseña
+            </h5>
+            <form (ngSubmit)="submitRating()" #ratingForm="ngForm">
+              <div class="mb-3">
+                <label class="form-label">Calificación</label>
+                <div>
+                  <ng-container *ngFor="let i of [0, 1, 2, 3, 4]">
+                    <i class="bi me-1"
+                       [ngClass]="getStarClass(hoveredRating || newRating.rating, i)"
+                       (mousemove)="onHover(i, $event)"
+                       (mouseleave)="onLeave()"
+                       (click)="setRating(i, $event)"
+                       style="font-size: 2rem; cursor: pointer; color: #ffc107;"></i>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Comentario</label>
+                <textarea class="form-control" 
+                          [(ngModel)]="newRating.comment" 
+                          name="comment" 
+                          rows="4" 
+                          placeholder="Comparte tu experiencia..."
+                          required></textarea>
+              </div>
+              <div class="text-end">
+                <button class="btn btn-primary px-4" type="submit" [disabled]="ratingForm.invalid">
+                  <i class="bi bi-send me-2"></i>
+                  Enviar reseña
+                </button>
+              </div>
+            </form>
+          }
+        </div>
+      }
+
+      <!-- Modal de reporte -->
+      <app-report-modal
+        *ngIf="showReportModal"
+        [reportedByUserId]="currentUserId"
+        [publicationId]="publicationToReport"
+        (close)="showReportModal = false">
+      </app-report-modal>
+
+      <!-- Lightbox -->
+      <div *ngIf="selectedImage" class="custom-lightbox" (click)="closeImage()">
+        <img [src]="selectedImage" class="lightbox-img" />
+      </div>
+    </div>
+  }
 </div>
-<div
-  #liveToast
-  class="toast align-items-center border-0 position-fixed"
-  role="alert"
-  aria-live="assertive"
-  aria-atomic="true"
-  style="bottom: 1rem; left: 50%; transform: translateX(-50%); min-width: 300px;"
->
+
+<!-- Toast -->
+<div #liveToast
+     class="toast align-items-center border-0 position-fixed"
+     role="alert"
+     aria-live="assertive"
+     aria-atomic="true"
+     style="bottom: 1rem; left: 50%; transform: translateX(-50%); min-width: 300px; z-index: 9999;">
   <div class="d-flex">
     <div class="toast-body">{{ toastMessage }}</div>
-    <button
-      type="button"
-      class="btn-close btn-close-white me-2 m-auto"
-      data-bs-dismiss="toast"
-      aria-label="Close"
-      (click)="hideToast()"
-    ></button>
+    <button type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+            (click)="hideToast()"></button>
   </div>
 </div>
-
-
-

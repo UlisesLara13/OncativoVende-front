@@ -2,8 +2,10 @@ import { inject, Injectable } from '@angular/core';
 import { UserLoged } from '../models/UserLoged';
 import { KJUR } from 'jsrsasign';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { LoginUser } from '../models/LoginUser';
+import { RecoveryEmailPost } from '../models/RecoveryEmailPost';
+import { ResetPasswordPost } from '../models/ResetPasswordPost';
 
 @Injectable({
   providedIn: 'root'
@@ -13,17 +15,24 @@ export class AuthService {
   private readonly http: HttpClient = inject(HttpClient);
   private readonly url = 'http://localhost:8080/auth/';
 
-  constructor() { }
+  private currentUserSubject = new BehaviorSubject<UserLoged | null>(this.getToken() ? this.getUser() : null);
+  public user$ = this.currentUserSubject.asObservable();
+
+  constructor() {}
 
   async login(data: any): Promise<void> {
     this.saveToken(data.token);
     const user = this.getUser();
-    this.saveActualRoles(user.roles); 
+    this.saveActualRoles(user.roles);
+    this.currentUserSubject.next(user);
   }
 
   getUser(): UserLoged {
     const user = new UserLoged();
-    const decodedToken: any = KJUR.jws.JWS.parse(this.getToken() || '');
+    const token = this.getToken();
+    if (!token) return user;
+
+    const decodedToken: any = KJUR.jws.JWS.parse(token);
     user.id = decodedToken.payloadObj.id;
     user.roles = decodedToken.payloadObj.roles;
     user.name = decodedToken.payloadObj.name;
@@ -49,6 +58,7 @@ export class AuthService {
   logOut(): void {
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('jwtRoles');
+    this.currentUserSubject.next(null);
   }
 
   isLoggedIn(): boolean {
@@ -62,13 +72,12 @@ export class AuthService {
   saveActualRoles(roles: string[]): void {
     const header = { alg: 'HS256', typ: 'JWT' };
     const payload = {
-      roles: roles, // Guarda el array completo de roles
-      exp: Math.floor(Date.now() / 1000) + (60 * 60) // Expira en 1 hora
+      roles: roles,
+      exp: Math.floor(Date.now() / 1000) + (60 * 60)
     };
 
-    const secret = 'your-256-bit-secret'; 
+    const secret = 'your-256-bit-secret';
     const token = KJUR.jws.JWS.sign('HS256', JSON.stringify(header), JSON.stringify(payload), secret);
-    
     localStorage.setItem('jwtRoles', token);
   }
 
@@ -78,24 +87,29 @@ export class AuthService {
 
   getActualRoles(): string[] | null {
     const token = localStorage.getItem('jwtRoles');
-    if (!token) {
-      return null;
-    }
+    if (!token) return null;
 
     const secret = 'your-256-bit-secret';
     const decodedToken: any = KJUR.jws.JWS.parse(token);
     const isValid = KJUR.jws.JWS.verify(token, secret, ['HS256']);
-    
-    if (isValid) {
-      return decodedToken.payloadObj.roles || null;
-    } else {
-      console.error('Token no es válido.');
-      return null;
-    }
+
+    return isValid ? decodedToken.payloadObj.roles || null : null;
   }
 
   verifyLogin(user: LoginUser): Observable<LoginUser> {
     return this.http.post<LoginUser>(this.url + "login", user);
   }
+
+  recoverPassword(email: RecoveryEmailPost): Observable<void> {
+    return this.http.post<void>(this.url + "recover-password", email);
+  }
+
+  resetPassword(resetDto: ResetPasswordPost): Observable<void> {
+    return this.http.post<void>(this.url + "reset-password", resetDto);
+  }
+
+  updateUser(user: UserLoged): void {
+  localStorage.setItem('user', JSON.stringify(user));
+}
 
 }
