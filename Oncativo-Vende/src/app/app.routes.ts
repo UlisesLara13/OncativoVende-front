@@ -23,6 +23,9 @@ import { PublicationsListComponent } from './components/publications-list/public
 import { FrequentQuestionsComponent } from './components/frequent-questions/frequent-questions.component';
 import { NewEventComponent } from './components/new-event/new-event.component';
 import { EventsListComponent } from './components/events-list/events-list.component';
+import { ChartsUserComponent } from './components/charts-user/charts-user.component';
+import { ChartsPublicationComponent } from './components/charts-publication/charts-publication.component';
+import { ChartsSubscriptionsComponent } from './components/charts-subscriptions/charts-subscriptions.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
@@ -42,6 +45,9 @@ export const routes: Routes = [
     { path: 'admin/new-event', component: NewEventComponent , canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] } },
     { path: 'admin/users', component: UsersListComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] } },
     { path: 'admin/publications', component: PublicationsListComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] } },
+    { path: 'admin/charts/users', component: ChartsUserComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] } },
+    { path: 'admin/charts/publications', component: ChartsPublicationComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] } },
+    { path: 'admin/charts/subscriptions', component: ChartsSubscriptionsComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] } },
     { path: 'moderator/reports', component: ReportsListComponent, canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN','MODERADOR'] } },
     { path: 'not-found', component: NotFoundComponent },
     { path: 'search', component: SearchComponent },

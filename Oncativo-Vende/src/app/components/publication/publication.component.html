@@ -234,24 +234,32 @@
       @if (userLoged.id != publication.user.id && isLoggedIn()) {
         <div class="bg-white shadow-sm rounded-4 p-4">
           @if (existingRating != null) {
-            <h5 class="text-primary mb-3">
-              <i class="bi bi-check-circle me-2"></i>
-              Tu reseña
-            </h5>
-            <div class="card">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <div>
-                  <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                <h5 class="text-primary mb-3">
+                  <i class="bi bi-check-circle me-2"></i>
+                  Tu reseña
+                </h5>
+                <div class="card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div>
+                    <ng-container *ngFor="let star of [].constructor(5); let i = index">
                     <i [ngClass]="getStarClass(existingRating.rating, i)" style="color: #ffc107;"></i>
-                  </ng-container>
+                    </ng-container>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <small class="text-muted">{{ formatDate(existingRating.created_at) }}</small>
+                    <button class="btn btn-outline-danger btn-sm" 
+                        (click)="deleteRating()" 
+                        title="Eliminar reseña">
+                    <i class="bi bi-trash"></i>
+                    Eliminar reseña
+                    </button>
+                  </div>
+                  </div>
+                  <p class="mb-0">{{ existingRating.comment }}</p>
                 </div>
-                <small class="text-muted">{{ formatDate(existingRating.created_at) }}</small>
-              </div>
-              <p class="mb-0">{{ existingRating.comment }}</p>
-            </div>
-          </div>
-          }
+                </div>
+                }
           @else {
             <h5 class="text-primary mb-3">
               <i class="bi bi-pencil-square me-2"></i>

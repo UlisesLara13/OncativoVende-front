@@ -13,13 +13,13 @@
         <!-- Slides -->
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img src="assets/carrusel1.png" class="d-block w-100 fondo-carrusel" alt="Promo 1">
+            <img src="assets/carru4.png" class="d-block w-100 fondo-carrusel" style="height: 700px; object-fit: fill; cursor: pointer;" alt="Promo 1" routerLink="/faq">
           </div>
           <div class="carousel-item">
-            <img src="assets/carrusel2.png" class="d-block w-100 fondo-carrusel" alt="Promo 2">
+            <img src="assets/carru5.png" class="d-block w-100 fondo-carrusel" style="height: 700px; object-fit: fill; cursor: pointer;" alt="Promo 2" routerLink="/subscriptions">
           </div>
           <div class="carousel-item">
-            <img src="assets/carrusel3.png" class="d-block w-100 fondo-carrusel" alt="Promo 3">
+            <img src="assets/carru3.png" class="d-block w-100 fondo-carrusel" style="height: 700px; object-fit: fill; cursor: pointer;" alt="Promo 3" routerLink="/search">
           </div>
         </div>
   
@@ -200,16 +200,8 @@
                       </div>
                     </div>
 
-                    <div class="user-rating ms-auto" *ngIf="lastEvent.user.rating > 0">
-                      <span class="rating-stars text-primary">
-                        <span *ngFor="let star of [1,2,3,4,5]" [class]="star <= lastEvent.user.rating ? 'bi bi-star-fill' : 'bi bi-star'"></span>
-                      </span>
-                      <small class="text-muted ms-1">({{ lastEvent.user.rating }})</small>
-                    </div>
-                  </div>
-
-                  <div class="event-dates" *ngIf="lastEvent.start_date || lastEvent.end_date">
-                    <small class="text-muted">
+                    <div class="user-rating ms-auto">
+                      <small class="text-muted">
                       <i class="bi bi-calendar-event me-1"></i>
                       <span *ngIf="lastEvent.start_date && lastEvent.end_date && lastEvent.start_date !== lastEvent.end_date">
                         Del {{ formatDate(lastEvent.start_date) }} al {{ formatDate(lastEvent.end_date) }}
@@ -218,7 +210,9 @@
                         {{ formatDate(lastEvent.start_date) }}
                       </span>
                     </small>
+                    </div>
                   </div>
+
                 </div>
               </div>
             </div>

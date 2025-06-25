@@ -108,4 +108,8 @@ export class AuthService {
     return this.http.post<void>(this.url + "reset-password", resetDto);
   }
 
+  updateUser(user: UserLoged): void {
+  localStorage.setItem('user', JSON.stringify(user));
+}
+
 }

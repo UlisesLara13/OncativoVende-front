@@ -66,16 +66,8 @@
                     </div>
                   </div>
 
-                  <div class="user-rating ms-auto" *ngIf="event.user.rating > 0">
-                    <span class="rating-stars text-primary">
-                      <span *ngFor="let star of [1,2,3,4,5]" [class]="star <= event.user.rating ? 'bi bi-star-fill' : 'bi bi-star'"></span>
-                    </span>
-                    <small class="text-muted ms-1">({{ event.user.rating }})</small>
-                  </div>
-                </div>
-
-                <div class="event-dates" *ngIf="event.start_date || event.end_date">
-                  <small class="text-muted">
+                  <div class="user-rating ms-auto">
+                    <small class="text-muted">
                     <i class="bi bi-calendar-event me-1"></i>
                     <span *ngIf="event.start_date && event.end_date && event.start_date !== event.end_date">
                       Del {{ formatDate(event.start_date) }} al {{ formatDate(event.end_date) }}
@@ -84,6 +76,7 @@
                       {{ formatDate(event.start_date) }}
                     </span>
                   </small>
+                  </div>
                 </div>
               </div>
             </div>

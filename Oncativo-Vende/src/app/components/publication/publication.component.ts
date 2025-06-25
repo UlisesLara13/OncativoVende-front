@@ -137,9 +137,7 @@ submitRating() {
     this.loadRatings();
     this.toastMessage = '¡Reseña enviada con éxito!';
     this.showToast(this.toastMessage, true);
-    setTimeout(() => {
-      this.refreshPage();
-    }, 1000);
+    this.loadPublication(this.publication.id.toString());
   });
 }
 
@@ -278,13 +276,41 @@ zoomImage(event: MouseEvent) {
     });
   }
 
+  deleteRating() {
+Swal.fire({
+  title: '¿Estás seguro?',
+  text: 'Esta acción eliminará tu reseña permanentemente.',
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Sí, eliminar',
+  confirmButtonColor: '#d33',
+  cancelButtonColor: '#3085d6',
+  cancelButtonText: 'Cancelar'
+}).then((result) => {
+  if (result.isConfirmed) {
+    this.ratingService.deleteRating(this.existingRating!.id).subscribe(() => {
+      this.existingRating = null;
+      this.loadRatings();
+      this.toastMessage = 'Reseña eliminada con éxito';
+      this.showToast(this.toastMessage, false);
+      this.loadPublication(this.publication.id.toString());
+      this.clearRating();
+    });
+  }});
+}
+
+clearRating() {
+  this.newRating.rating = 0;
+  this.newRating.comment = '';
+  this.hoveredRating = 0;
+}
+
 loadPublication(id: string) {
   this.publicationService.getPublicationById(+id).subscribe({
     next: (data: PublicationGet) => {
       this.publication = data;
       console.log('Publicación cargada:', this.publication);
 
-      // Consultar si es favorita
       const userId = this.userLoged.id;
       const dto = {
         publication_id: this.publication.id,

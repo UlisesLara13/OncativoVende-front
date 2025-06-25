@@ -82,24 +82,49 @@ export class MyProfileComponent implements OnInit {
     this.showChangePasswordModal = true;
   }
 
+
   closeChangePasswordModal(): void {
     this.showChangePasswordModal = false;
   }
 
-  onChangeAvatar(): void {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.click();
+onChangeAvatar(): void {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.click();
 
-    input.onchange = (event: any) => {
-      const file = event.target.files[0];
-      if (file) {
-        this.selectedFile = file;
-        this.uploadProfilePic(file);
+  input.onchange = (event: any) => {
+    const file = event.target.files[0];
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Formato no válido',
+          text: 'Solo se permiten archivos JPG, JPEG y PNG.',
+          showConfirmButton: false,
+          timer: 2000
+        });
+        return;
       }
-    };
-  }
+
+      const maxSize = 5 * 1024 * 1024; 
+      if (file.size > maxSize) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo muy grande',
+          text: 'El archivo no puede ser mayor a 5MB.',
+          showConfirmButton: false,
+          timer: 2000
+        });
+        return;
+      }
+
+      this.selectedFile = file;
+      this.uploadProfilePic(file);
+    }
+  };
+}
 
   deleteAccount(): void {
     Swal.fire({
@@ -138,33 +163,58 @@ export class MyProfileComponent implements OnInit {
     });
   }
 
-  uploadProfilePic(file: File): void {
-    if (this.userLoged && this.userLoged.id) {
-      this.fileService.uploadProfilePic(this.userLoged.id, file).subscribe({
-        next: (fileUrl: string) => {
-          console.log('Foto subida exitosamente', fileUrl);
-  
-          this.usersService.updateAvatarUrl(this.userLoged.id, fileUrl).subscribe({
-            next: () => {
-              this.user.avatar_url = fileUrl;
-  
-              Swal.fire({
-                icon: 'success',
-                title: 'Foto de perfil actualizada',
-                text: 'Tu foto de perfil ha sido actualizada exitosamente.',
-                timer: 2000,
-                showConfirmButton: false
-              });
-            },
-            error: (error) => {
-              console.error('Error actualizando avatar en el backend:', error);
-            }
-          });
-        },
-        error: (error) => {
-          console.error('Error al subir la imagen:', error);
-        }
-      });
+    refreshPage(): void {
+      location.reload();
     }
-  }  
+
+ uploadProfilePic(file: File): void {
+  if (this.userLoged && this.userLoged.id) {
+    this.fileService.uploadProfilePic(this.userLoged.id, file).subscribe({
+      next: (fileUrl: string) => {
+        console.log('Foto subida exitosamente', fileUrl);
+
+        this.usersService.updateAvatarUrl(this.userLoged.id, fileUrl).subscribe({
+          next: () => {
+            this.user.avatar_url = fileUrl;
+            
+            this.userLoged.avatar = fileUrl; 
+            this.authService.updateUser(this.userLoged); 
+            
+            this.loadUserData(this.userLoged.id);
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Foto de perfil actualizada',
+              text: 'Tu foto de perfil ha sido actualizada exitosamente.',
+              timer: 2000,
+              showConfirmButton: false
+            }).then(() => {
+              this.refreshPage();
+            });
+          },
+          error: (error) => {
+            console.error('Error actualizando avatar en el backend:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo actualizar la foto de perfil. Inténtalo de nuevo.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error al subir la imagen:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al subir imagen',
+          text: 'No se pudo subir la imagen. Inténtalo de nuevo.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    });
+  }
+}
 }
