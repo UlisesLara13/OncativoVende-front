@@ -117,6 +117,47 @@ export class EventsListComponent implements OnInit {
     });
   }
 
+  showAdvertisementInfo(): void {
+    Swal.fire({
+      title: '¿Cómo publicar tu anuncio?',
+      html: `
+        <div class="text-start">
+          <p class="mb-3">Para publicar tu anuncio en nuestra plataforma, contactanos a través de:</p>
+          
+          <div class="mb-3">
+            <strong><i class="bi bi-envelope-fill text-primary me-2"></i>Email:</strong><br>
+            <a href="mailto:oncativovende@gmail.com" class="text-decoration-none">oncativovende@gmail.com</a>
+          </div>
+          
+          <div class="mb-3">
+            <strong><i class="bi bi-whatsapp text-success me-2"></i>WhatsApp:</strong><br>
+            <a href="https://wa.me/5493572605121" target="_blank" class="text-decoration-none">3572605121</a>
+          </div>
+          
+          <div class="alert alert-info mt-3">
+            <small>
+              <i class="bi bi-info-circle me-1"></i>
+              Te brindaremos información sobre cotización, requisitos y coordinaremos las fechas del posteo.
+            </small>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: '<i class="bi bi-whatsapp me-2"></i>Contactar por WhatsApp',
+      cancelButtonText: 'Cerrar',
+      confirmButtonColor: '#25d366',
+      cancelButtonColor: '#6c757d',
+      showCloseButton: true,
+      customClass: {
+        popup: 'swal-wide'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.open('https://wa.me/5493572605121?text=Hola,%20me%20interesa%20publicar%20un%20anuncio%20en%20su%20plataforma.%20¿Podrían%20brindarme%20información%20sobre%20cotización%20y%20requisitos?', '_blank');
+      }
+    });
+  }
+
   formatDate(dateString?: string): string {
     if (!dateString) return '';
     
@@ -151,5 +192,4 @@ export class EventsListComponent implements OnInit {
     const firstLetterSurname = user.surname ? user.surname.charAt(0).toUpperCase() : '';
     return firstLetterName + firstLetterSurname;
   }
-
 }

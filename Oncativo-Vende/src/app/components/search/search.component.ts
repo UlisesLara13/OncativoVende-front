@@ -12,6 +12,7 @@ import { UtilsService } from '../../services/utils.service';
 import { LocationGet } from '../../models/LocationGet';
 import { TagGet } from '../../models/TagGet';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { forkJoin, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -39,6 +40,7 @@ export class SearchComponent implements OnInit {
   totalPages: number = 0;
   itemsPerPage: number = 12; 
   isLastPage: boolean = false;
+  loading: boolean = false; 
   orderByOptions = [
     { label: 'Fecha de publicación', value: 'createdAt' },
     { label: 'Precio', value: 'price' },
@@ -52,8 +54,8 @@ export class SearchComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+  async ngOnInit(): Promise<void> {
+    this.route.queryParams.subscribe(async params => {
       this.searchText = params['searchText'] || '';
       this.category = Array.isArray(params['category']) ? params['category'] : (params['category'] ? [params['category']] : []);
       this.location = params['location'];
@@ -62,11 +64,49 @@ export class SearchComponent implements OnInit {
       this.tag = Array.isArray(params['tag']) ? params['tag'] : (params['tag'] ? [params['tag']] : []);
       this.sortBy = params['sortBy'] || 'createdAt';
       this.sortDir = params['sortDir'] || 'desc';
-      this.loadCategories();
-      this.loadLocations();
-      this.loadTags();
+      
+      await this.loadInitialData();
       this.loadPublications();
     });
+  }
+
+  private async loadInitialData(): Promise<void> {
+    this.loading = true;
+    try {
+      await Promise.all([
+        this.loadCategories(),
+        this.loadLocations(),
+        this.loadTags()
+      ]);
+    } catch (error) {
+      console.error('Error al cargar datos iniciales:', error);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async loadCategories(): Promise<void> {
+    try {
+      this.categories = await firstValueFrom(this.publicationsService.getCategories());
+    } catch (error) {
+      console.error('Error al cargar categorías:', error);
+    }
+  }
+
+  async loadLocations(): Promise<void> {
+    try {
+      this.locations = await firstValueFrom(this.utilsService.getLocations());
+    } catch (error) {
+      console.error('Error al cargar localidades:', error);
+    }
+  }
+
+  async loadTags(): Promise<void> {
+    try {
+      this.tags = await firstValueFrom(this.utilsService.getTags());
+    } catch (error) {
+      console.error('Error al cargar etiquetas:', error);
+    }
   }
 
   loadPublications(): void {
@@ -153,7 +193,6 @@ export class SearchComponent implements OnInit {
   }
 
   clearFilters(): void {
-    // Limpiar todos los filtros
     this.searchText = null;
     this.category = [];
     this.location = null;
@@ -164,13 +203,11 @@ export class SearchComponent implements OnInit {
     this.sortDir = 'desc';
     this.currentPage = 1;
     
-    // Actualizar URL sin parámetros de búsqueda
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {}
     });
     
-    // Cargar publicaciones sin filtros
     this.loadPublications();
   }
 
@@ -197,28 +234,6 @@ export class SearchComponent implements OnInit {
     return `badge rounded-pill ${tagColorMap[tag] || 'bg-secondary'}`;
   }
 
-  loadCategories(): void {
-    this.publicationsService.getCategories().subscribe({
-      next: (categories: CategoryGet[]) => {
-        this.categories = categories;
-      },
-      error: (error) => {
-        console.error('Error al cargar categorías:', error);
-      }
-    });
-  }
-
-  loadLocations(): void {
-    this.utilsService.getLocations().subscribe({
-      next: (locations: LocationGet[]) => {
-        this.locations = locations;
-      },
-      error: (error) => {
-        console.error('Error al cargar localidades:', error);
-      }
-    });
-  }
-
   goToPublication(id: number): void {
     this.publicationsService.addView(id).subscribe({
       next: () => {
@@ -226,17 +241,6 @@ export class SearchComponent implements OnInit {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       },
-    });
-  }
-
-  loadTags(): void {
-    this.utilsService.getTags().subscribe({
-      next: (tags: TagGet[]) => {
-        this.tags = tags;
-      },
-      error: (error) => {
-        console.error('Error al cargar etiquetas:', error);
-      }
     });
   }
 }

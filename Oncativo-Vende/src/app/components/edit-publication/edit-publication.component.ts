@@ -79,7 +79,7 @@ export class EditPublicationComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
   ) {
     this.form = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
       price: [null, [Validators.required, Validators.min(1)]],
       location_id: [null, Validators.required],

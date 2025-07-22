@@ -73,7 +73,7 @@
               <li><a class="dropdown-item" [routerLink]="'/my-favorites'" style="font-size: 0.9rem;">Mis favoritos</a></li>
               <li><a class="dropdown-item" [routerLink]="'/my-publications'" style="font-size: 0.9rem;">Mis publicaciones</a></li>
               <li><a class="dropdown-item" [routerLink]="'/subscriptions'" style="font-size: 0.9rem;">Gestionar suscripciones</a></li>
-                @if (authService.hasRole("PREMIUM")) {
+                @if (authService.hasRole("PREMIUM") || authService.hasRole("ADMIN")) {
                 <li><hr class="my-1"></li>
                 <li><a class="dropdown-item d-flex justify-content-between align-items-center" style="font-size: 0.9rem;" [routerLink]="'/new-publication'"> Crear publicación<i class="bi bi-clipboard-plus ms-1"></i></a></li>
                 }

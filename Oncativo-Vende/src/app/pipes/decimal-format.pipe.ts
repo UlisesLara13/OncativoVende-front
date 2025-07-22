@@ -11,14 +11,14 @@ export class DecimalFormatPipe implements PipeTransform {
       return ''; 
     }
 
-    let parsedValue = parseFloat(value as string); 
+    const parsedValue = parseFloat(value as string); 
 
     if (isNaN(parsedValue)) {
       return ''; 
     }
 
     return parsedValue.toLocaleString('es-AR', { 
-      maximumFractionDigits: 0  
+      maximumFractionDigits: 2
     });
   }
 }

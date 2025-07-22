@@ -195,7 +195,7 @@
       <div class="row fw-bold text-secondary px-2 mb-2 d-none d-lg-flex">
         <div class="col-1 text-center">Imagen</div>
         <div class="col-3">Título / Usuario</div>
-        <div class="col-2 text-center">Precio / Vistas</div>
+        <div class="col-2 text-end">Precio / Vistas</div>
         <div class="col-2 text-center">Ubicación</div>
         <div class="col-1 text-center">Estado</div>
         <div class="col-2 text-center">Fecha</div>
@@ -224,7 +224,7 @@
               
               <!-- Título y Usuario -->
               <div class="col-12 col-sm-9 col-lg-3 mb-2 mb-lg-0">
-                <h6 class="mb-1 fw-bold">{{ pub.title | truncate:35 }}</h6>
+                <h6 class="mb-1 fw-bold">{{ pub.title | truncate:25 }}</h6>
                 <small class="text-muted d-block" style="font-size: 0.75rem;">
                   {{ pub.description | truncate:40 }}
                 </small>
@@ -234,8 +234,8 @@
               </div>
               
               <!-- Precio y Vistas -->
-              <div class="col-6 col-lg-2 text-center">
-                <h6 class="text-success mb-1">${{ pub.price | decimalFormat }}</h6>
+              <div class="col-6 col-lg-2 text-end">
+                <h6 class="text mb-1">${{ pub.price | decimalFormat }}</h6>
                 <small class="text-muted">
                   <i class="bi bi-eye"></i> {{ pub.views }} vistas
                 </small>

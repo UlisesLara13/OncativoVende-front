@@ -86,7 +86,7 @@
 
     <!-- Bronce -->
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm h-100 text-center">
+      <div class="card border-0 shadow-sm h-100 text-center d-flex flex-column">
         <div class="card-header bg-bronce text-white fs-5 fw-bold">
           Suscripción Bronce
           @if (currentDiscount > 0) {
@@ -95,7 +95,7 @@
             </div>
           }
         </div>
-        <div class="card-body">
+        <div class="card-body d-flex flex-column">
           @if (currentDiscount > 0) {
             <div class="mb-2">
               <span class="text-muted text-decoration-line-through">${{basePrices.bronce}}</span>
@@ -103,7 +103,7 @@
           }
           <h1 class="card-title">${{getDiscountedPrice(basePrices.bronce)}}</h1>
           <h6>${{getDiscountedPrice(basePrices.bronce)}} / mes</h6>
-          <ul class="list-unstyled mt-3 mb-4">
+          <ul class="list-unstyled mt-3 mb-4 flex-grow-1">
             <li><i class="bi bi-check-lg text-success"></i> 1 mes de servicio</li>
             @if (currentDiscount > 0) {
               <li><i class="bi bi-check-lg text-success"></i> {{currentDiscount}}% de descuento aplicado</li>
@@ -111,14 +111,14 @@
               <li><i class="bi bi-x text-danger"></i> Sin descuento</li>
             }
           </ul>
-          <button class="btn btn-outline-bronce" (click)="pay('Suscripción Bronce', basePrices.bronce)">Elegir Bronce</button>
+          <button class="btn btn-outline-bronce mt-auto" (click)="pay('Suscripción Bronce', basePrices.bronce)">Elegir Bronce</button>
         </div>
       </div>
     </div>
 
     <!-- Plata -->
     <div class="col-md-4">
-      <div class="card border-0 shadow h-100 text-center">
+      <div class="card border-0 shadow h-100 text-center d-flex flex-column">
         <div class="card-header bg-plata text-white fs-5 fw-bold">
           Suscripción Plata
           @if (currentDiscount > 0) {
@@ -127,7 +127,7 @@
             </div>
           }
         </div>
-        <div class="card-body">
+        <div class="card-body d-flex flex-column">
           @if (currentDiscount > 0) {
             <div class="mb-2">
               <span class="text-muted text-decoration-line-through">${{basePrices.plata}}</span>
@@ -135,21 +135,21 @@
           }
           <h1 class="card-title">${{getDiscountedPrice(basePrices.plata)}}</h1>
           <h6>${{getMonthlyPrice(basePrices.plata, 6)}} / mes</h6>
-          <ul class="list-unstyled mt-3 mb-4">
+          <ul class="list-unstyled mt-3 mb-4 flex-grow-1">
             <li><i class="bi bi-check-lg text-success"></i> 6 meses de servicio</li>
             <li><i class="bi bi-check-lg text-success"></i> Ahorro de ${{getMonthlySavings(basePrices.plata, 6)}} / mes</li>
             @if (currentDiscount > 0) {
               <li><i class="bi bi-check-lg text-success"></i> {{currentDiscount}}% de descuento adicional</li>
             }
           </ul>
-          <button class="btn btn-outline-plata" (click)="pay('Suscripción Plata', basePrices.plata)">Elegir Plata</button>
+          <button class="btn btn-outline-plata mt-auto" (click)="pay('Suscripción Plata', basePrices.plata)">Elegir Plata</button>
         </div>
       </div>
     </div>
 
     <!-- Oro -->
     <div class="col-md-4">
-      <div class="card border-0 shadow-lg h-100 text-center">
+      <div class="card border-0 shadow-lg h-100 text-center d-flex flex-column">
         <div class="card-header bg-oro text-white fs-5 fw-bold">
           Suscripción Oro
           @if (currentDiscount > 0) {
@@ -158,7 +158,7 @@
             </div>
           }
         </div>
-        <div class="card-body">
+        <div class="card-body d-flex flex-column">
           @if (currentDiscount > 0) {
             <div class="mb-2">
               <span class="text-muted text-decoration-line-through">${{basePrices.oro}}</span>
@@ -166,14 +166,14 @@
           }
           <h1 class="card-title">${{getDiscountedPrice(basePrices.oro)}}</h1>
           <h6>${{getMonthlyPrice(basePrices.oro, 12)}} / mes</h6>
-          <ul class="list-unstyled mt-3 mb-4">
+          <ul class="list-unstyled mt-3 mb-4 flex-grow-1">
             <li><i class="bi bi-check-lg text-success"></i> 12 meses de servicio</li>
             <li><i class="bi bi-check-lg text-success"></i> Ahorro de ${{getMonthlySavings(basePrices.oro, 12)}} / mes</li>
             @if (currentDiscount > 0) {
               <li><i class="bi bi-check-lg text-success"></i> {{currentDiscount}}% de descuento adicional</li>
             }
           </ul>
-          <button class="btn btn-outline-oro" (click)="pay('Oro', basePrices.oro)">Elegir Oro</button>
+          <button class="btn btn-outline-oro mt-auto" (click)="pay('Oro', basePrices.oro)">Elegir Oro</button>
         </div>
       </div>
     </div>

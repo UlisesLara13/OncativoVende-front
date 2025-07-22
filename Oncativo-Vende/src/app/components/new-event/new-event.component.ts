@@ -158,7 +158,6 @@ export class NewEventComponent implements OnInit {
       }
     }
 
-    // Validación de rango de fechas
     if (this.form.errors && this.form.errors['dateRange']) {
       if (controlName === 'start_date' || controlName === 'end_date') {
         return 'La fecha de fin debe ser igual o posterior a la fecha de inicio.';
@@ -223,6 +222,12 @@ export class NewEventComponent implements OnInit {
     }
   }
 
+  goToEvents(): void {
+    this.router.navigate(['/events']).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
   private createEventWithImage(imageUrl: string | null): void {
     const eventData: any = {
       title: this.form.value.title,
@@ -239,6 +244,7 @@ export class NewEventComponent implements OnInit {
       eventData.image_url = imageUrl;
     }
 
+
     console.log('Datos a enviar:', eventData);
 
     this.eventsService.createEvent(eventData).subscribe({
@@ -254,7 +260,7 @@ export class NewEventComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         }).then(() => {
-          this.router.navigate(['/events']);
+          this.goToEvents();
         });
       },
       error: (err) => {
@@ -280,14 +286,14 @@ export class NewEventComponent implements OnInit {
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Sí, cancelar',
-        cancelButtonText: 'Continuar editando'
+        cancelButtonText: 'Continuar'
       }).then((result) => {
         if (result.isConfirmed) {
-          this.router.navigate(['/events']);
+          this.goToEvents();
         }
       });
     } else {
-      this.router.navigate(['/events']);
+      this.goToEvents();
     }
   }
 }

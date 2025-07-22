@@ -1,22 +1,23 @@
-/* Fuente global */
+
 * {
     font-family: 'Poppins', sans-serif;
     
   }
   
-  /* Estructura general */
   .container-fluid {
     display: flex;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
     padding: 0;
     background-color: #f8f9fa;
   }
   
-  /* Formulario de registro */
   .form-register {
     max-width: 600px;
     width: 100%;
+    height: auto;
+    margin-bottom: 50px;
+    margin-top: 50px;
     background-color: white;
     padding: 2rem;
     border-radius: 0.5rem;

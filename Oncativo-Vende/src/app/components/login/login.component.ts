@@ -171,6 +171,8 @@ onKeyDown(event: KeyboardEvent, index: number) {
   }
 }
 
+
+
 onPaste(event: ClipboardEvent, index: number) {
   event.preventDefault();
   const pasteData = event.clipboardData?.getData('text') || '';
@@ -195,7 +197,7 @@ onPaste(event: ClipboardEvent, index: number) {
       next: async (data) => {
         await this.authService.login(data);
         this.errorLog = false;
-        this.router.navigate(['/home']);
+        this.goToHome();
       
       },
       error: (error) => {
@@ -214,6 +216,12 @@ onPaste(event: ClipboardEvent, index: number) {
 
   cleanForm() {
     this.reactiveForm.reset();
+  }
+
+  goToHome(): void {
+    this.router.navigate(['/home']).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
 getFirstInvalidCodeControl(): string {

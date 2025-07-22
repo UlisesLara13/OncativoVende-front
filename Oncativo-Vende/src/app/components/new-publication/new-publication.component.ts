@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import { UsersService } from '../../services/users.service';
 import { UserGet } from '../../models/UserGet';
+import { PublicationGet } from '../../models/PublicationGet';
 
 @Component({
   selector: 'app-new-publication',
@@ -75,7 +76,7 @@ export class NewPublicationComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
   ) {
     this.form = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
       price: [null, [Validators.required, Validators.min(1)]],
       location_id: [null, Validators.required],
@@ -428,35 +429,39 @@ hasAtLeastOneImage(): boolean {
       contacts: contacts
     };
 
-    this.publicationService.createPublication(publication).subscribe({
-      next: res => {
-        this.form.reset();
-        this.selectedImages = [];
-        this.uploadedImagePaths = [];
-        this.step = 1;
-        this.contacts.clear();
-        this.addContact();
-        Swal.fire({
-          icon: 'success',
-          title: '¡Completado!',
-          text: 'Publicación creada con éxito',
-          showConfirmButton: false,
-          timer: 1500
-        }).then(() => {
-          this.router.navigate(['/home']);
-        });
-      },
-      error: err => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al crear la publicación',
-          text: err.error.message || 'Ocurrió un error inesperado. Inténtalo de nuevo más tarde.',
-          showConfirmButton:false,
-          timer: 2000
-        });
-      }
-    });
-  }
+     this.publicationService.createPublication(publication).subscribe({
+    next: (res: PublicationGet) => {
+      // El servicio retorna el objeto completo PublicationGet con el ID
+      const publicationId = res.id;
+      
+      this.form.reset();
+      this.selectedImages = [];
+      this.uploadedImagePaths = [];
+      this.step = 1;
+      this.contacts.clear();
+      this.addContact();
+      
+      Swal.fire({
+        icon: 'success',
+        title: '¡Completado!',
+        text: 'Publicación creada con éxito',
+        showConfirmButton: false,
+        timer: 1500
+      }).then(() => {
+        this.router.navigate(['/publication', publicationId]);
+      });
+    },
+    error: err => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al crear la publicación',
+        text: err.error.message || 'Ocurrió un error inesperado. Inténtalo de nuevo más tarde.',
+        showConfirmButton: false,
+        timer: 2000
+      });
+    }
+  });
+}
 
   getImagePreview(file: File): string {
     return URL.createObjectURL(file);
